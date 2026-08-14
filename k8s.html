@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kubernetes Senior DevOps / Cloud Architect Interview Guide</title>
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --card: #ffffff;
+    --text: #17202a;
+    --muted: #5f6b7a;
+    --border: #dfe5ec;
+    --accent: #1f5f8b;
+    --accent-light: #eaf3f9;
+    --code: #111827;
+    --code-text: #e5e7eb;
+    --success: #1f7a4d;
+    --warning: #9a6700;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.6;
+  }
+  header {
+    background: #17202a;
+    color: white;
+    padding: 42px 7%;
+    border-bottom: 5px solid var(--accent);
+  }
+  header h1 { margin: 0 0 8px; font-size: 34px; }
+  header p { margin: 0; color: #d7dee7; font-size: 16px; }
+  main { max-width: 1180px; margin: 30px auto; padding: 0 22px 60px; }
+  .toc, .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.04);
+  }
+  .toc { padding: 22px 26px; margin-bottom: 28px; }
+  .toc h2 { margin-top: 0; font-size: 20px; }
+  .toc ol { columns: 2; padding-left: 22px; }
+  .toc a { color: var(--accent); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .card { padding: 26px 30px; margin-bottom: 22px; }
+  h2 { font-size: 25px; margin: 0 0 14px; color: #1b3548; }
+  h3 { font-size: 19px; color: #244d68; margin-top: 22px; }
+  p { margin: 10px 0; }
+  ul, ol { padding-left: 24px; }
+  .answer {
+    border-left: 4px solid var(--accent);
+    background: var(--accent-light);
+    padding: 14px 18px;
+    margin: 14px 0;
+  }
+  .key {
+    border-left: 4px solid var(--success);
+    background: #edf8f2;
+    padding: 14px 18px;
+    margin: 16px 0;
+  }
+  .warning {
+    border-left: 4px solid var(--warning);
+    background: #fff8e6;
+    padding: 14px 18px;
+    margin: 16px 0;
+  }
+  pre {
+    background: var(--code);
+    color: var(--code-text);
+    padding: 16px 18px;
+    border-radius: 7px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  code {
+    font-family: Consolas, Monaco, monospace;
+    font-size: .92em;
+  }
+  p code, li code {
+    background: #eef1f4;
+    padding: 2px 5px;
+    border-radius: 4px;
+    color: #263746;
+  }
+  .diagram {
+    background: #fafbfd;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    font-family: Consolas, Monaco, monospace;
+    white-space: pre;
+    overflow-x: auto;
+    color: #263746;
+  }
+  .priority {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px 24px;
+  }
+  .priority div {
+    border: 1px solid var(--border);
+    padding: 12px 14px;
+    border-radius: 7px;
+    background: #fbfcfd;
+  }
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    padding: 25px;
+  }
+  @media (max-width: 760px) {
+    .toc ol { columns: 1; }
+    .priority { grid-template-columns: 1fr; }
+    header h1 { font-size: 27px; }
+    .card { padding: 20px; }
+  }
+  @media print {
+    body { background: white; }
+    .toc, .card { box-shadow: none; break-inside: avoid; }
+    header { background: white; color: black; border-bottom: 2px solid #333; }
+    header p { color: #333; }
+    a { color: black; }
+  }
+</style>
+</head>
+
+<body>
+<header>
+  <h1>Kubernetes Interview Questions & Answers</h1>
+  <p>Senior DevOps / Cloud Architect Level — Kubernetes, EKS, Troubleshooting, Security, Networking, Scaling and Architecture</p>
+</header>
+
+<main>
+
+<section class="toc">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#q1">Kubernetes Architecture</a></li>
+    <li><a href="#q2">What happens when you create a Deployment?</a></li>
+    <li><a href="#q3">Deployment vs ReplicaSet</a></li>
+    <li><a href="#q4">Rolling Deployment</a></li>
+    <li><a href="#q5">maxSurge and maxUnavailable</a></li>
+    <li><a href="#q6">Pod Crash / Self-Healing</a></li>
+    <li><a href="#q7">Pod vs Container</a></li>
+    <li><a href="#q8">Multiple containers in a Pod</a></li>
+    <li><a href="#q9">Kubernetes Service</a></li>
+    <li><a href="#q10">ClusterIP, NodePort, LoadBalancer</a></li>
+    <li><a href="#q11">Exposing an application in EKS</a></li>
+    <li><a href="#q12">Ingress vs Service</a></li>
+    <li><a href="#q13">Readiness Probe</a></li>
+    <li><a href="#q14">Liveness vs Readiness vs Startup</a></li>
+    <li><a href="#q15">Running but not Ready</a></li>
+    <li><a href="#q16">CrashLoopBackOff</a></li>
+    <li><a href="#q17">OOMKilled</a></li>
+    <li><a href="#q18">Requests vs Limits</a></li>
+    <li><a href="#q19">CPU limit exceeded</a></li>
+    <li><a href="#q20">Pod Scheduling</a></li>
+    <li><a href="#q21">Taints and Tolerations</a></li>
+    <li><a href="#q22">Affinity and Anti-Affinity</a></li>
+    <li><a href="#q23">ConfigMap vs Secret</a></li>
+    <li><a href="#q24">Kubernetes Networking</a></li>
+    <li><a href="#q25">AWS VPC CNI</a></li>
+    <li><a href="#q26">Pod to RDS Troubleshooting</a></li>
+    <li><a href="#q27">NetworkPolicy</a></li>
+    <li><a href="#q28">High Availability</a></li>
+    <li><a href="#q29">PodDisruptionBudget</a></li>
+    <li><a href="#q30">HPA vs Cluster Autoscaler vs Karpenter</a></li>
+    <li><a href="#q31">HPA Metrics</a></li>
+    <li><a href="#q32">Zero-Downtime Deployment</a></li>
+    <li><a href="#q33">Blue-Green vs Canary</a></li>
+    <li><a href="#q34">EKS Latency Troubleshooting</a></li>
+    <li><a href="#q35">Pending Pods</a></li>
+    <li><a href="#q36">kubectl drain</a></li>
+    <li><a href="#q37">cordon vs drain</a></li>
+    <li><a href="#q38">EKS Security</a></li>
+    <li><a href="#q39">Pod Identity vs IRSA</a></li>
+    <li><a href="#q40">RBAC</a></li>
+    <li><a href="#q41">Role vs ClusterRole</a></li>
+    <li><a href="#q42">GitOps</a></li>
+    <li><a href="#q43">Why GitOps instead of direct kubectl?</a></li>
+    <li><a href="#q44">Secrets in GitOps</a></li>
+    <li><a href="#q45">etcd</a></li>
+    <li><a href="#q46">etcd failure</a></li>
+    <li><a href="#q47">Reconciliation</a></li>
+    <li><a href="#q48">One Pod receiving all traffic</a></li>
+    <li><a href="#q49">EKS Node NotReady</a></li>
+    <li><a href="#q50">Production EKS Architecture</a></li>
+    <li><a href="#scenario">Mock Interview Scenario: 503</a></li>
+  </ol>
+</section>
+
+<section class="card" id="q1">
+<h2>1. Explain Kubernetes architecture</h2>
+<div class="answer">
+<p>Kubernetes has two major parts: the <strong>Control Plane</strong> and <strong>Worker Nodes</strong>.</p>
+</div>
+<h3>Control Plane</h3>
+<ul>
+<li><strong>API Server</strong> — entry point for Kubernetes operations.</li>
+<li><strong>etcd</strong> — stores Kubernetes cluster state.</li>
+<li><strong>Scheduler</strong> — decides which node should run a Pod.</li>
+<li><strong>Controller Manager</strong> — continuously makes actual state match desired state.</li>
+<li><strong>Cloud Controller Manager</strong> — integrates Kubernetes with cloud providers such as AWS.</li>
+</ul>
+<h3>Worker Nodes</h3>
+<ul>
+<li><strong>kubelet</strong> — manages Pods on the node.</li>
+<li><strong>Container Runtime</strong> — runs containers, typically containerd.</li>
+<li><strong>kube-proxy</strong> — supports Kubernetes Service networking.</li>
+<li><strong>Pods</strong> — run application containers.</li>
+</ul>
+<div class="key"><strong>Interview statement:</strong> Kubernetes follows a desired-state model. I declare desired state through the API server, store the state in etcd, and controllers continuously work to make the actual cluster state match that desired state.</div>
+</section>
+
+<section class="card" id="q2">
+<h2>2. What happens when you create a Deployment?</h2>
+<pre>kubectl apply -f deployment.yaml</pre>
+<div class="diagram">kubectl
+   |
+   v
+API Server
+   |
+   v
+etcd
+   |
+   v
+Deployment Controller
+   |
+   v
+ReplicaSet
+   |
+   v
+Scheduler
+   |
+   v
+Worker Node
+   |
+   v
+kubelet
+   |
+   v
+Container Runtime
+   |
+   v
+Pod</div>
+<p>The API server receives the desired state. The Deployment Controller creates or updates a ReplicaSet. The ReplicaSet ensures the required number of Pods exist. The Scheduler assigns unscheduled Pods to nodes. kubelet asks the container runtime to create the containers.</p>
+</section>
+
+<section class="card" id="q3">
+<h2>3. Deployment vs ReplicaSet</h2>
+<p>A <strong>ReplicaSet</strong> ensures a specific number of Pods are running.</p>
+<p>A <strong>Deployment</strong> manages ReplicaSets and provides:</p>
+<ul>
+<li>Rolling updates</li>
+<li>Rollbacks</li>
+<li>Version management</li>
+<li>Replica management</li>
+</ul>
+<div class="diagram">Deployment
+     |
+     +---- ReplicaSet v1
+     |        |
+     |        +-- Pod
+     |        +-- Pod
+     |
+     +---- ReplicaSet v2
+              |
+              +-- Pod
+              +-- Pod</div>
+<p>For stateless applications, normally use a Deployment rather than managing ReplicaSets directly.</p>
+</section>
+
+<section class="card" id="q4">
+<h2>4. How does Kubernetes perform a rolling deployment?</h2>
+<p>Suppose there are 4 replicas and version v2 is being deployed.</p>
+<div class="diagram">v1 Pods: 4
+v2 Pods: 0
+
+        ↓
+
+v1 Pods: 3
+v2 Pods: 1
+
+        ↓
+
+v1 Pods: 2
+v2 Pods: 2
+
+        ↓
+
+v1 Pods: 1
+v2 Pods: 3
+
+        ↓
+
+v1 Pods: 0
+v2 Pods: 4</div>
+<pre>strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 1
+    maxSurge: 1</pre>
+</section>
+
+<section class="card" id="q5">
+<h2>5. What are maxSurge and maxUnavailable?</h2>
+<p>Suppose:</p>
+<pre>replicas: 10
+maxSurge: 2
+maxUnavailable: 1</pre>
+<p><strong>maxSurge</strong> is the maximum number of Pods that can temporarily exist above the desired replica count. Here Kubernetes can have up to 12 Pods.</p>
+<p><strong>maxUnavailable</strong> is the maximum number of Pods that can be unavailable during deployment. With 10 replicas and maxUnavailable 1, Kubernetes aims to keep at least 9 available.</p>
+</section>
+
+<section class="card" id="q6">
+<h2>6. What happens if a Pod crashes?</h2>
+<div class="diagram">Desired replicas = 3
+
+Pod 1 → Running
+Pod 2 → Running
+Pod 3 → Crash
+
+ReplicaSet sees only 2 healthy replicas
+             ↓
+Creates/replaces Pod
+             ↓
+Eventually 3 replicas again</div>
+<p>Kubernetes controllers maintain the desired state. This is the basis of Kubernetes self-healing for workloads managed by controllers.</p>
+</section>
+
+<section class="card" id="q7">
+<h2>7. Pod vs Container</h2>
+<p>A <strong>Pod is the smallest deployable unit in Kubernetes</strong>. A Pod can contain one or multiple containers.</p>
+<div class="diagram">Pod
+ |
+ +-- Application Container</div>
+<p>Containers in the same Pod share the network namespace, IP address, localhost, and can share volumes.</p>
+</section>
+
+<section class="card" id="q8">
+<h2>8. Why not normally put multiple application containers in one Pod?</h2>
+<p>Containers in the same Pod share a lifecycle and scale together. If App A needs 10 replicas but App B needs 2, putting them in one Pod forces them to scale together.</p>
+<div class="diagram">Deployment A → 10 Pods
+Deployment B → 2 Pods</div>
+<p>Multiple containers in one Pod are most useful for tightly coupled sidecars such as logging agents, service mesh proxies, security agents, proxies, or configuration helpers.</p>
+</section>
+
+<section class="card" id="q9">
+<h2>9. What is a Kubernetes Service?</h2>
+<p>Pods are ephemeral and their IP addresses can change. A Service provides a stable networking abstraction and selects Pods using labels.</p>
+<div class="diagram">             Service
+                |
+       +--------+--------+
+       |        |        |
+      Pod      Pod      Pod</div>
+</section>
+
+<section class="card" id="q10">
+<h2>10. ClusterIP vs NodePort vs LoadBalancer</h2>
+<h3>ClusterIP</h3>
+<p>Internal access. It is the default Service type.</p>
+<h3>NodePort</h3>
+<p>Exposes a Service through a port on every node.</p>
+<pre>Client → NodeIP:30080 → Service → Pods</pre>
+<h3>LoadBalancer</h3>
+<p>Integrates with a cloud provider to expose a load balancer. In AWS this can integrate with AWS load-balancing services depending on the Service and controller configuration.</p>
+</section>
+
+<section class="card" id="q11">
+<h2>11. In AWS EKS, how would you expose an application?</h2>
+<div class="diagram">Internet
+   |
+Route 53
+   |
+CloudFront
+   |
+WAF
+   |
+ALB
+   |
+Ingress
+   |
+Kubernetes Service
+   |
+Pods</div>
+<p>For EKS, a common approach is the <strong>AWS Load Balancer Controller</strong>, which creates and manages AWS load balancers from Kubernetes resources.</p>
+</section>
+
+<section class="card" id="q12">
+<h2>12. Ingress vs Service</h2>
+<p>A Service provides connectivity to a group of Pods. Ingress provides HTTP/HTTPS routing rules.</p>
+<div class="diagram">api.company.com
+       |
+     Ingress
+     /     \
+ /users   /orders
+   |         |
+User       Order
+Service    Service</div>
+</section>
+
+<section class="card" id="q13">
+<h2>13. What is a readiness probe?</h2>
+<p>A readiness probe answers: <strong>Is this Pod ready to receive traffic?</strong></p>
+<pre>readinessProbe:
+  httpGet:
+    path: /health
+    port: 8080</pre>
+<p>If readiness fails, the Pod can remain Running but should not receive traffic through the Service.</p>
+</section>
+
+<section class="card" id="q14">
+<h2>14. Liveness vs Readiness vs Startup</h2>
+<ul>
+<li><strong>Readiness</strong> — determines whether the Pod should receive traffic.</li>
+<li><strong>Liveness</strong> — determines whether the application is still healthy; repeated failure can cause a container restart.</li>
+<li><strong>Startup</strong> — protects slow-starting applications before liveness/readiness checks become active.</li>
+</ul>
+<div class="diagram">Application starts
+       |
+       | slow initialization
+       v
+Startup probe succeeds
+       |
+       v
+Liveness / Readiness become active</div>
+</section>
+
+<section class="card" id="q15">
+<h2>15. Why can a Pod be Running but not Ready?</h2>
+<p>Possible reasons include:</p>
+<ul>
+<li>Readiness probe failure</li>
+<li>Application still initializing</li>
+<li>Wrong health-check endpoint</li>
+<li>Wrong port</li>
+<li>Dependency unavailable</li>
+<li>Database connection failure</li>
+<li>Configuration issue</li>
+<li>Secret missing</li>
+<li>Network connectivity issue</li>
+</ul>
+<pre>kubectl get pods
+kubectl describe pod &lt;pod&gt;
+kubectl logs &lt;pod&gt;
+kubectl get events</pre>
+</section>
+
+<section class="card" id="q16">
+<h2>16. How do you troubleshoot CrashLoopBackOff?</h2>
+<pre>kubectl get pods
+kubectl describe pod &lt;pod&gt;
+kubectl logs &lt;pod&gt;
+kubectl logs &lt;pod&gt; --previous
+kubectl get events</pre>
+<p>Investigate application errors, bad environment variables, missing Secrets/ConfigMaps, database connectivity, permission issues, OOMKilled, incorrect entrypoint, and liveness probe failures.</p>
+<div class="key"><strong>Senior-level approach:</strong> Don't immediately restart the Pod. First determine why Kubernetes is restarting it.</div>
+</section>
+
+<section class="card" id="q17">
+<h2>17. What is OOMKilled?</h2>
+<p>OOM means Out Of Memory. If a container exceeds its memory limit, it can be terminated with an OOMKilled reason.</p>
+<pre>resources:
+  requests:
+    memory: "512Mi"
+  limits:
+    memory: "1Gi"</pre>
+<p>Check with:</p>
+<pre>kubectl describe pod &lt;pod&gt;</pre>
+<p>Then investigate application memory behavior, leaks, workload characteristics, and resource sizing.</p>
+</section>
+
+<section class="card" id="q18">
+<h2>18. Requests vs Limits</h2>
+<p><strong>Request:</strong> resource amount Kubernetes uses when scheduling a Pod.</p>
+<pre>requests:
+  cpu: 500m
+  memory: 512Mi</pre>
+<p><strong>Limit:</strong> maximum resource the container can consume.</p>
+<pre>limits:
+  cpu: "1"
+  memory: "1Gi"</pre>
+<div class="key"><strong>Remember:</strong> Requests influence scheduling; limits constrain runtime usage.</div>
+</section>
+
+<section class="card" id="q19">
+<h2>19. What happens if CPU limit is exceeded?</h2>
+<p>CPU is generally throttled. Memory behaves differently: exceeding the memory limit can result in the container being killed with an OOMKilled condition.</p>
+</section>
+
+<section class="card" id="q20">
+<h2>20. How does Kubernetes decide which node gets a Pod?</h2>
+<p>The Scheduler considers CPU/memory requests, node selectors, affinity, anti-affinity, taints, tolerations, topology constraints, and scheduling policies.</p>
+<div class="diagram">Pod
+ |
+Scheduler
+ |
+ +-- Node A ❌ insufficient CPU
+ +-- Node B ❌ taint
+ +-- Node C ✅
+</div>
+</section>
+
+<section class="card" id="q21">
+<h2>21. Taints and Tolerations</h2>
+<p>A taint says: <strong>don't schedule Pods here unless they tolerate this.</strong></p>
+<pre>Node:
+taint: workload=database:NoSchedule</pre>
+<pre>tolerations:
+- key: workload
+  operator: Equal
+  value: database
+  effect: NoSchedule</pre>
+<p>Useful for dedicated GPU, database, system, or high-memory nodes.</p>
+</section>
+
+<section class="card" id="q22">
+<h2>22. Node Affinity vs Pod Anti-Affinity</h2>
+<p><strong>Node Affinity</strong> controls which nodes a Pod should run on.</p>
+<p><strong>Pod Anti-Affinity</strong> controls which Pods should not be placed together.</p>
+<div class="diagram">High availability example:
+
+Node A → payment Pod
+Node B → payment Pod
+Node C → payment Pod
+
+rather than:
+
+Node A → payment Pod
+Node A → payment Pod
+Node A → payment Pod</div>
+</section>
+
+<section class="card" id="q23">
+<h2>23. ConfigMap vs Secret</h2>
+<p><strong>ConfigMap</strong> is for non-sensitive configuration such as database host, log level, and environment name.</p>
+<p><strong>Secret</strong> is intended for sensitive values such as passwords, API keys, and tokens.</p>
+<div class="warning"><strong>Senior-level point:</strong> Kubernetes Secrets are not automatically a complete enterprise secrets-management solution. In AWS, consider integrating with AWS Secrets Manager or Parameter Store and mechanisms such as the Secrets Store CSI Driver where appropriate.</div>
+</section>
+
+<section class="card" id="q24">
+<h2>24. How does Kubernetes networking work?</h2>
+<p>Pods normally receive their own IP addresses and can communicate with other Pods without requiring NAT in the normal Kubernetes networking model. The implementation depends on the CNI.</p>
+<div class="diagram">Pod A: 10.0.1.10
+       |
+       | network
+       v
+Pod B: 10.0.2.20</div>
+<p>In EKS, AWS VPC CNI is commonly used.</p>
+</section>
+
+<section class="card" id="q25">
+<h2>25. What is the AWS VPC CNI?</h2>
+<p>AWS VPC CNI allows Kubernetes Pods to participate directly in AWS VPC networking using AWS networking resources/IP addresses.</p>
+<div class="diagram">VPC
+ |
+ +-- EC2 Node
+ |      |
+ |      +-- Pod IP
+ |      +-- Pod IP
+ |
+ +-- EC2 Node
+        |
+        +-- Pod IP</div>
+<p>This supports connectivity to VPC resources such as RDS, ElastiCache, and internal load balancers.</p>
+</section>
+
+<section class="card" id="q26">
+<h2>26. How do you troubleshoot a Pod that cannot connect to RDS?</h2>
+<div class="diagram">Pod
+ ↓
+Pod IP
+ ↓
+Node / VPC networking
+ ↓
+Security Group
+ ↓
+Network ACL
+ ↓
+Route Table
+ ↓
+RDS</div>
+<pre>kubectl exec -it &lt;pod&gt; -- nslookup &lt;rds-host&gt;
+kubectl exec -it &lt;pod&gt; -- nc -vz &lt;rds-host&gt; 3306</pre>
+<p>Check DNS, security groups, network ACLs, routes, RDS security group, listener/port, credentials, and NetworkPolicy where applicable.</p>
+</section>
+
+<section class="card" id="q27">
+<h2>27. What is NetworkPolicy?</h2>
+<p>NetworkPolicy controls which Pods can communicate with other Pods or networks.</p>
+<div class="diagram">Frontend
+   |
+   v
+Backend     ✅
+   |
+   v
+Database    ❌ direct access</div>
+<p>Policies can use namespaces, Pod labels, IP blocks, and ports.</p>
+<div class="warning">NetworkPolicy enforcement depends on the networking implementation/configuration. Defining a policy does not by itself guarantee enforcement in every cluster.</div>
+</section>
+
+<section class="card" id="q28">
+<h2>28. How does Kubernetes provide high availability?</h2>
+<div class="diagram">             Load Balancer
+                  |
+        +---------+---------+
+        |         |         |
+      Node A    Node B    Node C
+        |         |         |
+      Pod A     Pod B     Pod C</div>
+<p>Use multiple worker nodes, multiple Availability Zones, multiple Pod replicas, topology spread/anti-affinity, PodDisruptionBudget, and appropriate autoscaling. In EKS, spread workloads across multiple AZs.</p>
+</section>
+
+<section class="card" id="q29">
+<h2>29. What is PodDisruptionBudget?</h2>
+<pre>minAvailable: 2</pre>
+<p>A PDB protects availability during voluntary disruptions such as node maintenance, cluster upgrades, and node draining.</p>
+<div class="warning">A PDB does not protect against every type of failure, such as an unexpected node crash.</div>
+</section>
+
+<section class="card" id="q30">
+<h2>30. HPA vs Cluster Autoscaler vs Karpenter</h2>
+<div class="diagram">Traffic
+   |
+HPA
+   |
+More Pods
+   |
+Pods Pending
+   |
+Karpenter / Node Scaling
+   |
+New EC2 capacity
+   |
+Pods Scheduled</div>
+<ul>
+<li><strong>HPA</strong> scales Pods.</li>
+<li><strong>Cluster Autoscaler</strong> scales nodes based on unschedulable Pods and node group configuration.</li>
+<li><strong>Karpenter</strong> dynamically provisions suitable compute capacity based on pending workload requirements.</li>
+</ul>
+</section>
+
+<section class="card" id="q31">
+<h2>31. Does HPA scale only on CPU?</h2>
+<p>No. HPA can use CPU, memory, custom metrics, and external metrics.</p>
+<p>For production workloads, application/business metrics can sometimes be better than CPU, such as queue depth, requests per second, Kafka lag, or active requests.</p>
+</section>
+
+<section class="card" id="q32">
+<h2>32. How would you deploy a zero-downtime application?</h2>
+<div class="diagram">Deployment
++
+Readiness Probe
++
+RollingUpdate
++
+Multiple Replicas
++
+PodDisruptionBudget
++
+Topology Spread
++
+Load Balancer</div>
+<p>Only ready Pods receive traffic, while multiple replicas and appropriate rollout settings maintain availability during deployment.</p>
+</section>
+
+<section class="card" id="q33">
+<h2>33. Blue-Green vs Canary deployment</h2>
+<h3>Blue-Green</h3>
+<div class="diagram">Blue  → v1
+Green → v2
+
+Traffic switches from Blue to Green.</div>
+<p>Rollback can be fast because the old environment remains available.</p>
+<h3>Canary</h3>
+<div class="diagram">v1 → 90%
+v2 → 10%
+
+then
+
+v1 → 50%
+v2 → 50%
+
+then
+
+v2 → 100%</div>
+<p>Canary reduces deployment risk by gradually increasing exposure.</p>
+</section>
+
+<section class="card" id="q34">
+<h2>34. How would you troubleshoot high latency in an EKS application?</h2>
+<div class="diagram">Client
+ ↓
+CloudFront
+ ↓
+WAF
+ ↓
+ALB
+ ↓
+Ingress
+ ↓
+Service
+ ↓
+Pod
+ ↓
+Database / Cache / External API</div>
+<h3>Kubernetes</h3>
+<ul><li>Pod CPU and memory</li><li>CPU throttling</li><li>Restarts</li><li>HPA behavior</li><li>Scheduling</li><li>Network latency</li></ul>
+<h3>Application</h3>
+<ul><li>Application logs</li><li>Thread pool</li><li>Connection pool</li><li>Garbage collection</li><li>Dependency latency</li></ul>
+<h3>AWS</h3>
+<ul><li>ALB latency</li><li>Target response time</li><li>RDS performance</li><li>ElastiCache</li><li>Network metrics</li></ul>
+<p>Useful observability tools include CloudWatch, Prometheus, Grafana, OpenTelemetry/ADOT, and distributed tracing where implemented.</p>
+</section>
+
+<section class="card" id="q35">
+<h2>35. How do you debug Pending Pods?</h2>
+<pre>kubectl get pods
+kubectl describe pod &lt;pod&gt;</pre>
+<p>Look at Events. Common causes:</p>
+<ul>
+<li>Insufficient CPU</li>
+<li>Insufficient memory</li>
+<li>No matching node selector</li>
+<li>Taint without toleration</li>
+<li>PVC unavailable</li>
+<li>Impossible affinity rules</li>
+<li>Node capacity exhausted</li>
+</ul>
+<pre>0/10 nodes are available:
+5 insufficient memory
+3 didn't match node selector
+2 had taint</pre>
+</section>
+
+<section class="card" id="q36">
+<h2>36. What happens when you run kubectl drain?</h2>
+<p><code>kubectl drain</code> prepares a node for maintenance. Workloads are evicted when eligible and controllers recreate them on other nodes.</p>
+<pre>kubectl drain node-1 --ignore-daemonsets
+kubectl uncordon node-1</pre>
+</section>
+
+<section class="card" id="q37">
+<h2>37. Cordon vs Drain</h2>
+<p><strong>Cordon</strong> prevents new Pods from being scheduled but leaves existing Pods running.</p>
+<pre>kubectl cordon node-1</pre>
+<p><strong>Drain</strong> cordons the node and evicts eligible workloads.</p>
+<pre>kubectl drain node-1</pre>
+</section>
+
+<section class="card" id="q38">
+<h2>38. How do you secure an EKS cluster?</h2>
+<div class="diagram">Identity
+   ↓
+IAM
+   ↓
+EKS Authentication
+   ↓
+RBAC
+   ↓
+NetworkPolicy
+   ↓
+Security Groups
+   ↓
+Secrets Management
+   ↓
+Image Security
+   ↓
+Runtime Security
+   ↓
+Audit / Monitoring</div>
+<ul>
+<li>Least-privilege IAM</li>
+<li>EKS Pod Identity / IRSA where appropriate</li>
+<li>Kubernetes RBAC</li>
+<li>Private API endpoint where appropriate</li>
+<li>KMS encryption</li>
+<li>Secrets Manager</li>
+<li>Image scanning</li>
+<li>Network policies</li>
+<li>Security groups</li>
+<li>CloudTrail</li>
+<li>GuardDuty</li>
+<li>Audit logging</li>
+</ul>
+</section>
+
+<section class="card" id="q39">
+<h2>39. Pod Identity vs IRSA</h2>
+<p>Both solve the workload identity problem without putting static AWS credentials inside Pods.</p>
+<h3>IRSA</h3>
+<div class="diagram">ServiceAccount
+      |
+OIDC
+      |
+IAM Role
+      |
+AWS Permissions</div>
+<h3>EKS Pod Identity</h3>
+<p>AWS provides a newer mechanism that simplifies associating IAM roles with Kubernetes workloads.</p>
+<div class="key"><strong>Interview answer:</strong> Both solve workload identity. For new EKS implementations, I would evaluate EKS Pod Identity first, while IRSA remains important for existing clusters and compatibility.</div>
+</section>
+
+<section class="card" id="q40">
+<h2>40. What is RBAC?</h2>
+<p>RBAC means Role-Based Access Control. It controls who can perform which actions on which Kubernetes resources.</p>
+<div class="diagram">Who
+ |
+Role
+ |
+Actions
+ |
+Resources</div>
+<p>Resources can include Pods, Deployments, Services, Secrets, and ConfigMaps.</p>
+</section>
+
+<section class="card" id="q41">
+<h2>41. Role vs ClusterRole</h2>
+<p><strong>Role</strong> is namespace-scoped.</p>
+<p><strong>ClusterRole</strong> is cluster-scoped or can be bound into namespaces depending on how it is used.</p>
+</section>
+
+<section class="card" id="q42">
+<h2>42. How would you implement GitOps for Kubernetes?</h2>
+<div class="diagram">Developer
+   |
+Git
+   |
+CI Pipeline
+   |
+Build / Test / Scan
+   |
+Container Registry
+   |
+GitOps Repository
+   |
+Argo CD / Flux
+   |
+Kubernetes</div>
+<p>The key principle is that Git becomes the source of truth for desired Kubernetes state. CI builds and publishes artifacts; GitOps CD reconciles the cluster to the desired state.</p>
+</section>
+
+<section class="card" id="q43">
+<h2>43. Why shouldn't CI directly run kubectl apply in a mature GitOps architecture?</h2>
+<div class="diagram">CI
+ |
+Build / Test / Scan
+ |
+Push Image
+ |
+Update Git Desired State
+ |
+Argo CD
+ |
+Kubernetes</div>
+<p>Advantages include auditability, Git history, easy rollback, drift detection, separation of CI and CD, and reconciliation.</p>
+</section>
+
+<section class="card" id="q44">
+<h2>44. How do you handle secrets in GitOps?</h2>
+<p>Do not commit plain-text secrets into Git.</p>
+<p>Possible approaches include AWS Secrets Manager, Parameter Store, Secrets Store CSI Driver, SOPS, or Sealed Secrets, depending on the security model.</p>
+<div class="diagram">AWS Secrets Manager
+        |
+Secrets Store CSI Driver
+        |
+Kubernetes Pod</div>
+</section>
+
+<section class="card" id="q45">
+<h2>45. What is etcd and why is it critical?</h2>
+<p>etcd is the Kubernetes distributed key-value store. It contains cluster state such as Deployments, Pods, Services, ConfigMaps, Secrets, RBAC, and cluster configuration.</p>
+<p>Therefore backups, encryption at rest, high availability, and tightly controlled access are important.</p>
+<p>In EKS, AWS manages the Kubernetes control plane and its underlying control-plane infrastructure.</p>
+</section>
+
+<section class="card" id="q46">
+<h2>46. What happens if etcd goes down?</h2>
+<p>Existing workloads may continue running for some time because kubelets and containers are already operating. However, the control plane cannot reliably persist or retrieve cluster state.</p>
+<p>Problems can occur with new deployments, scheduling, scaling, controllers, and cluster changes.</p>
+</section>
+
+<section class="card" id="q47">
+<h2>47. What is Kubernetes reconciliation?</h2>
+<div class="diagram">Desired state:
+3 replicas
+
+Actual state:
+2 replicas
+
+        ↓
+
+Controller observes:
+Desired != Actual
+
+        ↓
+
+Create Pod
+
+        ↓
+
+Desired = Actual</div>
+<p>This reconciliation loop is fundamental to Kubernetes.</p>
+</section>
+
+<section class="card" id="q48">
+<h2>48. One Pod is receiving all traffic. Why?</h2>
+<p>Possible causes include Service endpoint issues, readiness configuration, session affinity, application connection behavior, load-balancing behavior, service mesh configuration, EndpointSlice state, or only one Pod actually being Ready.</p>
+<pre>kubectl get endpoints
+kubectl get endpointslice
+kubectl get pods -o wide</pre>
+<p>Verify that all intended Pods are Ready and represented in the Service endpoints.</p>
+</section>
+
+<section class="card" id="q49">
+<h2>49. Node suddenly becomes NotReady. What do you do?</h2>
+<h3>Step 1 — Confirm</h3>
+<pre>kubectl get nodes
+kubectl describe node &lt;node&gt;</pre>
+<h3>Step 2 — Check node conditions</h3>
+<ul><li>MemoryPressure</li><li>DiskPressure</li><li>PIDPressure</li><li>NetworkUnavailable</li></ul>
+<h3>Step 3 — Check workloads</h3>
+<pre>kubectl get pods -A -o wide</pre>
+<h3>Step 4 — Check EKS infrastructure</h3>
+<ul>
+<li>EC2 status</li>
+<li>Auto Scaling Group</li>
+<li>Instance health</li>
+<li>EBS</li>
+<li>Network</li>
+<li>IAM</li>
+<li>CNI</li>
+<li>kubelet/container runtime</li>
+</ul>
+<h3>Step 5 — Recover</h3>
+<p>Depending on the cause, replace the unhealthy node, allow workloads to reschedule, and validate application health. A senior engineer should focus on service availability first, then root cause.</p>
+</section>
+
+<section class="card" id="q50">
+<h2>50. Architect-level: Design a production EKS platform</h2>
+<div class="diagram">                         Internet
+                            |
+                         Route 53
+                            |
+                       CloudFront
+                            |
+                           WAF
+                            |
+                           ALB
+                            |
+                    AWS Load Balancer
+                       Controller
+                            |
+                      Kubernetes
+                       Service
+                            |
+              +-------------+-------------+
+              |             |             |
+            Pod           Pod           Pod
+              |             |             |
+              +-------------+-------------+
+                            |
+                  RDS / Aurora / Redis</div>
+
+<h3>CI/CD</h3>
+<div class="diagram">GitHub
+   |
+GitHub Actions
+   |
+Build + Test + Security Scan
+   |
+Container Registry
+   |
+GitOps
+   |
+Argo CD
+   |
+EKS</div>
+
+<h3>Observability</h3>
+<div class="diagram">EKS
+ |
+ +-- Prometheus
+ +-- Grafana
+ +-- CloudWatch
+ +-- OpenTelemetry
+ +-- X-Ray / Distributed Tracing</div>
+
+<h3>Security</h3>
+<p>IAM, KMS, Secrets Manager, GuardDuty, NetworkPolicy, Security Groups, RBAC, image scanning, and audit logging.</p>
+</section>
+
+<section class="card" id="scenario">
+<h2>Mock Interview Scenario — Production EKS Returns HTTP 503</h2>
+
+<h3>Scenario</h3>
+<div class="diagram">Internet
+   ↓
+Route 53
+   ↓
+ALB
+   ↓
+Ingress
+   ↓
+Kubernetes Service
+   ↓
+Pods
+   ↓
+RDS</div>
+
+<p>Users suddenly receive <strong>HTTP 503</strong>. Kubernetes shows:</p>
+<pre>Pod 1   Running
+Pod 2   Running
+Pod 3   Running</pre>
+
+<h3>Interview-ready answer</h3>
+<div class="answer">
+<p>If users are getting 503 while the Pods are showing Running, I would not assume the Pods are healthy. Running only means the containers are running; they may not be Ready or reachable. I would troubleshoot from the outside in.</p>
+</div>
+
+<h3>1. Check the ALB</h3>
+<p>Check ALB target health and metrics:</p>
+<ul>
+<li>Are targets healthy?</li>
+<li>Are they returning 5xx?</li>
+<li>Is the ALB unable to connect to targets?</li>
+<li>What is target response time?</li>
+</ul>
+<p>If the ALB has no healthy targets, that can directly explain the 503.</p>
+
+<h3>2. Check the Ingress</h3>
+<pre>kubectl get ingress -A
+kubectl describe ingress &lt;ingress-name&gt;</pre>
+<p>Verify hostname, Service name, Service port, target port, and AWS Load Balancer Controller events/errors.</p>
+
+<h3>3. Check the Service</h3>
+<pre>kubectl get svc
+kubectl describe svc &lt;service-name&gt;
+kubectl get endpoints &lt;service-name&gt;
+kubectl get endpointslice</pre>
+<p>If the Service has no endpoints, it has no healthy Pods behind it.</p>
+
+<h3>4. Check Pod readiness</h3>
+<pre>kubectl get pods
+kubectl describe pod &lt;pod-name&gt;</pre>
+<p>Check READY, STATUS, and RESTARTS.</p>
+<div class="diagram">NAME       READY   STATUS
+app-1      0/1     Running
+app-2      0/1     Running
+app-3      0/1     Running</div>
+<p>The Pods are technically running, but none are Ready. Investigate the readiness probe.</p>
+
+<h3>5. Check the readiness probe</h3>
+<pre>readinessProbe:
+  httpGet:
+    path: /health
+    port: 8080</pre>
+<p>Verify the health endpoint, port, startup time, and whether dependencies such as RDS are causing readiness to fail.</p>
+
+<h3>6. Check the Service selector</h3>
+<p>For example, a Service might select:</p>
+<pre>selector:
+  app: payment</pre>
+<p>while Pods have:</p>
+<pre>labels:
+  app: payments</pre>
+<p>This produces no matching Pods and therefore no endpoints.</p>
+<pre>kubectl get svc &lt;service&gt; -o yaml
+kubectl get pods --show-labels</pre>
+
+<h3>7. Check Pod logs</h3>
+<pre>kubectl logs &lt;pod&gt;
+kubectl logs &lt;pod&gt; --previous</pre>
+<p>Look for startup errors, database failures, port binding errors, configuration problems, authentication failures, and dependency failures.</p>
+
+<h3>8. Test the application from inside Kubernetes</h3>
+<p>Bypass the ALB and test the Service directly.</p>
+<pre>kubectl run test --rm -it \
+  --image=curlimages/curl -- sh
+
+curl http://&lt;service-name&gt;:&lt;port&gt;/health</pre>
+<p>This helps determine whether the failure is at the ALB/Ingress layer or the Service/Pod/Application layer.</p>
+
+<h3>9. Check AWS networking</h3>
+<p>If the application works internally but ALB still reports unhealthy targets, check:</p>
+<ul>
+<li>Security Groups</li>
+<li>Network ACLs</li>
+<li>Route tables</li>
+<li>ALB-to-target connectivity</li>
+<li>Target port</li>
+<li>AWS Load Balancer Controller</li>
+<li>AWS VPC CNI health</li>
+</ul>
+
+<h3>10. Check RDS after isolating the application layer</h3>
+<div class="diagram">Pod
+ ↓
+DNS
+ ↓
+Network
+ ↓
+Security Group
+ ↓
+RDS</div>
+<p>Check DNS resolution, port 3306 connectivity, security groups, credentials, connection pool, RDS CPU/connections/storage, and database availability.</p>
+
+<h3>Best interview answer</h3>
+<div class="key">
+<p><strong>"I would isolate the failure domain from ALB to Ingress to Service to endpoints to Pod readiness and finally the application and its dependencies, rather than assuming that a Running Pod is a healthy Pod."</strong></p>
+</div>
+
+<h3>Useful commands</h3>
+<pre>kubectl get pods
+kubectl describe pod &lt;pod&gt;
+kubectl get svc
+kubectl describe svc &lt;service&gt;
+kubectl get endpoints
+kubectl get endpointslice
+kubectl get ingress
+kubectl describe ingress
+kubectl logs &lt;pod&gt;
+kubectl logs &lt;pod&gt; --previous
+kubectl get events</pre>
+</section>
+
+<section class="card">
+<h2>Top 10 Questions to Prioritize for Your Interview</h2>
+<div class="priority">
+<div><strong>1.</strong> Explain EKS architecture end-to-end.</div>
+<div><strong>2.</strong> What happens internally when you deploy a Kubernetes Deployment?</div>
+<div><strong>3.</strong> How do you troubleshoot CrashLoopBackOff?</div>
+<div><strong>4.</strong> How do you troubleshoot Pending Pods?</div>
+<div><strong>5.</strong> How do you troubleshoot 503/504 from ALB → EKS?</div>
+<div><strong>6.</strong> Explain HPA vs Cluster Autoscaler vs Karpenter.</div>
+<div><strong>7.</strong> Explain Pod Identity vs IRSA.</div>
+<div><strong>8.</strong> Explain readiness, liveness and startup probes.</div>
+<div><strong>9.</strong> Design a highly available production EKS architecture across multiple AZs.</div>
+<div><strong>10.</strong> Explain secure GitOps-based CI/CD for EKS.</div>
+</div>
+<div class="key">
+<p><strong>Final preparation tip:</strong> At Senior DevOps / Cloud Architect level, scenario-based questions are more important than memorizing Kubernetes commands. Be ready to trace a problem across <strong>AWS → Load Balancer → Kubernetes → Pod → Application → Database</strong>.</p>
+</div>
+</section>
+
+</main>
+
+<footer>
+Kubernetes Senior DevOps / Cloud Architect Interview Guide
+</footer>
+</body>
+</html>

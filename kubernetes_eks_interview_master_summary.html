@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kubernetes & EKS Interview Master Summary</title>
+<style>
+  html{scroll-behavior:smooth}
+  body{font-family:Arial,Helvetica,sans-serif;line-height:1.55;color:#172033;background:#f5f7fb;margin:0}
+  .sidebar{position:fixed;left:0;top:0;bottom:0;width:285px;background:#172033;color:#fff;overflow-y:auto;padding:22px 0;z-index:10}
+  .sidebar h2{color:#fff;border:0;padding:0 20px 14px;margin:0;font-size:20px}
+  .sidebar .subtitle{padding:0 20px 18px;color:#bfcbe0;font-size:12px}
+  .sidebar a{display:block;color:#dfe7f4;text-decoration:none;padding:8px 20px;font-size:14px;border-left:3px solid transparent}
+  .sidebar a:hover{background:#22304a;border-left-color:#70a5e8;color:#fff}
+  .sidebar .group{color:#8fb4e6;text-transform:uppercase;font-size:11px;font-weight:bold;padding:15px 20px 6px;letter-spacing:.6px}
+  .content{margin-left:285px}
+  header{margin-left:285px}
+
+  header{background:#172033;color:white;padding:32px 40px}
+  header h1{margin:0 0 8px;font-size:32px}
+  header p{margin:0;color:#d9e2f2}
+  main{max-width:1200px;margin:30px auto;padding:0 22px}
+  section{background:white;border-radius:10px;padding:24px;margin:20px 0;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+  h2{color:#173b70;border-bottom:2px solid #e6ebf3;padding-bottom:8px}
+  h3{color:#285b9d;margin-top:22px}
+  pre{background:#101827;color:#e9eef7;padding:16px;border-radius:7px;overflow:auto}
+  code{font-family:Consolas,monospace}
+  .cmd{background:#0c1422}
+  .note{background:#eef6ff;border-left:4px solid #3978c7;padding:12px 15px;margin:15px 0}
+  .warn{background:#fff5e8;border-left:4px solid #d8891d;padding:12px 15px;margin:15px 0}
+  table{width:100%;border-collapse:collapse;margin:15px 0}
+  th,td{border:1px solid #dfe5ee;padding:10px;text-align:left;vertical-align:top}
+  th{background:#eef2f7}
+  ul{padding-left:24px}
+  .tag{display:inline-block;background:#e8eef8;padding:3px 8px;border-radius:12px;margin:2px;font-size:13px}
+  .toc a{color:#285b9d;text-decoration:none}
+  .toc li{margin:5px 0}
+  .small{font-size:13px;color:#5c6678}
+  @media(max-width:900px){
+    .sidebar{position:relative;width:auto;height:auto;max-height:none}
+    .content,header{margin-left:0}
+    .sidebar a{display:inline-block;padding:7px 12px}
+    .sidebar .group{display:block}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Kubernetes & EKS Interview Master Summary</h1>
+  <p>Architecture concepts, troubleshooting, security, networking, deployments, Helm, and high-value commands.</p>
+</header>
+
+<nav class="sidebar">
+  <h2>Kubernetes & EKS</h2>
+  <div class="subtitle">Interview Master Summary</div>
+
+  <div class="group">Core Kubernetes</div>
+  <a href="#networking">1. Kubernetes Networking</a>
+  <a href="#service">2. Service vs Ingress</a>
+  <a href="#probes">3. Startup / Readiness / Liveness</a>
+  <a href="#crash">4. CrashLoopBackOff</a>
+  <a href="#resources">5. CPU, Memory & Throttling</a>
+  <a href="#scheduling">6. Taints, Tolerations & Affinity</a>
+  <a href="#networkpolicy">7. NetworkPolicy</a>
+
+  <div class="group">Architecture & Deployment</div>
+  <a href="#multiaz">8. Multi-AZ EKS</a>
+  <a href="#deployments">9. Blue-Green vs Canary</a>
+  <a href="#helm">14. Helm & Version Management</a>
+
+  <div class="group">Security</div>
+  <a href="#rbac">10. Kubernetes RBAC</a>
+  <a href="#iam">11. IAM vs RBAC in EKS</a>
+  <a href="#podidentity">12. Pod Identity vs IRSA</a>
+  <a href="#security">13. Securing EKS</a>
+
+  <div class="group">Troubleshooting</div>
+  <a href="#troubleshooting">15. Troubleshooting Flow</a>
+
+  <div class="group">Command Reference</div>
+  <a href="#commands">16. All Important Commands</a>
+  <a href="#top25">17. Top 25 Commands</a>
+  <a href="#memory-map">18. Final Memory Map</a>
+</nav>
+
+<div class="content">
+<main>
+
+<section class="toc">
+<h2>Contents</h2>
+<ol>
+<li><a href="#networking">Kubernetes Networking</a></li>
+<li><a href="#service">Service vs Ingress</a></li>
+<li><a href="#probes">Startup vs Readiness vs Liveness</a></li>
+<li><a href="#crash">CrashLoopBackOff</a></li>
+<li><a href="#resources">CPU, Memory & Throttling</a></li>
+<li><a href="#scheduling">Taints, Tolerations, Affinity</a></li>
+<li><a href="#networkpolicy">NetworkPolicy</a></li>
+<li><a href="#multiaz">Multi-AZ</a></li>
+<li><a href="#deployments">Blue-Green vs Canary</a></li>
+<li><a href="#rbac">RBAC</a></li>
+<li><a href="#iam">IAM vs RBAC in EKS</a></li>
+<li><a href="#podidentity">Pod Identity vs IRSA</a></li>
+<li><a href="#security">EKS Security</a></li>
+<li><a href="#helm">Helm & Version Management</a></li>
+<li><a href="#troubleshooting">Troubleshooting Flow</a></li>
+<li><a href="#commands">All Important Commands</a></li>
+<li><a href="#top25">Top 25 Commands</a></li>
+</ol>
+</section>
+
+<section id="networking">
+<h2>1. Kubernetes Networking</h2>
+<p>Every Pod normally receives its own IP address. Pods can communicate with Pods on the same node, different nodes, and different namespaces. The implementation depends on the CNI.</p>
+<pre><code>Pod A ───────────────► Pod B
+       Pod IP
+
+EKS commonly:
+AWS VPC CNI → integrates Pod networking with the AWS VPC.</code></pre>
+<div class="note"><b>Interview:</b> Kubernetes follows a flat Pod networking model where Pods can communicate directly without NAT in the normal Pod-to-Pod model. The CNI implements the networking.</div>
+<h3>Cross-namespace communication</h3>
+<pre><code>http://user-service.backend.svc.cluster.local:8080</code></pre>
+<p>Format: <code>&lt;service&gt;.&lt;namespace&gt;.svc.cluster.local</code></p>
+</section>
+
+<section id="service">
+<h2>2. Service vs Ingress</h2>
+<table>
+<tr><th>Service</th><th>Ingress</th></tr>
+<tr><td>Stable endpoint for Pods</td><td>External HTTP/HTTPS routing</td></tr>
+<tr><td>Uses selectors to find Pods</td><td>Routes requests to Services</td></tr>
+<tr><td>Common type: ClusterIP</td><td>Often backed by an AWS ALB in EKS</td></tr>
+</table>
+<pre><code>Internet
+   ↓
+ALB
+   ↓
+Ingress
+   ↓
+Service
+   ↓
+Pods</code></pre>
+<h3>Service example</h3>
+<pre><code>apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+spec:
+  type: ClusterIP
+  selector:
+    app: user-service
+  ports:
+    - port: 8080
+      targetPort: 8080</code></pre>
+<h3>Service commands</h3>
+<pre class="cmd"><code>kubectl get svc
+kubectl get svc -n &lt;namespace&gt;
+kubectl describe svc &lt;service&gt; -n &lt;namespace&gt;
+kubectl get endpoints -n &lt;namespace&gt;
+kubectl get endpointslice -n &lt;namespace&gt;</code></pre>
+<h3>Ingress commands</h3>
+<pre class="cmd"><code>kubectl get ingress -n &lt;namespace&gt;
+kubectl describe ingress &lt;ingress&gt; -n &lt;namespace&gt;</code></pre>
+</section>
+
+<section id="probes">
+<h2>3. Startup vs Readiness vs Liveness</h2>
+<table>
+<tr><th>Probe</th><th>Question</th><th>Failure behavior</th></tr>
+<tr><td>Startup</td><td>Has the application finished starting?</td><td>Protects slow startup</td></tr>
+<tr><td>Readiness</td><td>Can this Pod receive traffic?</td><td>Removes Pod from Service endpoints</td></tr>
+<tr><td>Liveness</td><td>Is the application still alive?</td><td>Container can be restarted</td></tr>
+</table>
+<pre><code>Startup   → Can you start?
+Readiness → Can you receive traffic?
+Liveness  → Are you still alive?</code></pre>
+<h3>Example</h3>
+<pre><code>startupProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  failureThreshold: 30
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /ready
+    port: 8080
+  periodSeconds: 5
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  periodSeconds: 10</code></pre>
+</section>
+
+<section id="crash">
+<h2>4. CrashLoopBackOff</h2>
+<p>CrashLoopBackOff is a symptom: the container starts, crashes, Kubernetes restarts it, and Kubernetes increases the restart backoff.</p>
+<h3>Common causes</h3>
+<ul>
+<li>Application startup error</li><li>Bad command or arguments</li><li>Missing ConfigMap/Secret</li><li>Bad image</li><li>OOMKilled</li><li>Liveness probe failure</li><li>Database/dependency unavailable</li><li>Permission problems</li>
+</ul>
+<h3>Commands</h3>
+<pre class="cmd"><code>kubectl get pods -n &lt;namespace&gt;
+kubectl describe pod &lt;pod&gt; -n &lt;namespace&gt;
+kubectl logs &lt;pod&gt; -n &lt;namespace&gt;
+kubectl logs &lt;pod&gt; -n &lt;namespace&gt; --previous
+kubectl logs -f &lt;pod&gt; -n &lt;namespace&gt;
+kubectl get events -n &lt;namespace&gt; --sort-by='.lastTimestamp'
+kubectl top pod &lt;pod&gt; -n &lt;namespace&gt;</code></pre>
+<div class="note"><b>Most important:</b> <code>kubectl logs &lt;pod&gt; --previous</code> when a container is repeatedly crashing.</div>
+</section>
+
+<section id="resources">
+<h2>5. CPU, Memory & Throttling</h2>
+<pre><code>resources:
+  requests:
+    cpu: 500m
+  limits:
+    cpu: "1"</code></pre>
+<table>
+<tr><th>Resource</th><th>When limit is exceeded</th></tr>
+<tr><td>CPU</td><td>Container is throttled; application can slow down</td></tr>
+<tr><td>Memory</td><td>Container can be OOMKilled and restarted</td></tr>
+</table>
+<pre class="cmd"><code>kubectl top nodes
+kubectl top pods
+kubectl top pod &lt;pod&gt; -n &lt;namespace&gt;
+kubectl describe pod &lt;pod&gt; -n &lt;namespace&gt;</code></pre>
+</section>
+
+<section id="scheduling">
+<h2>6. Taints, Tolerations, Node Affinity & Pod Anti-Affinity</h2>
+<h3>Taint = Node</h3>
+<pre class="cmd"><code>kubectl taint nodes &lt;node&gt; workload=gpu:NoSchedule
+kubectl describe node &lt;node&gt;
+kubectl taint nodes &lt;node&gt; workload=gpu:NoSchedule-</code></pre>
+<h3>Toleration = Pod</h3>
+<pre><code>tolerations:
+  - key: workload
+    operator: Equal
+    value: gpu
+    effect: NoSchedule</code></pre>
+<p>Toleration allows a Pod to run on a tainted node; it does not force the Pod onto that node.</p>
+<h3>Node Affinity</h3>
+<p><b>Question:</b> Which nodes should my Pod run on?</p>
+<pre><code>affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: workload
+              operator: In
+              values:
+                - gpu</code></pre>
+<h3>Pod Anti-Affinity</h3>
+<p><b>Question:</b> Which other Pods should my Pod avoid?</p>
+<pre><code>affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchLabels:
+            app: user-service
+        topologyKey: kubernetes.io/hostname</code></pre>
+<h3>Topology Spread Constraints</h3>
+<pre><code>topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: DoNotSchedule
+    labelSelector:
+      matchLabels:
+        app: user-service</code></pre>
+<h3>Scheduling troubleshooting</h3>
+<pre class="cmd"><code>kubectl get pods
+kubectl describe pod &lt;pod&gt;
+kubectl get nodes --show-labels
+kubectl describe node &lt;node&gt;
+kubectl top nodes</code></pre>
+</section>
+
+<section id="networkpolicy">
+<h2>7. NetworkPolicy</h2>
+<p>NetworkPolicy controls which network traffic is allowed to/from Pods. Think of it as a firewall for Pod communication.</p>
+<pre><code>WebApp
+  ├──► User Service      ✅
+  ├──► Order Service     ✅
+  └──► Database          ❌</code></pre>
+<h3>Example</h3>
+<pre><code>apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: user-service-policy
+  namespace: backend
+spec:
+  podSelector:
+    matchLabels:
+      app: user-service
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: frontend
+      ports:
+        - protocol: TCP
+          port: 8080</code></pre>
+<pre class="cmd"><code>kubectl get networkpolicy -A
+kubectl get networkpolicy -n &lt;namespace&gt;
+kubectl describe networkpolicy &lt;policy&gt; -n &lt;namespace&gt;</code></pre>
+<div class="warn"><b>Important:</b> NetworkPolicy enforcement depends on the CNI/networking implementation.</div>
+</section>
+
+<section id="multiaz">
+<h2>8. Multi-AZ EKS</h2>
+<pre><code>                    AWS Region
+          ┌────────────┼────────────┐
+          ▼            ▼            ▼
+        AZ-1         AZ-2         AZ-3
+          │            │            │
+       Node-1       Node-2       Node-3
+          │            │            │
+       Pods          Pods          Pods</code></pre>
+<p>Multi-AZ protects against Availability Zone failure. It does not mean traffic is guaranteed to be exactly 33/33/33 across three AZs.</p>
+<p>With an AWS ALB, traffic is distributed among healthy registered targets according to the load-balancing behavior. Cross-zone load balancing affects whether traffic can be distributed across AZ boundaries.</p>
+<h3>Key distinction</h3>
+<pre><code>Multi-AZ
+→ Where are my Pods?
+→ Infrastructure availability
+
+Canary
+→ Which application version gets traffic?
+→ Deployment risk reduction</code></pre>
+</section>
+
+<section id="deployments">
+<h2>9. Blue-Green vs Canary</h2>
+<h3>Blue-Green</h3>
+<pre><code>Blue  = v1 → 100%
+Green = v2 → 0%
+
+After validation:
+
+Blue  = v1 → 0%
+Green = v2 → 100%</code></pre>
+<p><b>Memory:</b> Blue-Green = switch.</p>
+<ul><li>Very fast rollback</li><li>Easy to understand</li><li>Requires additional capacity</li></ul>
+<h3>Canary</h3>
+<pre><code>v1 = 95%, v2 = 5%
+      ↓
+v1 = 75%, v2 = 25%
+      ↓
+v1 = 50%, v2 = 50%
+      ↓
+v1 = 0%,  v2 = 100%</code></pre>
+<p><b>Memory:</b> Canary = gradual shift.</p>
+<p>Monitor error rate, latency, CPU, memory, logs, and business metrics. Strong observability is required.</p>
+</section>
+
+<section id="rbac">
+<h2>10. Kubernetes RBAC</h2>
+<p>RBAC = Role-Based Access Control. It controls who can perform which actions on Kubernetes resources.</p>
+<pre><code>Identity
+   ↓
+RBAC
+   ↓
+Kubernetes resources</code></pre>
+<table>
+<tr><th>Object</th><th>Purpose</th></tr>
+<tr><td>Role</td><td>Permissions in a namespace</td></tr>
+<tr><td>RoleBinding</td><td>Associates an identity with a Role</td></tr>
+<tr><td>ClusterRole</td><td>Cluster-scoped/reusable permissions</td></tr>
+<tr><td>ClusterRoleBinding</td><td>Associates identity with ClusterRole cluster-wide</td></tr>
+</table>
+<h3>RBAC commands</h3>
+<pre class="cmd"><code>kubectl get roles -A
+kubectl get rolebindings -A
+kubectl get clusterroles
+kubectl get clusterrolebindings
+kubectl auth can-i get pods
+kubectl auth can-i get pods -n dev
+kubectl auth can-i delete pods -n prod</code></pre>
+</section>
+
+<section id="iam">
+<h2>11. IAM vs RBAC in EKS</h2>
+<pre><code>AWS IAM
+   ↓
+Who is the AWS identity?
+
+EKS Access Management
+   ↓
+How does that IAM identity access the cluster?
+
+RBAC / EKS Access Policy
+   ↓
+What can the identity do in Kubernetes?</code></pre>
+<p>Human/automation access:</p>
+<pre><code>IAM User/Role → EKS → Kubernetes API</code></pre>
+<p>Application access to AWS:</p>
+<pre><code>Pod → Pod Identity / IRSA → IAM Role → AWS Service</code></pre>
+<h3>Modern EKS access commands</h3>
+<pre class="cmd"><code>aws eks list-access-entries \
+  --cluster-name &lt;cluster-name&gt;
+
+aws eks describe-access-entry \
+  --cluster-name &lt;cluster-name&gt; \
+  --principal-arn &lt;iam-role-arn&gt;
+
+aws eks list-associated-access-policies \
+  --cluster-name &lt;cluster-name&gt; \
+  --principal-arn &lt;iam-role-arn&gt;</code></pre>
+</section>
+
+<section id="podidentity">
+<h2>12. EKS Pod Identity vs IRSA</h2>
+<table>
+<tr><th>Pod Identity</th><th>IRSA</th></tr>
+<tr><td>Newer AWS-native EKS mechanism</td><td>Mature, widely used mechanism</td></tr>
+<tr><td>No ServiceAccount IAM annotation required</td><td>ServiceAccount annotation used</td></tr>
+<tr><td>Uses Pod Identity Agent</td><td>Uses EKS OIDC + web identity / STS</td></tr>
+<tr><td>Temporary credentials</td><td>Temporary credentials</td></tr>
+<tr><td>Least privilege</td><td>Least privilege</td></tr>
+</table>
+<pre><code>IRSA:
+Pod → ServiceAccount → OIDC → STS → IAM Role → AWS
+
+Pod Identity:
+Pod → ServiceAccount → Pod Identity Agent → IAM Role → AWS</code></pre>
+<h3>Commands</h3>
+<pre class="cmd"><code>aws eks list-pod-identity-associations \
+  --cluster-name &lt;cluster-name&gt;
+
+aws eks describe-pod-identity-association \
+  --cluster-name &lt;cluster-name&gt; \
+  --association-id &lt;association-id&gt;</code></pre>
+</section>
+
+<section id="security">
+<h2>13. Securing an EKS Cluster</h2>
+<ol>
+<li><b>IAM / EKS Access:</b> least privilege and controlled cluster access.</li>
+<li><b>Kubernetes RBAC:</b> restrict Kubernetes operations.</li>
+<li><b>Network:</b> private subnets, Security Groups, NetworkPolicy, VPC endpoints where appropriate.</li>
+<li><b>Pod Security:</b> non-root, no unnecessary privileges, restricted capabilities.</li>
+<li><b>Secrets:</b> Secrets Manager + KMS instead of Git/static credentials.</li>
+<li><b>Image Security:</b> scan images and use trusted/minimal images.</li>
+<li><b>Encryption:</b> encryption at rest and TLS in transit.</li>
+<li><b>CI/CD:</b> SAST, dependency scan, secret scan, IaC scan, image scan, OIDC.</li>
+<li><b>Monitoring:</b> CloudTrail, EKS audit/control-plane logs, GuardDuty, Security Hub, CloudWatch/Prometheus/Grafana as appropriate.</li>
+</ol>
+<pre><code>GitHub Actions
+     ↓
+OIDC
+     ↓
+AWS IAM Role
+     ↓
+EKS</code></pre>
+<h3>Pod security context</h3>
+<pre><code>securityContext:
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true</code></pre>
+</section>
+
+<section id="helm">
+<h2>14. Helm & Deployment Version Management</h2>
+<p>Recommended enterprise approach: build once, promote the same immutable artifact across environments.</p>
+<pre><code>Build → Test → Scan → ECR image
+                       ↓
+                  DEV → UAT → PROD</code></pre>
+<h3>Example values</h3>
+<pre><code>webapp:
+  image:
+    repository: xxx/webapp
+    tag: "1.2.0"
+
+userService:
+  image:
+    repository: xxx/user-service
+    tag: "2.1.0"
+
+orderService:
+  image:
+    repository: xxx/order-service
+    tag: "3.0.0"</code></pre>
+<h3>Environment override</h3>
+<pre><code>webapp:
+  image:
+    tag: "1.2.0"
+
+userService:
+  image:
+    tag: "2.1.0"
+
+orderService:
+  image:
+    tag: "3.0.0"</code></pre>
+<h3>Helm commands</h3>
+<pre class="cmd"><code>helm list -A
+
+helm install &lt;release&gt; &lt;chart&gt;
+
+helm upgrade &lt;release&gt; &lt;chart&gt;
+
+helm upgrade --install &lt;release&gt; &lt;chart&gt;
+
+helm get values &lt;release&gt; -n &lt;namespace&gt;
+
+helm get values &lt;release&gt; -n &lt;namespace&gt; -a
+
+helm template &lt;release&gt; &lt;chart&gt;
+
+helm template &lt;release&gt; &lt;chart&gt; \
+  -f values.yaml \
+  -f environments/dev/values.yaml
+
+helm lint &lt;chart&gt;
+
+helm history &lt;release&gt; -n &lt;namespace&gt;
+
+helm rollback &lt;release&gt; &lt;revision&gt; -n &lt;namespace&gt;</code></pre>
+<h3>Recommended structure</h3>
+<pre><code>helm/
+└── onesourceqa/
+    ├── Chart.yaml
+    ├── values.yaml
+    └── templates/
+        ├── webapp-deployment.yaml
+        ├── webapp-service.yaml
+        ├── user-deployment.yaml
+        ├── user-service.yaml
+        ├── order-deployment.yaml
+        └── order-service.yaml
+
+environments/
+├── dev/values.yaml
+├── uat/values.yaml
+└── prod/values.yaml</code></pre>
+</section>
+
+<section id="troubleshooting">
+<h2>15. Kubernetes Troubleshooting Flow</h2>
+<pre><code>Application issue
+      ↓
+kubectl get pods
+      ↓
+Pod healthy?
+  ┌───┴────┐
+ Yes       No
+  │         │
+  │      describe pod
+  │      logs
+  │      --previous
+  │      events
+  │
+  ↓
+Check Service
+  ↓
+Check EndpointSlice
+  ↓
+Check Ingress / ALB
+  ↓
+Test DNS / HTTP
+  ↓
+Check NetworkPolicy
+  ↓
+Check CPU / Memory
+  ↓
+Check application dependencies</code></pre>
+<h3>Network troubleshooting</h3>
+<pre class="cmd"><code>kubectl get pods -o wide -n &lt;namespace&gt;
+
+kubectl get svc -n &lt;namespace&gt;
+
+kubectl get endpointslice -n &lt;namespace&gt;
+
+kubectl exec -it &lt;pod&gt; -n &lt;namespace&gt; -- \
+  nslookup user-service
+
+kubectl exec -it &lt;pod&gt; -n &lt;namespace&gt; -- \
+  curl http://user-service:8080/health
+
+kubectl exec -it &lt;pod&gt; -n frontend -- \
+  curl http://user-service.backend.svc.cluster.local:8080/health</code></pre>
+</section>
+
+<section id="commands">
+<h2>16. All Important Commands — Separate Command Reference</h2>
+
+<h3>Cluster & Nodes</h3>
+<pre class="cmd"><code>kubectl cluster-info
+kubectl get nodes
+kubectl get nodes -o wide
+kubectl get nodes --show-labels
+kubectl describe node &lt;node&gt;
+kubectl top nodes
+kubectl label node &lt;node&gt; workload=gpu
+kubectl taint nodes &lt;node&gt; workload=gpu:NoSchedule
+kubectl taint nodes &lt;node&gt; workload=gpu:NoSchedule-</code></pre>
+
+<h3>Pods</h3>
+<pre class="cmd"><code>kubectl get pods
+kubectl get pods -A
+kubectl get pods -n &lt;namespace&gt;
+kubectl get pods -o wide
+kubectl describe pod &lt;pod&gt; -n &lt;namespace&gt;
+kubectl logs &lt;pod&gt; -n &lt;namespace&gt;
+kubectl logs &lt;pod&gt; -n &lt;namespace&gt; --previous
+kubectl logs -f &lt;pod&gt; -n &lt;namespace&gt;
+kubectl logs &lt;pod&gt; -c &lt;container&gt; -n &lt;namespace&gt;
+kubectl exec -it &lt;pod&gt; -n &lt;namespace&gt; -- /bin/sh
+kubectl top pods
+kubectl top pod &lt;pod&gt; -n &lt;namespace&gt;</code></pre>
+
+<h3>Deployments</h3>
+<pre class="cmd"><code>kubectl get deployments
+kubectl describe deployment &lt;deployment&gt; -n &lt;namespace&gt;
+kubectl rollout status deployment/&lt;deployment&gt; -n &lt;namespace&gt;
+kubectl rollout history deployment/&lt;deployment&gt; -n &lt;namespace&gt;
+kubectl rollout undo deployment/&lt;deployment&gt; -n &lt;namespace&gt;
+kubectl rollout restart deployment/&lt;deployment&gt; -n &lt;namespace&gt;
+kubectl scale deployment &lt;deployment&gt; --replicas=5 -n &lt;namespace&gt;</code></pre>
+
+<h3>Services & Ingress</h3>
+<pre class="cmd"><code>kubectl get svc
+kubectl get svc -n &lt;namespace&gt;
+kubectl describe svc &lt;service&gt; -n &lt;namespace&gt;
+kubectl get endpoints -n &lt;namespace&gt;
+kubectl get endpointslice -n &lt;namespace&gt;
+kubectl get ingress -n &lt;namespace&gt;
+kubectl describe ingress &lt;ingress&gt; -n &lt;namespace&gt;</code></pre>
+
+<h3>Namespaces</h3>
+<pre class="cmd"><code>kubectl get namespaces
+kubectl create namespace dev
+kubectl get pods -n dev
+kubectl get all -n dev</code></pre>
+
+<h3>ConfigMaps & Secrets</h3>
+<pre class="cmd"><code>kubectl get configmaps -n &lt;namespace&gt;
+kubectl describe configmap &lt;name&gt; -n &lt;namespace&gt;
+kubectl get secrets -n &lt;namespace&gt;
+kubectl describe secret &lt;name&gt; -n &lt;namespace&gt;</code></pre>
+
+<h3>Events</h3>
+<pre class="cmd"><code>kubectl get events -n &lt;namespace&gt;
+kubectl get events -n &lt;namespace&gt; --sort-by='.lastTimestamp'
+kubectl get events --sort-by='.lastTimestamp'</code></pre>
+
+<h3>NetworkPolicy</h3>
+<pre class="cmd"><code>kubectl get networkpolicy -A
+kubectl get networkpolicy -n &lt;namespace&gt;
+kubectl describe networkpolicy &lt;policy&gt; -n &lt;namespace&gt;</code></pre>
+
+<h3>RBAC</h3>
+<pre class="cmd"><code>kubectl get roles -A
+kubectl get rolebindings -A
+kubectl get clusterroles
+kubectl get clusterrolebindings
+kubectl auth can-i get pods
+kubectl auth can-i get pods -n dev
+kubectl auth can-i delete pods -n prod</code></pre>
+
+<h3>Helm</h3>
+<pre class="cmd"><code>helm list -A
+helm install &lt;release&gt; &lt;chart&gt;
+helm upgrade &lt;release&gt; &lt;chart&gt;
+helm upgrade --install &lt;release&gt; &lt;chart&gt;
+helm get values &lt;release&gt; -n &lt;namespace&gt;
+helm get values &lt;release&gt; -n &lt;namespace&gt; -a
+helm template &lt;release&gt; &lt;chart&gt;
+helm lint &lt;chart&gt;
+helm history &lt;release&gt; -n &lt;namespace&gt;
+helm rollback &lt;release&gt; &lt;revision&gt; -n &lt;namespace&gt;</code></pre>
+
+<h3>AWS EKS CLI</h3>
+<pre class="cmd"><code>aws eks list-clusters
+
+aws eks describe-cluster \
+  --name &lt;cluster-name&gt;
+
+aws eks update-kubeconfig \
+  --region &lt;region&gt; \
+  --name &lt;cluster-name&gt;</code></pre>
+
+<h3>EKS Access Entries</h3>
+<pre class="cmd"><code>aws eks list-access-entries \
+  --cluster-name &lt;cluster-name&gt;
+
+aws eks describe-access-entry \
+  --cluster-name &lt;cluster-name&gt; \
+  --principal-arn &lt;iam-role-arn&gt;
+
+aws eks list-associated-access-policies \
+  --cluster-name &lt;cluster-name&gt; \
+  --principal-arn &lt;iam-role-arn&gt;</code></pre>
+
+<h3>EKS Pod Identity</h3>
+<pre class="cmd"><code>aws eks list-pod-identity-associations \
+  --cluster-name &lt;cluster-name&gt;
+
+aws eks describe-pod-identity-association \
+  --cluster-name &lt;cluster-name&gt; \
+  --association-id &lt;association-id&gt;</code></pre>
+</section>
+
+<section id="top25">
+<h2>17. Top 25 Commands to Memorize</h2>
+<p>If you have limited interview preparation time, prioritize these:</p>
+<pre class="cmd"><code># 1
+kubectl get nodes
+
+# 2
+kubectl get pods -A
+
+# 3
+kubectl get pods -o wide
+
+# 4
+kubectl describe pod &lt;pod&gt;
+
+# 5
+kubectl logs &lt;pod&gt;
+
+# 6
+kubectl logs &lt;pod&gt; --previous
+
+# 7
+kubectl logs -f &lt;pod&gt;
+
+# 8
+kubectl exec -it &lt;pod&gt; -- /bin/sh
+
+# 9
+kubectl get svc
+
+# 10
+kubectl describe svc &lt;service&gt;
+
+# 11
+kubectl get endpointslice
+
+# 12
+kubectl get ingress
+
+# 13
+kubectl describe ingress &lt;ingress&gt;
+
+# 14
+kubectl get events --sort-by='.lastTimestamp'
+
+# 15
+kubectl top pods
+
+# 16
+kubectl top nodes
+
+# 17
+kubectl get deployments
+
+# 18
+kubectl rollout status deployment/&lt;deployment&gt;
+
+# 19
+kubectl rollout history deployment/&lt;deployment&gt;
+
+# 20
+kubectl rollout undo deployment/&lt;deployment&gt;
+
+# 21
+kubectl get nodes --show-labels
+
+# 22
+kubectl get networkpolicy -A
+
+# 23
+kubectl auth can-i get pods
+
+# 24
+helm list -A
+
+# 25
+aws eks update-kubeconfig --name &lt;cluster&gt; --region &lt;region&gt;</code></pre>
+</section>
+
+<section id="memory-map">
+<h2>18. Final Interview Memory Map</h2>
+<pre><code>Pod
+ ├── IP → Pod networking
+ ├── ServiceAccount → IAM / RBAC
+ ├── Probes → startup/readiness/liveness
+ ├── Resources → CPU/memory
+ └── SecurityContext → container security
+
+Node
+ ├── Taint
+ ├── Labels
+ └── Capacity
+
+Scheduling
+ ├── Node Affinity
+ ├── Pod Anti-Affinity
+ └── Topology Spread
+
+Network
+ ├── CNI
+ ├── Service
+ ├── Ingress
+ └── NetworkPolicy
+
+Security
+ ├── IAM
+ ├── EKS Access Entries
+ ├── RBAC
+ ├── Pod Identity / IRSA
+ ├── Secrets Manager
+ └── KMS
+
+Deployment
+ ├── RollingUpdate
+ ├── Blue-Green
+ └── Canary
+
+Availability
+ ├── Multi-AZ
+ ├── Topology Spread
+ └── PodDisruptionBudget</code></pre>
+<div class="note"><b>Core interview memory:</b> IAM = AWS permissions. RBAC = Kubernetes permissions. Taint = Node. Toleration = Pod. Readiness = traffic. Liveness = restart. Startup = slow startup protection. CPU = throttling. Memory = OOMKill. Service = stable endpoint. Ingress = HTTP routing. Blue-Green = switch. Canary = gradual shift.</div>
+</section>
+
+<p class="small">Prepared as a consolidated Kubernetes/EKS interview reference based on the topics discussed in this conversation.</p>
+</main>
+</div>
+</body>
+</html>

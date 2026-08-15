@@ -98,6 +98,24 @@
     overflow-x: auto;
     color: #263746;
   }
+   .visual {
+      margin: 18px 0;
+      padding: 12px;
+      background: #fafbfd;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+   }
+   .visual img {
+      display: block;
+      width: 100%;
+      height: auto;
+   }
+   .visual figcaption {
+      margin-top: 9px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+   }
   .priority {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -217,6 +235,10 @@
 <li><strong>Pods</strong> — run application containers.</li>
 </ul>
 <div class="key"><strong>Interview statement:</strong> Kubernetes follows a desired-state model. I declare desired state through the API server, store the state in etcd, and controllers continuously work to make the actual cluster state match that desired state.</div>
+<figure class="visual">
+<img src="images/kubernetes-architecture.svg" alt="Kubernetes control plane managing two worker nodes and their application Pods">
+<figcaption>Kubernetes control plane and worker-node relationship</figcaption>
+</figure>
 </section>
 
 <section class="card" id="q2">
@@ -554,6 +576,10 @@ Node A → payment Pod</div>
        v
 Pod B: 10.0.2.20</div>
 <p>In EKS, AWS VPC CNI is commonly used.</p>
+<figure class="visual">
+<img src="images/kubernetes-networking.svg" alt="Kubernetes network traffic flowing from a client through a Service to frontend and backend Pods and a database">
+<figcaption>Service routing, Pod traffic, and access to a VPC database</figcaption>
+</figure>
 </section>
 
 <section class="card" id="q25">
@@ -945,6 +971,10 @@ kubectl describe node &lt;node&gt;</pre>
 
 <section class="card" id="q50">
 <h2>50. Architect-level: Design a production EKS platform</h2>
+<figure class="visual">
+<img src="images/eks-production-architecture.svg" alt="Production EKS architecture across three availability zones with ingress, private nodes, observability, and AWS services">
+<figcaption>Highly available production EKS platform across multiple Availability Zones</figcaption>
+</figure>
 <div class="diagram">                         Internet
                             |
                          Route 53

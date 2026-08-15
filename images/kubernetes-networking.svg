@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 360" role="img" aria-labelledby="title desc">
+  <title id="title">Kubernetes pod networking</title>
+  <desc id="desc">Traffic flows from a client through a service to frontend and backend pods, then to a database.</desc>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L10,3 L0,6 Z" fill="#1f5f8b"/></marker></defs>
+  <rect width="1000" height="360" fill="#f5f7fa"/>
+  <g font-family="Arial,sans-serif" text-anchor="middle">
+    <rect x="35" y="135" width="130" height="65" rx="11" fill="#fff" stroke="#1f5f8b" stroke-width="3"/><text x="100" y="173" font-size="18" fill="#17202a">Client</text>
+    <rect x="220" y="135" width="150" height="65" rx="11" fill="#eaf3f9" stroke="#1f5f8b" stroke-width="3"/><text x="295" y="173" font-size="18" fill="#17202a">Service</text>
+    <rect x="430" y="65" width="165" height="65" rx="11" fill="#edf8f2" stroke="#1f7a4d" stroke-width="3"/><text x="512" y="103" font-size="18" fill="#17202a">Frontend Pod</text>
+    <rect x="430" y="205" width="165" height="65" rx="11" fill="#edf8f2" stroke="#1f7a4d" stroke-width="3"/><text x="512" y="243" font-size="18" fill="#17202a">Backend Pod</text>
+    <rect x="700" y="135" width="160" height="65" rx="11" fill="#fff8e6" stroke="#9a6700" stroke-width="3"/><text x="780" y="173" font-size="18" fill="#17202a">RDS / Database</text>
+  </g>
+  <g stroke="#1f5f8b" stroke-width="4" fill="none" marker-end="url(#arrow)">
+    <path d="M165 168 H220"/><path d="M370 168 H420 L430 98"/><path d="M370 168 H420 L430 238"/><path d="M595 238 H650 L700 178"/>
+  </g>
+  <g font-family="Arial,sans-serif" font-size="15" fill="#5f6b7a"><text x="50" y="45">Pod-to-Pod traffic uses the cluster network</text><text x="650" y="285">CNI, routes, security groups, and NetworkPolicy</text></g>
+</svg>

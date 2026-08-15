@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 470" role="img" aria-labelledby="title desc">
+  <title id="title">Production EKS architecture</title>
+  <desc id="desc">A production EKS design across multiple availability zones with ingress, private nodes, observability, and AWS services.</desc>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L10,3 L0,6 Z" fill="#1f5f8b"/></marker></defs>
+  <rect width="1000" height="470" fill="#f5f7fa"/>
+  <rect x="35" y="25" width="930" height="75" rx="14" fill="#fff" stroke="#1f5f8b" stroke-width="3"/>
+  <g font-family="Arial,sans-serif" text-anchor="middle" fill="#17202a"><text x="170" y="70" font-size="19">Users</text><text x="340" y="70" font-size="19">Route 53</text><text x="520" y="70" font-size="19">WAF</text><text x="700" y="70" font-size="19">ALB</text><text x="860" y="70" font-size="19">Ingress</text></g>
+  <path d="M500 100 V140" stroke="#1f5f8b" stroke-width="4" marker-end="url(#arrow)"/>
+  <rect x="35" y="145" width="930" height="205" rx="16" fill="#eaf3f9" stroke="#1f5f8b" stroke-width="3"/>
+  <text x="65" y="180" font-family="Arial,sans-serif" font-size="23" font-weight="700" fill="#1b3548">EKS Cluster</text>
+  <g font-family="Arial,sans-serif" text-anchor="middle">
+    <rect x="65" y="205" width="260" height="110" rx="11" fill="#edf8f2" stroke="#1f7a4d" stroke-width="3"/><text x="195" y="237" font-size="19" fill="#17202a">Availability Zone A</text><text x="195" y="270" font-size="16" fill="#17202a">Private nodes + Pods</text><text x="195" y="296" font-size="15" fill="#5f6b7a">HPA / PDB</text>
+    <rect x="370" y="205" width="260" height="110" rx="11" fill="#edf8f2" stroke="#1f7a4d" stroke-width="3"/><text x="500" y="237" font-size="19" fill="#17202a">Availability Zone B</text><text x="500" y="270" font-size="16" fill="#17202a">Private nodes + Pods</text><text x="500" y="296" font-size="15" fill="#5f6b7a">HPA / PDB</text>
+    <rect x="675" y="205" width="260" height="110" rx="11" fill="#edf8f2" stroke="#1f7a4d" stroke-width="3"/><text x="805" y="237" font-size="19" fill="#17202a">Availability Zone C</text><text x="805" y="270" font-size="16" fill="#17202a">Private nodes + Pods</text><text x="805" y="296" font-size="15" fill="#5f6b7a">HPA / PDB</text>
+  </g>
+  <path d="M500 350 V385" stroke="#1f5f8b" stroke-width="4" marker-end="url(#arrow)"/>
+  <g font-family="Arial,sans-serif" text-anchor="middle"><rect x="90" y="390" width="235" height="55" rx="9" fill="#fff" stroke="#8bb7cf"/><text x="207" y="424" font-size="17" fill="#17202a">CloudWatch / Prometheus</text><rect x="382" y="390" width="235" height="55" rx="9" fill="#fff" stroke="#8bb7cf"/><text x="500" y="424" font-size="17" fill="#17202a">ECR + CI/CD</text><rect x="674" y="390" width="235" height="55" rx="9" fill="#fff" stroke="#8bb7cf"/><text x="792" y="424" font-size="17" fill="#17202a">RDS / S3 / Secrets</text></g>
+</svg>

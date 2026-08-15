@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Production EKS Platform Architecture - Detailed Explanation</title>
+<style>
+:root{--navy:#172b3a;--blue:#1769aa;--light:#f4f7fa;--card:#fff;--border:#d9e1e8;--text:#1f2933;--muted:#667482;--green:#18794e;--red:#b42318;--code:#111827}
+*{box-sizing:border-box}body{margin:0;background:var(--light);color:var(--text);font-family:Arial,Helvetica,sans-serif;line-height:1.65}
+header{background:var(--navy);color:white;padding:42px 7%;border-bottom:5px solid var(--blue)}
+header h1{margin:0 0 8px;font-size:34px}header p{margin:0;color:#d8e1e8}
+.container{max-width:1250px;margin:28px auto;padding:0 22px 60px}.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:27px 30px;margin-bottom:22px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+h2{color:var(--navy);font-size:26px;margin:0 0 15px}h3{color:#244e69;margin-top:22px}.diagram{background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:17px;font-family:Consolas,Monaco,monospace;white-space:pre;overflow:auto;color:#243746}
+pre{background:var(--code);color:#e5e7eb;padding:16px;border-radius:7px;overflow:auto;font-size:13px}code{font-family:Consolas,Monaco,monospace}
+p code,li code{background:#edf1f5;padding:2px 5px;border-radius:4px}.callout{padding:15px 18px;border-left:4px solid var(--blue);background:#edf6fc;margin:16px 0}
+.success{border-left-color:var(--green);background:#edf8f2}.danger{border-left-color:var(--red);background:#fff1f0}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.smallcard{border:1px solid var(--border);border-radius:8px;padding:17px;background:#fbfcfd}
+table{width:100%;border-collapse:collapse;margin:15px 0}th,td{border:1px solid var(--border);padding:11px;text-align:left;vertical-align:top}th{background:#eef3f7}
+.toc ol{columns:2;padding-left:25px}.toc a{color:var(--blue);text-decoration:none}.toc a:hover{text-decoration:underline}
+footer{text-align:center;color:var(--muted);padding:30px}@media(max-width:800px){.grid{grid-template-columns:1fr}.toc ol{columns:1}header h1{font-size:27px}.card{padding:20px}}
+</style>
+</head>
+<body>
+<header>
+<h1>Production EKS Platform Architecture</h1>
+<p>Detailed enterprise explanation — AWS, EKS, Ingress, Services, Pods, Autoscaling, Security, GitOps, Observability and Data Services</p>
+</header>
+<div class="container">
+
+<section class="card toc">
+<h2>Architecture Guide</h2>
+<ol>
+<li><a href="#overview">Architecture Overview</a></li><li><a href="#traffic">End-to-End Request Flow</a></li>
+<li><a href="#network">AWS VPC and Multi-AZ Network</a></li><li><a href="#eks">EKS Cluster</a></li>
+<li><a href="#controlplane">Control Plane</a></li><li><a href="#nodes">Worker Nodes</a></li><li><a href="#pods">Pods and Networking</a></li>
+<li><a href="#ingress">Ingress and ALB Controller</a></li><li><a href="#services">Kubernetes Services</a></li>
+<li><a href="#routing">Ingress-to-Service Routing</a></li><li><a href="#autoscaling">Autoscaling</a></li>
+<li><a href="#storage">Storage</a></li><li><a href="#data">Databases and Cache</a></li>
+<li><a href="#messaging">Messaging and Streaming</a></li><li><a href="#iam">IAM and Workload Identity</a></li>
+<li><a href="#security">Security</a></li><li><a href="#cicd">CI/CD</a></li><li><a href="#gitops">GitOps</a></li>
+<li><a href="#observability">Observability</a></li><li><a href="#backup">Backup and DR</a></li>
+<li><a href="#failure">Failure Scenarios</a></li><li><a href="#interview">Architect-Level Answer</a></li>
+</ol>
+</section>
+
+<section class="card" id="overview"><h2>1. Architecture Overview</h2>
+<p>This is a production-grade Amazon EKS platform designed for highly available enterprise workloads.</p>
+<div class="diagram">                           INTERNET
+                              |
+                           Route 53
+                              |
+                    CloudFront / WAF / Shield
+                              |
+                         Internet ALB
+                              |
+                    AWS Load Balancer Controller
+                              |
+                         Kubernetes Ingress
+                              |
+                    Kubernetes Services
+                              |
+             +----------------+----------------+
+             |                |                |
+           Pod              Pod              Pod
+             |                |                |
+             +----------------+----------------+
+                              |
+                 RDS / Aurora / Redis / SQS
+                              |
+                    Other AWS Services</div>
+<div class="grid">
+<div class="smallcard"><b>High Availability</b><br>Multiple AZs, nodes and Pod replicas.</div>
+<div class="smallcard"><b>Scalability</b><br>HPA plus node-capacity autoscaling.</div>
+<div class="smallcard"><b>Security</b><br>IAM, RBAC, NetworkPolicy, WAF, KMS and Secrets Manager.</div>
+<div class="smallcard"><b>Observability</b><br>Logs, metrics and traces.</div>
+<div class="smallcard"><b>Automation</b><br>CI/CD plus GitOps reconciliation.</div>
+<div class="smallcard"><b>Resilience</b><br>Multi-AZ, PDBs, backups and DR.</div>
+</div></section>
+
+<section class="card" id="traffic"><h2>2. End-to-End Request Flow</h2>
+<div class="diagram">User
+  |
+  v
+Route 53
+  |
+  v
+CloudFront
+  |
+  v
+AWS WAF / Shield
+  |
+  v
+Application Load Balancer
+  |
+  v
+Ingress
+  |
+  v
+Kubernetes Service
+  |
+  v
+Ready Pod
+  |
+  v
+Application
+  |
+  +------> ElastiCache
+  +------> RDS / Aurora
+  +------> SQS / SNS / MSK
+  +------> Other Internal APIs</div>
+<ul>
+<li>Route 53 provides DNS.</li><li>CloudFront provides edge delivery and optional caching.</li>
+<li>WAF filters malicious HTTP traffic.</li><li>Shield provides DDoS protection.</li>
+<li>ALB provides Layer-7 load balancing.</li><li>Ingress defines Kubernetes HTTP routing.</li>
+<li>Service provides stable access to Pods.</li><li>Pods run the application.</li>
+</ul></section>
+
+<section class="card" id="network"><h2>3. AWS VPC and Multi-AZ Network</h2>
+<div class="diagram">VPC 10.0.0.0/16
+
++-------------------+-------------------+-------------------+
+| Availability Zone A| Availability Zone B| Availability Zone C|
+| Public Subnet A    | Public Subnet B    | Public Subnet C    |
+| NAT Gateway        | NAT Gateway        | NAT Gateway        |
+|                    |                    |                    |
+| Private Subnet A   | Private Subnet B   | Private Subnet C   |
+| EKS Nodes / Pods   | EKS Nodes / Pods   | EKS Nodes / Pods   |
++-------------------+-------------------+-------------------+</div>
+<p>Worker nodes and application Pods should normally run in private subnets. Public load balancers and NAT gateways can reside in public subnets.</p>
+<div class="callout success"><b>Architectural principle:</b> The load balancer can be public while the application compute layer remains private.</div>
+</section>
+
+<section class="card" id="eks"><h2>4. EKS Cluster — Detailed View</h2>
+<div class="diagram">                    Amazon EKS Cluster
++------------------------------------------------------------------+
+|                                                                  |
+|  +----------------------+      +-------------------------------+ |
+|  | AWS Managed          |      | Kubernetes Add-ons             | |
+|  | Control Plane        |      | CoreDNS                       | |
+|  | API Server           |      | kube-proxy                    | |
+|  | etcd                 |      | AWS VPC CNI                   | |
+|  | Scheduler            |      | AWS Load Balancer Controller  | |
+|  | Controllers          |      | EBS CSI Driver                | |
+|  +----------------------+      | Metrics Server                | |
+|                                +-------------------------------+ |
+|                                                                  |
+|  +------------------------------------------------------------+  |
+|  | Worker Node Group / Auto Scaling                            |  |
+|  |                                                            |  |
+|  | AZ-A              AZ-B              AZ-C                    |  |
+|  | +------------+    +------------+    +------------+          |  |
+|  | | Node       |    | Node       |    | Node       |          |  |
+|  | | kubelet    |    | kubelet    |    | kubelet    |          |  |
+|  | | containerd |    | containerd |    | containerd |          |  |
+|  | +------------+    +------------+    +------------+          |  |
+|  |      |                 |                 |                  |  |
+|  |     Pods              Pods              Pods                |  |
+|  +------------------------------------------------------------+  |
++------------------------------------------------------------------+</div></section>
+
+<section class="card" id="controlplane"><h2>5. EKS Control Plane</h2>
+<table><tr><th>Component</th><th>Purpose</th></tr>
+<tr><td>API Server</td><td>Receives Kubernetes API requests.</td></tr>
+<tr><td>etcd</td><td>Stores Kubernetes cluster state.</td></tr>
+<tr><td>Scheduler</td><td>Selects worker nodes for unscheduled Pods.</td></tr>
+<tr><td>Controller Manager</td><td>Runs reconciliation loops that maintain desired state.</td></tr>
+<tr><td>Cloud Controller Manager</td><td>Integrates Kubernetes with cloud-provider resources where applicable.</td></tr>
+</table>
+<p>Amazon EKS provides a managed Kubernetes control plane, reducing the operational burden of managing control-plane infrastructure.</p>
+</section>
+
+<section class="card" id="nodes"><h2>6. Worker Nodes and Node Groups</h2>
+<div class="diagram">EKS Node Group
+        |
+        +------------------+
+        | Auto Scaling     |
+        | / Provisioning   |
+        +------------------+
+        |
+ +------+------+------+
+ |             |      |
+Node A       Node B  Node C
+ |             |      |
+Pods          Pods   Pods</div>
+<ul>
+<li><b>kubelet</b> manages Pods.</li><li><b>containerd</b> runs containers.</li>
+<li><b>VPC CNI</b> provides Pod networking.</li><li><b>kube-proxy</b> supports Service networking.</li>
+</ul>
+<p>Production node groups should span multiple AZs and use labels, taints/tolerations, affinity rules and autoscaling where appropriate.</p>
+</section>
+
+<section class="card" id="pods"><h2>7. Pods and Pod Networking</h2>
+<div class="diagram">Worker Node
+|
++-- Pod: web-1
+|     +-- Application Container
+|     +-- Sidecar Container (optional)
+|
++-- Pod: api-1
+|
++-- Pod: api-2</div>
+<p>With AWS VPC CNI, Pods receive VPC networking addresses according to the cluster configuration.</p>
+<div class="callout success"><b>Key interview point:</b> A Pod being <code>Running</code> does not necessarily mean it is ready to receive traffic. Readiness determines whether it should be included behind a Service.</div>
+</section>
+
+<section class="card" id="ingress"><h2>8. Ingress and AWS Load Balancer Controller</h2>
+<div class="diagram">Internet
+   |
+   v
+Internet-facing ALB
+   |
+   +--------------------------------+
+   | Listener :443                  |
+   | TLS certificate                |
+   | Health checks                  |
+   +--------------------------------+
+                |
+                v
+       AWS Load Balancer Controller
+                |
+                v
+        Kubernetes Ingress
+                |
+        +-------+-------+--------+
+        |       |       |        |
+      /web    /api   /admin   /orders
+        |       |       |        |
+     svc-web svc-api svc-admin svc-orders</div>
+<p>The controller watches Kubernetes resources and configures AWS load-balancing resources. Ingress rules can route different hosts or paths to different Services.</p>
+<table><tr><th>Host / Path</th><th>Target</th></tr>
+<tr><td>app.example.com/</td><td>svc-web</td></tr>
+<tr><td>api.example.com/</td><td>svc-api</td></tr>
+<tr><td>admin.example.com/</td><td>svc-admin</td></tr>
+<tr><td>api.example.com/orders</td><td>svc-orders</td></tr>
+</table>
+</section>
+
+<section class="card" id="services"><h2>9. Kubernetes Services</h2>
+<div class="diagram">Service: svc-api
+Port: 80
+TargetPort: 8081
+Selector:
+  app: api
+
+       |
+       +--------+--------+
+       |        |        |
+      Pod      Pod      Pod
+      api-1    api-2    api-3</div>
+<ul>
+<li><b>ClusterIP</b> — internal virtual IP.</li><li><b>Selector</b> — identifies backend Pods.</li>
+<li><b>Port</b> — Service-facing port.</li><li><b>TargetPort</b> — application port.</li>
+<li><b>EndpointSlice</b> — tracks backend endpoints.</li>
+</ul></section>
+
+<section class="card" id="routing"><h2>10. Ingress → Service → Replica → Pod Routing</h2>
+<div class="diagram">Client
+  |
+  v
+ALB
+  |
+  v
+Ingress Rule
+  |
+  v
+svc-api
+  |
+  v
+EndpointSlice
+  |
+  +----------------+----------------+
+  |                |                |
+Pod api-1        Pod api-2        Pod api-3
+Ready            Ready            Ready
+  |                |                |
+  +----------------+----------------+
+           Application</div>
+<div class="diagram">Pod process healthy
+       ↓
+Readiness probe passes
+       ↓
+Pod becomes Ready
+       ↓
+EndpointSlice includes Pod
+       ↓
+Service can send traffic
+       ↓
+Ingress / ALB can reach application</div>
+<div class="callout danger"><b>Common 503 root cause:</b> Pods may be Running but not Ready. If there are no healthy endpoints, the load balancer can return 503.</div>
+</section>
+
+<section class="card" id="autoscaling"><h2>11. Autoscaling Architecture</h2>
+<div class="diagram">User Traffic
+     |
+     v
+Application Metrics
+     |
+     v
+HPA
+     |
+     v
+Pods: 3 → 8
+     |
+     v
+Insufficient Node Capacity
+     |
+     v
+Karpenter / Cluster Autoscaler
+     |
+     v
+New EC2 Capacity
+     |
+     v
+Pods Scheduled</div>
+<p><b>HPA</b> scales Pods. <b>Cluster Autoscaler</b> adjusts node groups. <b>Karpenter</b> can dynamically provision suitable compute based on pending workload requirements.</p>
+</section>
+
+<section class="card" id="storage"><h2>12. Storage</h2>
+<div class="grid">
+<div class="smallcard"><b>EBS</b><br>Block storage and persistent volumes through the EBS CSI Driver.</div>
+<div class="smallcard"><b>EFS</b><br>Shared file storage for multiple Pods.</div>
+<div class="smallcard"><b>S3</b><br>Object storage for files, artifacts, reports and backups.</div>
+<div class="smallcard"><b>FSx</b><br>Specialized shared file-system requirements.</div>
+</div>
+<div class="callout"><b>Design principle:</b> Stateless application Pods should generally not depend on their local container filesystem for durable data.</div>
+</section>
+
+<section class="card" id="data"><h2>13. RDS, Aurora and ElastiCache</h2>
+<div class="diagram">                    EKS Pods
+                       |
+          +------------+------------+
+          |            |            |
+          v            v            v
+      RDS/Aurora   ElastiCache    S3
+      Database       Redis
+          |
+     Persistent State</div>
+<p>Applications connect to database services through private networking. For connectivity issues, verify DNS, security groups, network ACLs, routes, ports, credentials, connection pools and database health.</p>
+</section>
+
+<section class="card" id="messaging"><h2>14. Messaging and Streaming</h2>
+<div class="diagram">Application Pod
+     |
+     +----> SQS ----> Worker
+     |
+     +----> SNS ----> Multiple Subscribers
+     |
+     +----> MSK/Kafka ----> Streaming Consumers</div>
+<p>Asynchronous messaging is useful when the application should not wait for long-running work to complete.</p>
+<div class="diagram">POST /report
+     |
+     v
+API
+     |
+     +--> Create Job
+     +--> SQS
+            |
+            v
+       Worker Pods
+            |
+            v
+       Generate Report
+            |
+            v
+           S3
+            |
+            v
+      Job Status = Complete</div>
+</section>
+
+<section class="card" id="iam"><h2>15. IAM and Workload Identity</h2>
+<div class="diagram">Kubernetes ServiceAccount
+          |
+          v
+EKS Pod Identity / IRSA
+          |
+          v
+IAM Role
+          |
+          v
+AWS APIs
+ |
+ +-- S3
+ +-- SQS
+ +-- Secrets Manager
+ +-- Other AWS Services</div>
+<div class="callout success"><b>Least privilege:</b> Give each workload only the AWS permissions it actually needs. Never put long-lived AWS access keys into application containers.</div>
+</section>
+
+<section class="card" id="security"><h2>16. Security Architecture</h2>
+<div class="diagram">Internet
+   |
+AWS WAF / Shield
+   |
+ALB
+   |
+Ingress
+   |
+Kubernetes RBAC
+   |
+NetworkPolicy
+   |
+Pods
+   |
+IAM Workload Identity
+   |
+AWS Services
+
+Supporting controls:
+KMS | Secrets Manager | Image Scanning
+GuardDuty | Security Hub | CloudTrail | VPC Flow Logs</div>
+<ul>
+<li>Edge protection with WAF and DDoS controls.</li><li>IAM and Kubernetes RBAC.</li>
+<li>Private subnets, Security Groups and NetworkPolicy.</li><li>Secrets Manager and KMS.</li>
+<li>Image vulnerability scanning.</li><li>CloudTrail and audit logging.</li>
+</ul>
+</section>
+
+<section class="card" id="cicd"><h2>17. CI/CD Pipeline</h2>
+<div class="diagram">Developer
+   |
+   v
+GitHub
+   |
+   v
+GitHub Actions
+   |
+   +--> Unit Tests
+   +--> SAST / Dependency Scan
+   +--> Build Container
+   +--> Image Scan
+   |
+   v
+Amazon ECR
+   |
+   v
+Update Deployment Version
+   |
+   v
+GitOps Repository</div>
+<p>CI should produce immutable, scanned artifacts. The same artifact should be promoted across environments where possible.</p>
+</section>
+
+<section class="card" id="gitops"><h2>18. GitOps with Argo CD</h2>
+<div class="diagram">Git Repository
+   |
+   | Helm / Kubernetes manifests
+   v
+Argo CD
+   |
+   | Continuous reconciliation
+   v
+EKS Cluster
+   |
+   +-- Deployment
+   +-- Service
+   +-- Ingress
+   +-- Config
+   +-- RBAC</div>
+<p>Git is the desired-state source of truth. Argo CD continuously detects and reconciles drift.</p>
+<ul><li>Auditable changes</li><li>Git history</li><li>Drift detection</li><li>Rollback capability</li><li>Declarative deployment</li><li>Separation of CI and CD</li></ul>
+</section>
+
+<section class="card" id="observability"><h2>19. Observability</h2>
+<div class="diagram">Applications
+    |
+    +-------- Logs --------> CloudWatch
+    |
+    +-------- Metrics -----> Prometheus / AMP
+    |
+    +-------- Dashboards --> Grafana
+    |
+    +-------- Traces ------> OpenTelemetry / X-Ray
+    |
+    +-------- AWS Metrics -> CloudWatch</div>
+<div class="grid">
+<div class="smallcard"><b>Logs</b><br>Application, Kubernetes, ALB and AWS service logs.</div>
+<div class="smallcard"><b>Metrics</b><br>CPU, memory, latency, errors, throughput and infrastructure health.</div>
+<div class="smallcard"><b>Traces</b><br>End-to-end request tracing across services and dependencies.</div>
+<div class="smallcard"><b>Correlation</b><br>Use logs, metrics and traces together to isolate failure domains.</div>
+</div>
+</section>
+
+<section class="card" id="backup"><h2>20. Backup and Disaster Recovery</h2>
+<div class="diagram">Application / EKS
+       |
+       +---- Kubernetes / Volume Backup
+       +---- RDS Automated Backup
+       +---- S3 Versioning / Replication
+       +---- Multi-AZ
+       +---- Cross-Region Strategy
+       |
+       v
+Disaster Recovery Environment</div>
+<p>Define RPO and RTO targets. Include database backups, persistent volume backups, retained container images, GitOps repository protection and cross-region recovery for critical workloads.</p>
+</section>
+
+<section class="card" id="failure"><h2>21. Production Failure Scenarios</h2>
+<h3>ALB returns 503</h3>
+<div class="diagram">ALB
+ |
+ v
+Ingress
+ |
+ v
+Service
+ |
+ v
+EndpointSlice
+ |
+ +-- No Ready Pods
+       |
+       v
+      503</div>
+<pre>kubectl get ingress
+kubectl describe ingress &lt;ingress&gt;
+kubectl get svc
+kubectl get endpoints
+kubectl get endpointslice
+kubectl get pods
+kubectl describe pod &lt;pod&gt;</pre>
+
+<h3>Pods are Running but not Ready</h3>
+<p>Investigate readiness probes, health endpoints, ports, application startup and dependencies.</p>
+
+<h3>Pods are Pending</h3>
+<p>Investigate CPU/memory requests, node capacity, taints/tolerations, affinity, topology rules and PVCs.</p>
+
+<h3>Node is NotReady</h3>
+<p>Check node conditions, kubelet, container runtime, CNI, EC2 health, disk pressure, memory pressure and networking.</p>
+
+<h3>Application is slow</h3>
+<div class="diagram">Client → CloudFront → WAF → ALB → Ingress → Service → Pod → Cache / DB / External API</div>
+<p>Correlate ALB latency, Pod metrics, application logs, traces and database metrics.</p>
+</section>
+
+<section class="card" id="interview"><h2>22. Architect-Level Interview Explanation</h2>
+<div class="callout success">
+<p><b>Recommended answer:</b></p>
+<p>"For a production EKS platform, I would design the cluster across multiple Availability Zones with worker nodes in private subnets. Internet traffic would enter through Route 53 and, where appropriate, CloudFront and WAF before reaching a multi-AZ Application Load Balancer. The AWS Load Balancer Controller would integrate the ALB with Kubernetes Ingress resources.</p>
+<p>The Ingress would route requests to Kubernetes Services, and Services would distribute traffic across Ready Pods managed by Deployments. I would use readiness, liveness and startup probes to protect application availability during deployments and failures.</p>
+<p>For scalability, HPA would scale Pods based on application metrics, while Karpenter or Cluster Autoscaler would provide additional compute capacity when Pods cannot be scheduled.</p>
+<p>The workloads would use IAM-based workload identity instead of static AWS credentials. Secrets would be managed through AWS Secrets Manager, data would be stored in RDS or Aurora, caching would use ElastiCache, and asynchronous workloads could use SQS or MSK.</p>
+<p>For delivery, GitHub Actions would build, test and scan container images before publishing them to ECR. Argo CD would reconcile the desired Kubernetes state from Git into EKS.</p>
+<p>For observability, I would collect logs, metrics and traces using CloudWatch, Prometheus/AMP, Grafana and OpenTelemetry/X-Ray. Security would use WAF, IAM, RBAC, NetworkPolicy, KMS, Secrets Manager, image scanning, GuardDuty and centralized audit logging.</p>
+<p>Finally, I would design multi-AZ resilience, PodDisruptionBudgets, backups, disaster recovery and clear RTO/RPO targets so the platform is not only scalable but also operationally resilient."</b></p>
+</div>
+<h3>What makes this architect-level?</h3>
+<ul>
+<li>Complete request-path understanding.</li><li>Separation of edge, network, compute, application and data layers.</li>
+<li>Kubernetes internals plus AWS integration.</li><li>Security and workload identity.</li><li>CI/CD and GitOps.</li><li>Observability and autoscaling.</li><li>Failure recovery and disaster recovery.</li>
+<li>Understanding of trade-offs, not just service names.</li>
+</ul>
+</section>
+
+<section class="card"><h2>23. Quick Interview Cheat Sheet</h2>
+<table>
+<tr><th>Question</th><th>Strong Short Answer</th></tr>
+<tr><td>Why EKS?</td><td>Managed Kubernetes control plane integrated with AWS networking, IAM, load balancing and AWS services.</td></tr>
+<tr><td>Ingress?</td><td>HTTP/HTTPS routing abstraction; AWS Load Balancer Controller can integrate it with an ALB.</td></tr>
+<tr><td>Service?</td><td>Stable network abstraction in front of changing Pod IPs.</td></tr>
+<tr><td>Running vs Ready?</td><td>Running means the container is running; Ready means it is eligible to receive traffic.</td></tr>
+<tr><td>HPA?</td><td>Scales Pods.</td></tr>
+<tr><td>Karpenter / Cluster Autoscaler?</td><td>Provides or adjusts node capacity so Pods can be scheduled.</td></tr>
+<tr><td>IRSA / Pod Identity?</td><td>Provides AWS IAM permissions to workloads without static credentials.</td></tr>
+<tr><td>Readiness?</td><td>Controls whether a Pod receives traffic.</td></tr>
+<tr><td>Liveness?</td><td>Detects an unhealthy application and can trigger restart.</td></tr>
+<tr><td>PDB?</td><td>Protects availability during voluntary disruptions.</td></tr>
+<tr><td>GitOps?</td><td>Git is desired-state source of truth and Argo CD continuously reconciles EKS.</td></tr>
+<tr><td>503 troubleshooting?</td><td>Trace ALB → Ingress → Service → EndpointSlice → Ready Pods → Application → Dependencies.</td></tr>
+</table>
+</section>
+
+</div>
+<footer>Production EKS Platform Architecture — Senior DevOps / Cloud Architect Reference</footer>
+</body>
+</html>

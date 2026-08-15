@@ -1,0 +1,311 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-labelledby="title desc">
+  <title id="title">Production EKS Platform Architecture Detailed</title>
+  <desc id="desc">Detailed production EKS platform architecture with users, DNS, ALB, ingress, managed EKS cluster, worker node groups across three availability zones, services, storage, CI/CD, GitOps, security, backup, observability, and AWS data services.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L9,3 L0,6 Z" fill="#10233f"/>
+    </marker>
+    <filter id="softShadow" x="-8%" y="-8%" width="116%" height="116%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#10233f" flood-opacity=".12"/>
+    </filter>
+  </defs>
+  <style>
+    .bg{fill:#f7fafc}
+    .title{font:700 26px Arial,sans-serif;fill:#10233f}
+    .section-title{font:700 14px Arial,sans-serif;fill:#10233f}
+    .label{font:700 12px Arial,sans-serif;fill:#10233f}
+    .small{font:11px Arial,sans-serif;fill:#10233f}
+    .tiny{font:10px Arial,sans-serif;fill:#10233f}
+    .muted{font:10px Arial,sans-serif;fill:#475569}
+    .cloud{fill:#fff;stroke:#334155;stroke-width:1.4;filter:url(#softShadow)}
+    .panel{fill:#fff;stroke:#94a3b8;stroke-width:1.2}
+    .vpc{fill:#f8fff9;stroke:#16a34a;stroke-width:1.4}
+    .cluster{fill:#fffaf5;stroke:#f97316;stroke-width:1.4;stroke-dasharray:6 4}
+    .az{fill:#f8fcff;stroke:#38bdf8;stroke-width:1.1}
+    .subnet{fill:#eff6ff;stroke:#60a5fa;stroke-width:1}
+    .private{fill:#f0fdf4;stroke:#22c55e;stroke-width:1}
+    .purple{fill:#f5f3ff;stroke:#7c3aed;stroke-width:1.2}
+    .orange{fill:#fff7ed;stroke:#f97316;stroke-width:1.2}
+    .green{fill:#f0fdf4;stroke:#16a34a;stroke-width:1.2}
+    .blue{fill:#eff6ff;stroke:#2563eb;stroke-width:1.2}
+    .red{fill:#fff1f2;stroke:#e11d48;stroke-width:1.2}
+    .icon-orange{fill:#ff7a1a}
+    .icon-purple{fill:#6d28d9}
+    .icon-green{fill:#3f8f24}
+    .icon-blue{fill:#2563eb}
+    .line{stroke:#10233f;stroke-width:1.4;fill:none;marker-end:url(#arrow)}
+    .dash{stroke:#475569;stroke-width:1.1;fill:none;stroke-dasharray:4 3;marker-end:url(#arrow)}
+    .check{fill:#ecfdf5;stroke:#16a34a;stroke-width:1.3}
+  </style>
+
+  <rect class="bg" width="1600" height="1000"/>
+  <text class="title" x="800" y="30" text-anchor="middle">Production EKS Platform Architecture (Detailed)</text>
+
+  <!-- Users and edge entry -->
+  <rect class="panel" x="10" y="200" width="82" height="210" rx="6"/>
+  <text class="section-title" x="51" y="226" text-anchor="middle">Users</text>
+  <circle cx="38" cy="268" r="12" fill="none" stroke="#10233f" stroke-width="2"/>
+  <circle cx="62" cy="268" r="12" fill="none" stroke="#10233f" stroke-width="2"/>
+  <path d="M24 305 Q50 276 78 305" fill="none" stroke="#10233f" stroke-width="2"/>
+  <text class="small" x="51" y="324" text-anchor="middle">Web Users</text>
+  <rect x="40" y="352" width="22" height="42" rx="5" fill="none" stroke="#10233f" stroke-width="1.8"/>
+  <text class="small" x="51" y="430" text-anchor="middle">Mobile Users</text>
+
+  <rect class="panel" x="110" y="315" width="70" height="92" rx="6"/>
+  <rect class="icon-purple" x="128" y="333" width="34" height="34" rx="5"/>
+  <text class="small" x="145" y="355" text-anchor="middle" fill="#fff">53</text>
+  <text class="small" x="145" y="385" text-anchor="middle">Route 53</text>
+  <text class="tiny" x="145" y="400" text-anchor="middle">DNS</text>
+
+  <rect class="panel" x="215" y="285" width="100" height="250" rx="6"/>
+  <text class="section-title" x="265" y="310" text-anchor="middle">ALB</text>
+  <text class="tiny" x="265" y="326" text-anchor="middle">Application Load</text>
+  <text class="tiny" x="265" y="340" text-anchor="middle">Balancer</text>
+  <circle cx="265" cy="380" r="26" fill="#f5f3ff" stroke="#6d28d9" stroke-width="2"/>
+  <path d="M250 380 H280 M265 365 V395" stroke="#6d28d9" stroke-width="3"/>
+  <text class="tiny" x="225" y="435">Scheme: internet-facing</text>
+  <text class="tiny" x="225" y="458">Multi-AZ</text>
+  <text class="tiny" x="225" y="481">TLS Termination</text>
+  <text class="tiny" x="225" y="504">Health: /healthz</text>
+  <path class="line" d="M92 305 H110"/>
+  <path class="line" d="M180 360 H215"/>
+
+  <!-- AWS Cloud -->
+  <rect class="cloud" x="340" y="38" width="1010" height="810" rx="4"/>
+  <rect x="340" y="38" width="38" height="36" fill="#10233f"/>
+  <text class="tiny" x="359" y="61" text-anchor="middle" fill="#fff">aws</text>
+  <text class="section-title" x="392" y="62">AWS Cloud</text>
+  <rect class="panel" x="360" y="78" width="970" height="735" rx="4"/>
+  <text class="section-title" x="395" y="100">Region (us-east-1)</text>
+  <rect class="vpc" x="382" y="122" width="925" height="675" rx="4"/>
+  <text class="section-title" x="405" y="146">VPC 10.0.0.0/16</text>
+
+  <!-- Shared regional services -->
+  <circle cx="1000" cy="99" r="17" fill="#f5f3ff" stroke="#6d28d9" stroke-width="2"/>
+  <text class="tiny" x="1030" y="95">VPC Endpoints</text>
+  <text class="tiny" x="1030" y="109">(PrivateLink)</text>
+  <circle cx="1205" cy="99" r="17" fill="#f5f3ff" stroke="#6d28d9" stroke-width="2"/>
+  <text class="tiny" x="1235" y="101">Internet Gateway</text>
+
+  <!-- Availability zones -->
+  <rect class="az" x="585" y="122" width="190" height="128" rx="3"/>
+  <text class="label" x="680" y="145" text-anchor="middle" fill="#0369a1">Availability Zone A</text>
+  <rect class="subnet" x="600" y="160" width="160" height="34" rx="4"/>
+  <text class="tiny" x="614" y="179">Public Subnet A1</text>
+  <text class="tiny" x="614" y="193">10.0.1.0/24</text>
+  <rect class="panel" x="600" y="202" width="160" height="34" rx="4"/>
+  <text class="tiny" x="660" y="224" text-anchor="middle">NAT Gateway</text>
+
+  <rect class="az" x="780" y="122" width="190" height="128" rx="3"/>
+  <text class="label" x="875" y="145" text-anchor="middle" fill="#0369a1">Availability Zone B</text>
+  <rect class="subnet" x="795" y="160" width="160" height="34" rx="4"/>
+  <text class="tiny" x="809" y="179">Public Subnet B1</text>
+  <text class="tiny" x="809" y="193">10.0.2.0/24</text>
+  <rect class="panel" x="795" y="202" width="160" height="34" rx="4"/>
+  <text class="tiny" x="855" y="224" text-anchor="middle">NAT Gateway</text>
+
+  <rect class="az" x="975" y="122" width="190" height="128" rx="3"/>
+  <text class="label" x="1070" y="145" text-anchor="middle" fill="#0369a1">Availability Zone C</text>
+  <rect class="subnet" x="990" y="160" width="160" height="34" rx="4"/>
+  <text class="tiny" x="1004" y="179">Public Subnet C1</text>
+  <text class="tiny" x="1004" y="193">10.0.3.0/24</text>
+  <rect class="panel" x="990" y="202" width="160" height="34" rx="4"/>
+  <text class="tiny" x="1050" y="224" text-anchor="middle">NAT Gateway</text>
+
+  <!-- Ingress -->
+  <rect class="purple" x="352" y="392" width="196" height="255" rx="6"/>
+  <text class="section-title" x="450" y="416" text-anchor="middle">Ingress</text>
+  <text class="tiny" x="450" y="432" text-anchor="middle">(ALB Ingress Controller)</text>
+  <rect class="panel" x="365" y="444" width="170" height="110" rx="4"/>
+  <text class="tiny" x="450" y="462" text-anchor="middle">Ingress Rules</text>
+  <text class="tiny" x="373" y="490">app.example.com</text>
+  <text class="tiny" x="482" y="490">svc-web</text>
+  <text class="tiny" x="373" y="518">api.example.com</text>
+  <text class="tiny" x="482" y="518">svc-api</text>
+  <text class="tiny" x="373" y="546">admin.example.com</text>
+  <text class="tiny" x="482" y="546">svc-admin</text>
+  <rect class="panel" x="365" y="600" width="170" height="24" rx="4"/>
+  <text class="tiny" x="450" y="617" text-anchor="middle">TLS (ACM Certificate)</text>
+  <path class="line" d="M315 420 H352"/>
+
+  <!-- EKS cluster -->
+  <rect class="cluster" x="565" y="250" width="745" height="386" rx="8"/>
+  <rect class="icon-orange" x="575" y="260" width="36" height="36" rx="5"/>
+  <text class="tiny" x="593" y="283" text-anchor="middle" fill="#fff">EKS</text>
+  <text class="section-title" x="625" y="277">Amazon EKS Managed Cluster</text>
+
+  <rect class="cluster" x="575" y="300" width="318" height="102" rx="6"/>
+  <text class="label" x="734" y="320" text-anchor="middle">Control Plane (AWS Managed)</text>
+  <g transform="translate(600 340)">
+    <rect class="orange" x="0" y="0" width="44" height="38" rx="4"/><text class="tiny" x="22" y="58" text-anchor="middle">API Server</text>
+    <rect class="orange" x="62" y="0" width="44" height="38" rx="4"/><text class="tiny" x="84" y="58" text-anchor="middle">etcd</text>
+    <rect class="orange" x="124" y="0" width="44" height="38" rx="4"/><text class="tiny" x="146" y="58" text-anchor="middle">Scheduler</text>
+    <rect class="orange" x="186" y="0" width="44" height="38" rx="4"/><text class="tiny" x="208" y="52" text-anchor="middle">Controller</text><text class="tiny" x="208" y="65" text-anchor="middle">Manager</text>
+    <rect class="orange" x="248" y="0" width="44" height="38" rx="4"/><text class="tiny" x="270" y="52" text-anchor="middle">Cloud</text><text class="tiny" x="270" y="65" text-anchor="middle">Controller</text>
+  </g>
+
+  <rect class="cluster" x="900" y="300" width="390" height="102" rx="6"/>
+  <text class="label" x="1095" y="320" text-anchor="middle">Cluster Add-ons</text>
+  <g transform="translate(930 342)">
+    <circle class="icon-purple" cx="16" cy="16" r="13"/><text class="tiny" x="16" y="53" text-anchor="middle">CoreDNS</text>
+    <circle class="icon-purple" cx="82" cy="16" r="13"/><text class="tiny" x="82" y="53" text-anchor="middle">kube-proxy</text>
+    <circle class="icon-purple" cx="148" cy="16" r="13"/><text class="tiny" x="148" y="53" text-anchor="middle">VPC CNI</text>
+    <circle class="icon-purple" cx="214" cy="16" r="13"/><text class="tiny" x="214" y="47" text-anchor="middle">AWS LB</text><text class="tiny" x="214" y="60" text-anchor="middle">Controller</text>
+    <circle class="icon-purple" cx="280" cy="16" r="13"/><text class="tiny" x="280" y="47" text-anchor="middle">EBS CSI</text><text class="tiny" x="280" y="60" text-anchor="middle">Driver</text>
+    <circle class="icon-purple" cx="346" cy="16" r="13"/><text class="tiny" x="346" y="47" text-anchor="middle">Metrics</text><text class="tiny" x="346" y="60" text-anchor="middle">Server</text>
+  </g>
+
+  <rect class="cluster" x="575" y="410" width="715" height="214" rx="6"/>
+  <text class="label" x="932" y="430" text-anchor="middle">Worker Node Group (Auto Scaling)</text>
+  <rect class="private" x="588" y="446" width="195" height="94" rx="5"/>
+  <text class="label" x="685" y="464" text-anchor="middle">AZ A - Private Subnet A2</text>
+  <text class="tiny" x="685" y="479" text-anchor="middle">10.0.11.0/24</text>
+  <rect class="private" x="812" y="446" width="195" height="94" rx="5"/>
+  <text class="label" x="910" y="464" text-anchor="middle">AZ B - Private Subnet B2</text>
+  <text class="tiny" x="910" y="479" text-anchor="middle">10.0.12.0/24</text>
+  <rect class="private" x="1035" y="446" width="195" height="94" rx="5"/>
+  <text class="label" x="1133" y="464" text-anchor="middle">AZ C - Private Subnet C2</text>
+  <text class="tiny" x="1133" y="479" text-anchor="middle">10.0.13.0/24</text>
+  <g transform="translate(612 498)">
+    <rect class="orange" x="0" y="0" width="28" height="28" rx="3"/><text class="tiny" x="14" y="45" text-anchor="middle">kubelet</text>
+    <rect class="orange" x="68" y="0" width="28" height="28" rx="3"/><text class="tiny" x="82" y="45" text-anchor="middle">kubelet</text>
+    <text class="section-title" x="128" y="22" text-anchor="middle">...</text>
+    <rect class="orange" x="168" y="0" width="28" height="28" rx="3"/><text class="tiny" x="182" y="45" text-anchor="middle">kubelet</text>
+  </g>
+  <g transform="translate(837 498)">
+    <rect class="orange" x="0" y="0" width="28" height="28" rx="3"/><text class="tiny" x="14" y="45" text-anchor="middle">kubelet</text>
+    <rect class="orange" x="68" y="0" width="28" height="28" rx="3"/><text class="tiny" x="82" y="45" text-anchor="middle">kubelet</text>
+    <text class="section-title" x="128" y="22" text-anchor="middle">...</text>
+    <rect class="orange" x="168" y="0" width="28" height="28" rx="3"/><text class="tiny" x="182" y="45" text-anchor="middle">kubelet</text>
+  </g>
+  <g transform="translate(1060 498)">
+    <rect class="orange" x="0" y="0" width="28" height="28" rx="3"/><text class="tiny" x="14" y="45" text-anchor="middle">kubelet</text>
+    <rect class="orange" x="68" y="0" width="28" height="28" rx="3"/><text class="tiny" x="82" y="45" text-anchor="middle">kubelet</text>
+    <text class="section-title" x="128" y="22" text-anchor="middle">...</text>
+    <rect class="orange" x="168" y="0" width="28" height="28" rx="3"/><text class="tiny" x="182" y="45" text-anchor="middle">kubelet</text>
+  </g>
+
+  <rect class="blue" x="588" y="548" width="680" height="64" rx="5"/>
+  <text class="label" x="928" y="566" text-anchor="middle">Pod Networking (AWS VPC CNI)</text>
+  <g transform="translate(615 576)">
+    <rect class="blue" x="0" y="0" width="48" height="30" rx="3"/><text class="tiny" x="24" y="19" text-anchor="middle">Pod</text><text class="tiny" x="24" y="43" text-anchor="middle">10.0.11.x</text>
+    <rect class="blue" x="78" y="0" width="48" height="30" rx="3"/><text class="tiny" x="102" y="19" text-anchor="middle">Pod</text><text class="tiny" x="102" y="43" text-anchor="middle">10.0.11.y</text>
+    <text class="section-title" x="158" y="21" text-anchor="middle">...</text>
+    <rect class="blue" x="204" y="0" width="48" height="30" rx="3"/><text class="tiny" x="228" y="19" text-anchor="middle">Pod</text><text class="tiny" x="228" y="43" text-anchor="middle">10.0.12.x</text>
+    <rect class="blue" x="290" y="0" width="48" height="30" rx="3"/><text class="tiny" x="314" y="19" text-anchor="middle">Pod</text><text class="tiny" x="314" y="43" text-anchor="middle">10.0.12.y</text>
+    <text class="section-title" x="372" y="21" text-anchor="middle">...</text>
+    <rect class="blue" x="418" y="0" width="48" height="30" rx="3"/><text class="tiny" x="442" y="19" text-anchor="middle">Pod</text><text class="tiny" x="442" y="43" text-anchor="middle">10.0.13.x</text>
+    <rect class="blue" x="548" y="0" width="48" height="30" rx="3"/><text class="tiny" x="572" y="19" text-anchor="middle">Pod</text><text class="tiny" x="572" y="43" text-anchor="middle">10.0.13.y</text>
+  </g>
+
+  <!-- Services and internal deps -->
+  <rect class="blue" x="490" y="660" width="580" height="120" rx="6"/>
+  <text class="section-title" x="780" y="682" text-anchor="middle">Kubernetes Services (ClusterIP)</text>
+  <g transform="translate(510 700)">
+    <rect class="panel" x="0" y="0" width="92" height="62" rx="4"/><text class="tiny" x="46" y="18" text-anchor="middle">svc-web</text><text class="tiny" x="10" y="36">Port: 80</text><text class="tiny" x="10" y="51">Target: 8080</text>
+    <rect class="panel" x="118" y="0" width="92" height="62" rx="4"/><text class="tiny" x="164" y="18" text-anchor="middle">svc-api</text><text class="tiny" x="128" y="36">Port: 80</text><text class="tiny" x="128" y="51">Target: 8081</text>
+    <rect class="panel" x="236" y="0" width="92" height="62" rx="4"/><text class="tiny" x="282" y="18" text-anchor="middle">svc-admin</text><text class="tiny" x="246" y="36">Port: 80</text><text class="tiny" x="246" y="51">Target: 8082</text>
+    <rect class="panel" x="354" y="0" width="92" height="62" rx="4"/><text class="tiny" x="400" y="18" text-anchor="middle">svc-orders</text><text class="tiny" x="364" y="36">Port: 80</text><text class="tiny" x="364" y="51">Target: 8083</text>
+    <rect class="panel" x="472" y="0" width="92" height="62" rx="4"/><text class="tiny" x="518" y="18" text-anchor="middle">svc-payments</text><text class="tiny" x="482" y="36">Port: 80</text><text class="tiny" x="482" y="51">Target: 8084</text>
+  </g>
+  <rect class="purple" x="1125" y="635" width="185" height="170" rx="6"/>
+  <text class="section-title" x="1218" y="658" text-anchor="middle">Internal Dependencies</text>
+  <rect class="panel" x="1142" y="672" width="150" height="30" rx="4"/><text class="tiny" x="1180" y="691">Amazon RDS</text>
+  <rect class="panel" x="1142" y="711" width="150" height="30" rx="4"/><text class="tiny" x="1180" y="730">ElastiCache</text>
+  <rect class="panel" x="1142" y="750" width="150" height="30" rx="4"/><text class="tiny" x="1180" y="769">SQS / SNS</text>
+
+  <rect class="blue" x="420" y="790" width="675" height="40" rx="6"/>
+  <text class="section-title" x="758" y="807" text-anchor="middle">Storage (Persistent Volumes)</text>
+  <text class="tiny" x="455" y="818">EBS (gp3 / io2)</text>
+  <text class="tiny" x="650" y="818">EFS (shared files)</text>
+  <text class="tiny" x="850" y="818">FSx for Windows (if needed)</text>
+
+  <path class="line" d="M548 522 H565"/>
+  <path class="dash" d="M760 612 V660"/>
+  <path class="dash" d="M925 612 V660"/>
+  <path class="dash" d="M1070 700 H1125"/>
+  <path class="dash" d="M1070 740 H1125"/>
+
+  <!-- External data and observability -->
+  <rect class="panel" x="1395" y="38" width="190" height="540" rx="5"/>
+  <text class="section-title" x="1490" y="60" text-anchor="middle">Data &amp; Services</text>
+  <text class="tiny" x="1490" y="76" text-anchor="middle">(Outside EKS)</text>
+  <rect class="purple" x="1405" y="90" width="170" height="120" rx="5"/>
+  <text class="label" x="1490" y="112" text-anchor="middle">Databases</text>
+  <rect class="icon-blue" x="1422" y="128" width="34" height="34" rx="4"/><text class="tiny" x="1465" y="143">Amazon RDS</text><text class="tiny" x="1465" y="158">Multi-AZ</text>
+  <rect class="icon-blue" x="1422" y="170" width="34" height="34" rx="4"/><text class="tiny" x="1465" y="185">Amazon Aurora</text><text class="tiny" x="1465" y="200">MySQL / PostgreSQL</text>
+  <rect class="purple" x="1405" y="220" width="170" height="80" rx="5"/>
+  <text class="label" x="1490" y="242" text-anchor="middle">Caching</text>
+  <rect class="icon-blue" x="1422" y="256" width="34" height="34" rx="4"/><text class="tiny" x="1465" y="271">ElastiCache</text><text class="tiny" x="1465" y="286">Redis / Memcached</text>
+  <rect class="purple" x="1405" y="310" width="170" height="120" rx="5"/>
+  <text class="label" x="1490" y="332" text-anchor="middle">Storage</text>
+  <rect class="icon-green" x="1422" y="346" width="34" height="34" rx="4"/><text class="tiny" x="1465" y="362">Amazon S3</text>
+  <rect class="icon-green" x="1422" y="388" width="34" height="34" rx="4"/><text class="tiny" x="1465" y="403">EFS / FSx</text><text class="tiny" x="1465" y="418">Shared Storage</text>
+  <rect class="purple" x="1405" y="440" width="170" height="120" rx="5"/>
+  <text class="label" x="1490" y="462" text-anchor="middle">Messaging &amp; Streaming</text>
+  <rect class="icon-purple" x="1422" y="476" width="34" height="34" rx="4"/><text class="tiny" x="1465" y="491">Amazon SQS</text><text class="tiny" x="1465" y="506">Amazon SNS</text>
+  <rect class="icon-purple" x="1422" y="518" width="34" height="34" rx="4"/><text class="tiny" x="1465" y="533">Amazon MSK</text><text class="tiny" x="1465" y="548">Kafka</text>
+
+  <rect class="panel" x="1395" y="600" width="190" height="230" rx="5"/>
+  <text class="section-title" x="1490" y="625" text-anchor="middle">Observability</text>
+  <rect class="red" x="1412" y="648" width="36" height="36" rx="4"/><text class="tiny" x="1460" y="663">CloudWatch</text><text class="tiny" x="1460" y="678">Logs / Metrics</text>
+  <rect class="orange" x="1412" y="692" width="36" height="36" rx="4"/><text class="tiny" x="1460" y="707">AMP</text><text class="tiny" x="1460" y="722">Prometheus</text>
+  <rect class="orange" x="1412" y="736" width="36" height="36" rx="4"/><text class="tiny" x="1460" y="751">Grafana</text>
+  <rect class="purple" x="1412" y="780" width="36" height="36" rx="4"/><text class="tiny" x="1460" y="795">X-Ray</text><text class="tiny" x="1460" y="810">Tracing / ADOT</text>
+  <path class="line" d="M1350 122 H1395"/>
+  <path class="line" d="M1310 612 H1395"/>
+
+  <!-- Bottom platform capabilities -->
+  <rect class="panel" x="10" y="858" width="390" height="104" rx="5"/>
+  <text class="section-title" x="205" y="880" text-anchor="middle">CI/CD Pipeline</text>
+  <g transform="translate(32 894)">
+    <rect class="icon-purple" x="0" y="0" width="36" height="36" rx="4"/><text class="tiny" x="18" y="58" text-anchor="middle">Commit</text>
+    <path class="line" d="M40 18 H75"/>
+    <rect class="icon-blue" x="80" y="0" width="36" height="36" rx="4"/><text class="tiny" x="98" y="58" text-anchor="middle">Build</text>
+    <path class="line" d="M120 18 H155"/>
+    <rect class="icon-purple" x="160" y="0" width="36" height="36" rx="4"/><text class="tiny" x="178" y="58" text-anchor="middle">Scan</text>
+    <path class="line" d="M200 18 H235"/>
+    <rect class="icon-orange" x="240" y="0" width="36" height="36" rx="4"/><text class="tiny" x="258" y="58" text-anchor="middle">ECR</text>
+    <path class="line" d="M280 18 H315"/>
+    <rect class="icon-blue" x="320" y="0" width="36" height="36" rx="4"/><text class="tiny" x="338" y="58" text-anchor="middle">Deploy</text>
+  </g>
+
+  <rect class="panel" x="410" y="858" width="270" height="104" rx="5"/>
+  <text class="section-title" x="545" y="880" text-anchor="middle">GitOps (Argo CD)</text>
+  <rect class="panel" x="440" y="895" width="36" height="36" rx="18"/><text class="tiny" x="458" y="952" text-anchor="middle">Git Repo</text>
+  <path class="line" d="M482 913 H524"/>
+  <rect class="orange" x="530" y="895" width="36" height="36" rx="18"/><text class="tiny" x="548" y="952" text-anchor="middle">Argo CD</text>
+  <path class="line" d="M572 913 H614"/>
+  <rect class="icon-blue" x="620" y="895" width="36" height="36" rx="4"/><text class="tiny" x="638" y="952" text-anchor="middle">EKS State</text>
+
+  <rect class="panel" x="690" y="858" width="490" height="104" rx="5"/>
+  <text class="section-title" x="935" y="880" text-anchor="middle">Security</text>
+  <g transform="translate(720 895)">
+    <rect class="icon-green" x="0" y="0" width="36" height="36" rx="4"/><text class="tiny" x="18" y="57" text-anchor="middle">IRSA</text>
+    <rect class="icon-green" x="105" y="0" width="36" height="36" rx="4"/><text class="tiny" x="123" y="57" text-anchor="middle">KMS</text>
+    <rect class="icon-green" x="210" y="0" width="36" height="36" rx="4"/><text class="tiny" x="228" y="57" text-anchor="middle">Secrets</text>
+    <rect class="icon-green" x="315" y="0" width="36" height="36" rx="4"/><text class="tiny" x="333" y="57" text-anchor="middle">OPA</text>
+    <rect class="icon-purple" x="420" y="0" width="36" height="36" rx="4"/><text class="tiny" x="438" y="57" text-anchor="middle">NetworkPolicy</text>
+  </g>
+
+  <rect class="panel" x="1190" y="858" width="395" height="104" rx="5"/>
+  <text class="section-title" x="1388" y="880" text-anchor="middle">Backup &amp; DR</text>
+  <g transform="translate(1225 895)">
+    <rect class="icon-purple" x="0" y="0" width="36" height="36" rx="4"/><text class="tiny" x="18" y="57" text-anchor="middle">Velero</text>
+    <rect class="icon-green" x="105" y="0" width="36" height="36" rx="4"/><text class="tiny" x="123" y="57" text-anchor="middle">RDS Backup</text>
+    <rect class="icon-purple" x="210" y="0" width="36" height="36" rx="4"/><text class="tiny" x="228" y="57" text-anchor="middle">Multi-AZ</text>
+    <rect class="icon-green" x="315" y="0" width="36" height="36" rx="4"/><text class="tiny" x="333" y="57" text-anchor="middle">Cross-Region</text>
+  </g>
+
+  <rect class="panel" x="10" y="970" width="1575" height="24" rx="5"/>
+  <text class="label" x="42" y="986">Key Design Principles</text>
+  <g transform="translate(205 976)">
+    <circle class="check" cx="0" cy="6" r="10"/><text class="tiny" x="18" y="10">High Availability</text>
+    <circle class="check" cx="185" cy="6" r="10"/><text class="tiny" x="203" y="10">Scalability</text>
+    <circle class="check" cx="365" cy="6" r="10"/><text class="tiny" x="383" y="10">Security</text>
+    <circle class="check" cx="545" cy="6" r="10"/><text class="tiny" x="563" y="10">Observability</text>
+    <circle class="check" cx="745" cy="6" r="10"/><text class="tiny" x="763" y="10">Automated GitOps</text>
+    <circle class="check" cx="965" cy="6" r="10"/><text class="tiny" x="983" y="10">Resilient &amp; Self-Healing</text>
+    <circle class="check" cx="1220" cy="6" r="10"/><text class="tiny" x="1238" y="10">Cost Optimized</text>
+  </g>
+</svg>

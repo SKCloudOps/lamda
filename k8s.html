@@ -250,20 +250,20 @@
 <div class="visual-grid">
 <figure class="visual-tile">
 <a href="#q1">
-<img src="images/kubernetes-architecture.svg" alt="Kubernetes control plane managing two worker nodes and their application Pods" loading="lazy" decoding="async">
+<img src="images/kubernetes-architecture.png" alt="Kubernetes control plane managing two worker nodes and their application Pods" loading="lazy" decoding="async">
 <figcaption>Kubernetes architecture</figcaption>
 </a>
 </figure>
 <figure class="visual-tile">
 <a href="#q24">
-<img src="images/kubernetes-networking.svg" alt="Kubernetes network traffic flowing from a client through a Service to frontend and backend Pods and a database" loading="lazy" decoding="async">
+<img src="images/kubernetes-networking.png" alt="Kubernetes network traffic flowing from a client through a Service to frontend and backend Pods and a database" loading="lazy" decoding="async">
 <figcaption>Kubernetes networking</figcaption>
 </a>
 </figure>
 <figure class="visual-tile">
 <a href="#q50">
-<img src="images/eks-production-architecture.svg" alt="Production EKS architecture across three availability zones with ingress, private nodes, observability, and AWS services" loading="lazy" decoding="async">
-<figcaption>Production EKS architecture</figcaption>
+<img src="images/eks-platform-detailed.png" alt="Detailed production EKS platform architecture with users, Route 53, ALB, ingress, worker nodes, services, storage, observability, security, backup, and AWS data services" loading="lazy" decoding="async">
+<figcaption>Detailed production EKS platform</figcaption>
 </a>
 </figure>
 </div>
@@ -291,7 +291,7 @@
 </ul>
 <div class="key"><strong>Interview statement:</strong> Kubernetes follows a desired-state model. I declare desired state through the API server, store the state in etcd, and controllers continuously work to make the actual cluster state match that desired state.</div>
 <figure class="visual">
-<img src="images/kubernetes-architecture.svg" alt="Kubernetes control plane managing two worker nodes and their application Pods">
+<img src="images/kubernetes-architecture.png" alt="Kubernetes control plane managing two worker nodes and their application Pods">
 <figcaption>Kubernetes control plane and worker-node relationship</figcaption>
 </figure>
 </section>
@@ -632,7 +632,7 @@ Node A → payment Pod</div>
 Pod B: 10.0.2.20</div>
 <p>In EKS, AWS VPC CNI is commonly used.</p>
 <figure class="visual">
-<img src="images/kubernetes-networking.svg" alt="Kubernetes network traffic flowing from a client through a Service to frontend and backend Pods and a database">
+<img src="images/kubernetes-networking.png" alt="Kubernetes network traffic flowing from a client through a Service to frontend and backend Pods and a database">
 <figcaption>Service routing, Pod traffic, and access to a VPC database</figcaption>
 </figure>
 </section>
@@ -1027,8 +1027,8 @@ kubectl describe node &lt;node&gt;</pre>
 <section class="card" id="q50">
 <h2>50. Architect-level: Design a production EKS platform</h2>
 <figure class="visual">
-<img src="images/eks-production-architecture.svg" alt="Production EKS architecture across three availability zones with ingress, private nodes, observability, and AWS services">
-<figcaption>Highly available production EKS platform across multiple Availability Zones</figcaption>
+<img src="images/eks-platform-detailed.png" alt="Detailed production EKS platform architecture with users, Route 53, ALB, ingress, worker nodes, services, storage, observability, security, backup, and AWS data services">
+<figcaption>Architect-level production EKS platform across multiple Availability Zones</figcaption>
 </figure>
 <div class="diagram">                         Internet
                             |

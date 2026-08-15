@@ -116,6 +116,34 @@
       font-size: 13px;
       text-align: center;
    }
+  .visual-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .visual-tile {
+    margin: 0;
+    padding: 12px;
+    background: #fafbfd;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .visual-tile a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .visual-tile img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .visual-tile figcaption {
+    margin-top: 9px;
+    color: var(--muted);
+    font-size: 13px;
+    text-align: center;
+  }
   .priority {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -135,6 +163,7 @@
   }
   @media (max-width: 760px) {
     .toc ol { columns: 1; }
+    .visual-grid { grid-template-columns: 1fr; }
     .priority { grid-template-columns: 1fr; }
     header h1 { font-size: 27px; }
     .card { padding: 20px; }
@@ -160,6 +189,7 @@
 <section class="toc">
   <h2>Contents</h2>
   <ol>
+    <li><a href="#visuals">Required Kubernetes Diagrams</a></li>
     <li><a href="#q1">Kubernetes Architecture</a></li>
     <li><a href="#q2">What happens when you create a Deployment?</a></li>
     <li><a href="#q3">Deployment vs ReplicaSet</a></li>
@@ -212,6 +242,31 @@
     <li><a href="#q50">Production EKS Architecture</a></li>
     <li><a href="#scenario">Mock Interview Scenario: 503</a></li>
   </ol>
+</section>
+
+<section class="card" id="visuals">
+<h2>Required Kubernetes Diagrams</h2>
+<p>Use these visuals for the main architecture, networking, and production EKS interview topics.</p>
+<div class="visual-grid">
+<figure class="visual-tile">
+<a href="#q1">
+<img src="images/kubernetes-architecture.svg" alt="Kubernetes control plane managing two worker nodes and their application Pods" loading="lazy" decoding="async">
+<figcaption>Kubernetes architecture</figcaption>
+</a>
+</figure>
+<figure class="visual-tile">
+<a href="#q24">
+<img src="images/kubernetes-networking.svg" alt="Kubernetes network traffic flowing from a client through a Service to frontend and backend Pods and a database" loading="lazy" decoding="async">
+<figcaption>Kubernetes networking</figcaption>
+</a>
+</figure>
+<figure class="visual-tile">
+<a href="#q50">
+<img src="images/eks-production-architecture.svg" alt="Production EKS architecture across three availability zones with ingress, private nodes, observability, and AWS services" loading="lazy" decoding="async">
+<figcaption>Production EKS architecture</figcaption>
+</a>
+</figure>
+</div>
 </section>
 
 <section class="card" id="q1">

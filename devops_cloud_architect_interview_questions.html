@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>DevOps Cloud Architect Interview Questions</title>
+<style>
+:root{--navy:#102a43;--blue:#1769aa;--green:#2b8a3e;--orange:#e67700;--bg:#f5f7fa;--card:#fff;--border:#d9e2ec;--text:#243b53;--muted:#52606d;--code:#101827}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 Segoe UI,Arial,sans-serif}.sidebar{position:fixed;left:0;top:0;bottom:0;width:280px;background:var(--navy);color:#fff;padding:24px 18px;overflow:auto}.sidebar h1{font-size:20px;margin:0 0 6px}.sidebar p{font-size:12px;color:#bcccdc;margin:0 0 18px}.sidebar a{display:block;color:#d9e2ec;text-decoration:none;padding:7px 10px;border-radius:6px;font-size:13px;margin:2px 0}.sidebar a:hover{background:#243b53;color:#fff}.sidebar .home{background:#1769aa;color:#fff;margin-bottom:12px}.content{margin-left:280px}header{background:#102a43;color:#fff;padding:34px 6%}header h2{font-size:32px;margin:0 0 8px}header p{margin:0;color:#d9e2f2}main{max-width:1200px;margin:28px auto;padding:0 22px}.toolbar{position:sticky;top:0;z-index:3;background:var(--bg);padding:10px 0}.toolbar input{width:100%;border:1px solid var(--border);border-radius:7px;padding:12px 14px;font:inherit;background:#fff}.count{color:var(--muted);font-size:13px;margin:7px 0}.section{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:24px;margin:20px 0;box-shadow:0 2px 8px #102a4312}.section>h2{color:#173b70;border-bottom:2px solid #e6ebf3;padding-bottom:8px;margin-top:0}.question{border-top:1px solid #e6ebf3;padding:18px 0}.question:first-of-type{border-top:0}.question h3{font-size:18px;color:#102a43;margin:0 0 8px}.answer{background:#eef6ff;border-left:4px solid var(--blue);padding:12px 15px}.note{background:#fff7ed;border-left:4px solid var(--orange);padding:12px 15px}.question code,pre{font-family:Consolas,monospace}pre{background:var(--code);color:#e9eef7;padding:15px;border-radius:7px;overflow:auto}table{width:100%;border-collapse:collapse;margin:14px 0}th,td{border:1px solid var(--border);padding:9px;text-align:left;vertical-align:top}th{background:#eef2f7}li{margin:4px 0}.tag{display:inline-block;background:#e8eef8;color:#285b9d;border-radius:12px;padding:3px 9px;margin:3px;font-size:13px}.hidden{display:none}@media(max-width:850px){.sidebar{position:relative;width:auto;height:auto}.content{margin-left:0}header{padding:28px 20px}header h2{font-size:26px}main{padding:0 14px}.section{padding:18px}table{display:block;overflow:auto}}
+</style>
+</head>
+<body>
+<nav class="sidebar">
+<h1>Interview Questions</h1>
+<p>DevOps, cloud, Kubernetes, Terraform, Docker and CI/CD</p>
+<a class="home" href="index.html">Home Page</a>
+<a href="#kubernetes">Kubernetes and EKS</a><a href="#observability">Monitoring and Observability</a><a href="#terraform">Terraform and IaC</a><a href="#docker">Docker and Containers</a><a href="#cicd">CI/CD and Jenkins</a><a href="#aws">AWS Architecture</a><a href="#security">Security and Secrets</a><a href="#linux-git">Linux and Git</a><a href="#scenarios">Scenario Questions</a>
+</nav>
+<div class="content">
+<header><h2>DevOps Cloud Architect Interview Questions</h2><p>Practical answers based on the supplied interview PDF, organized for senior-level revision.</p></header>
+<main>
+<div class="toolbar"><input id="search" type="search" placeholder="Search questions, tools, or commands..." aria-label="Search interview questions"><div class="count" id="count"></div></div>
+<section class="section" id="kubernetes"><h2>Kubernetes and EKS</h2>
+<div class="question"><h3>What types of applications have you deployed?</h3><div class="answer">Web applications such as Java Spring Boot and Node.js, microservices, MySQL and MongoDB databases, Kafka, Prometheus, Grafana, Jenkins, and containerized workloads running on Docker and Kubernetes. I describe the deployment, security, observability, scaling, and recovery responsibilities for each platform.</div></div>
+<div class="question"><h3>How do you find the pod consuming the most resources?</h3><div class="answer">Use <code>kubectl top pods -A --sort-by=cpu</code> or <code>kubectl top pods -A --sort-by=memory</code>, then inspect the selected pod with <code>kubectl describe pod</code> and compare usage with requests, limits, restarts, and node capacity.</div></div>
+<div class="question"><h3>How do you deploy containers on different Kubernetes nodes?</h3><div class="answer">Use replicas with topology spread constraints, pod anti-affinity, node selectors, node affinity, taints, and tolerations. The scheduler then places pods according to resource availability and the declared placement rules.</div></div>
+<div class="question"><h3>What are readiness and liveness probes?</h3><div class="answer"><b>Readiness</b> controls whether a pod receives traffic. <b>Liveness</b> detects an unhealthy running container and triggers a restart. A startup probe is useful for slow-starting applications so liveness does not restart them prematurely.</div></div>
+<div class="question"><h3>How do you scale five pods to ten?</h3><pre>kubectl scale deployment/&lt;deployment-name&gt; --replicas=10 -n &lt;namespace&gt;
+kubectl rollout status deployment/&lt;deployment-name&gt; -n &lt;namespace&gt;</pre></div>
+<div class="question"><h3>How do you troubleshoot a Kubernetes application?</h3><div class="answer">Start with scope and timing, then inspect pods, events, logs, probes, services, EndpointSlices, Ingress or ALB health, DNS, NetworkPolicy, resource pressure, and dependencies. Correlate metrics, logs, traces, and deployment events before applying the smallest safe remediation.</div><pre>kubectl get pods -A
+kubectl get events -A --sort-by='.lastTimestamp'
+kubectl describe pod &lt;pod&gt; -n &lt;namespace&gt;
+kubectl logs &lt;pod&gt; -n &lt;namespace&gt; --previous</pre></div>
+</section>
+<section class="section" id="observability"><h2>Monitoring and Observability</h2>
+<div class="question"><h3>How do you configure Prometheus and Grafana?</h3><div class="answer">Deploy Prometheus with Helm or manifests, configure Kubernetes service discovery and scrape targets, deploy Grafana, connect it to Prometheus, import or build Kubernetes dashboards, and define Prometheus or Grafana alert rules with notification routing.</div></div>
+<div class="question"><h3>How do you visualize metrics for twenty pods?</h3><div class="answer">Use Prometheus labels such as namespace, workload, pod, container, and node. In Grafana, create variables for namespace and workload, then graph CPU, memory, restart count, request rate, error rate, and latency across all selected pods.</div></div>
+<div class="question"><h3>Which observability tools do you use?</h3><div class="answer"><span class="tag">Prometheus</span><span class="tag">Grafana</span><span class="tag">Alertmanager</span><span class="tag">CloudWatch</span><span class="tag">Fluent Bit</span><span class="tag">OpenSearch</span><span class="tag">Loki</span><span class="tag">OpenTelemetry</span><span class="tag">Jaeger</span><span class="tag">AWS X-Ray</span><span class="tag">CloudTrail</span><span class="tag">ELK</span><p>Use metrics to detect, logs to explain, traces to localize latency, and events to provide deployment or platform context.</p></div></div>
+<div class="question"><h3>How do you investigate a production performance incident?</h3><div class="answer">Define the time window and affected path, compare golden signals with a healthy baseline, identify the first failing trace span, correlate request and trace IDs with logs, inspect Kubernetes and cloud events, validate the suspected dependency, mitigate safely, and continue monitoring after recovery.</div></div>
+</section>
+<section class="section" id="terraform"><h2>Terraform and Infrastructure as Code</h2>
+<div class="question"><h3>What is Terraform taint?</h3><div class="answer">The legacy <code>terraform taint</code> command marked a resource for recreation. In current Terraform, prefer a planned replacement with <code>terraform apply -replace='aws_instance.example'</code> so the replacement is explicit and reviewable.</div></div>
+<div class="question"><h3>How do you secure a Terraform state file?</h3><div class="answer">Use a remote backend such as S3 with encryption, versioning, strict IAM, access logging, and state locking. Treat state as sensitive because it can contain resource attributes and secrets. Separate state by environment or ownership boundary and never commit it to source control.</div><pre>terraform {
+  backend "s3" {
+    bucket         = "company-terraform-state"
+    key            = "platform/prod/terraform.tfstate"
+    region         = "us-east-1"
+    encrypt        = true
+    use_lockfile   = true
+  }
+}</pre></div>
+<div class="question"><h3>What happens if fifty of one hundred managed VMs are deleted manually?</h3><div class="answer">Terraform refreshes state during planning, detects the missing resources, and normally proposes recreating them to match configuration. Review the plan first; do not apply blindly, especially when replacement affects dependencies or data.</div></div>
+<div class="question"><h3>What is the syntax for for_each?</h3><pre>variable "instances" {
+  type = map(object({
+    ami           = string
+    instance_type = string
+  }))
+}
+
+resource "aws_instance" "example" {
+  for_each      = var.instances
+  ami           = each.value.ami
+  instance_type = each.value.instance_type
+  tags = { Name = each.key }
+}</pre></div>
+<div class="question"><h3>How do you bring unmanaged resources under Terraform?</h3><div class="answer">Write the resource configuration, import the existing resource into the correct address, run <code>terraform plan</code>, and reconcile differences until the plan represents the intended state. Import does not generate a complete configuration automatically.</div><pre>terraform import aws_vpc.example vpc-1234567890abcdef0
+terraform plan</pre></div>
+</section>
+<section class="section" id="docker"><h2>Docker and Containers</h2>
+<div class="question"><h3>What are the advantages and disadvantages of multi-stage Docker builds?</h3><div class="answer"><b>Advantages:</b> smaller runtime images, fewer build tools in production, reduced attack surface, and better separation of build and runtime concerns. <b>Tradeoffs:</b> more Dockerfile complexity, possible cache mistakes, and harder debugging of discarded intermediate stages.</div></div>
+<div class="question"><h3>What is the difference between CMD and ENTRYPOINT?</h3><div class="answer"><code>ENTRYPOINT</code> defines the executable, while <code>CMD</code> supplies default arguments or a default command. The exec form is preferred for signal handling.</div><pre>ENTRYPOINT ["python", "app.py"]
+CMD ["--port", "8080"]</pre></div>
+<div class="question"><h3>What is the difference between bridge and host networking?</h3><div class="answer">Bridge networking gives containers an isolated network namespace and virtual IPs. Host networking shares the host network namespace, which can reduce overhead but weakens isolation and creates port conflicts.</div></div>
+<div class="question"><h3>How do you persist data in Docker?</h3><div class="answer">Use named volumes for Docker-managed persistence, bind mounts when a host path is intentionally required, and external managed storage for production databases. Containers should remain replaceable.</div><pre>docker volume create app-data
+docker run -v app-data:/var/lib/app my-image</pre></div>
+</section>
+<section class="section" id="cicd"><h2>CI/CD and Jenkins</h2>
+<div class="question"><h3>Describe an end-to-end CI/CD workflow.</h3><div class="answer">A developer commits code, CI checks out the revision, runs unit and integration tests, scans dependencies and images, builds an immutable artifact, publishes it to a registry, deploys through approved environments, and observes health metrics before promotion or rollback.</div></div>
+<div class="question"><h3>Write a Jenkins pipeline with approval before production.</h3><pre>pipeline {
+  agent any
+  stages {
+    stage('Checkout') { steps { checkout scm } }
+    stage('Build and Test') { steps { sh './mvnw clean verify' } }
+    stage('Image') { steps { sh 'docker build -t registry/app:${BUILD_NUMBER} .' } }
+    stage('Approval') { steps { input 'Deploy to production?' } }
+    stage('Deploy') { steps { sh 'kubectl apply -f deployment.yaml' } }
+  }
+}</pre></div>
+<div class="question"><h3>How do you handle a failed Jenkins build?</h3><div class="answer">Review the first meaningful error in console logs, identify whether it is code, dependency, agent, credential, infrastructure, or test related, reproduce it, fix the owning layer, rerun validation, and preserve the failure evidence. Archive JUnit XML and other build artifacts for trend analysis.</div></div>
+<div class="question"><h3>What is a Jenkinsfile and where is it stored?</h3><div class="answer">A Jenkinsfile is pipeline-as-code, normally stored in the root of the application repository and reviewed with the same pull request process as application code.</div></div>
+</section>
+<section class="section" id="aws"><h2>AWS Architecture</h2>
+<div class="question"><h3>Which AWS services do you use in a microservices CI/CD platform?</h3><div class="answer">IAM, VPC, Route 53, ALB or NLB, ECR, EKS, S3, CloudWatch, CloudTrail, KMS, Secrets Manager, CodeBuild or Jenkins, CodePipeline where appropriate, and RDS or DynamoDB for data services.</div></div>
+<div class="question"><h3>How do you handle a sudden e-commerce traffic spike?</h3><div class="answer">Use CloudFront caching where suitable, verify ALB and application health, scale pods and nodes, protect databases with connection limits and caching, add read capacity where appropriate, inspect queue depth, and use dashboards and alerts to guide changes.</div></div>
+<div class="question"><h3>How do you make a single-instance application highly available?</h3><div class="answer">Deploy multiple instances across Availability Zones in an Auto Scaling Group, place an ALB in front, configure health checks, externalize session state, and use Multi-AZ database capabilities with backups and tested failover.</div></div>
+<div class="question"><h3>How do you provide cross-account S3 access?</h3><div class="answer">Create a least-privilege role in the bucket account, add a trust policy for the approved principal from the other account, grant the required S3 permissions, and use STS AssumeRole. Validate both identity policy and bucket policy, plus encryption key policy if KMS is used.</div></div>
+<div class="question"><h3>What is the difference between a load balancer and NAT gateway?</h3><div class="answer">A load balancer distributes inbound traffic to healthy targets. A NAT gateway provides outbound internet access for private resources without allowing unsolicited inbound connections. They solve different traffic-direction problems.</div></div>
+</section>
+<section class="section" id="security"><h2>Security and Secrets</h2>
+<div class="question"><h3>Should secrets be stored in ConfigMaps?</h3><div class="answer">No. ConfigMaps are for non-sensitive configuration. Use Kubernetes Secrets with encryption at rest and least-privilege RBAC, or integrate AWS Secrets Manager or HashiCorp Vault through an approved external-secrets pattern. Avoid putting credentials in images, Git, logs, or plain environment files.</div></div>
+<div class="question"><h3>How do you securely store GitHub or CI credentials?</h3><div class="answer">Use repository, environment, or organization secrets; prefer OIDC federation to short-lived cloud credentials; restrict permissions; mask values in logs; rotate credentials; and audit workflow access.</div></div>
+<div class="question"><h3>How do you check code and infrastructure vulnerabilities?</h3><div class="answer">Use SAST and dependency scanning, secret scanning, image scanning, IaC scanning, dynamic testing such as ZAP where appropriate, AWS Inspector, runtime policy controls, patch management, and an exception process with ownership and expiry.</div></div>
+</section>
+<section class="section" id="linux-git"><h2>Linux and Git</h2>
+<div class="question"><h3>How do you count the word devops across HTML files?</h3><pre>rg -oi "devops" --glob "*.html" | Measure-Object -Line
+# Linux alternative:
+grep -oi "devops" -- *.html | wc -l</pre></div>
+<div class="question"><h3>What does break do in shell scripting?</h3><div class="answer"><code>break</code> exits the nearest loop immediately when a condition has been met, such as finding a matching record or handling a terminal error.</div></div>
+<div class="question"><h3>How do you resolve merge conflicts?</h3><pre>git status
+# edit conflict markers: &lt;&lt;&lt;&lt;&lt;&lt;&lt;, =======, &gt;&gt;&gt;&gt;&gt;&gt;&gt;
+git add &lt;resolved-files&gt
+git commit -m "Resolve merge conflict"
+git push</pre></div>
+<div class="question"><h3>How do you change the latest commit message?</h3><div class="answer">Use <code>git commit --amend -m "New message"</code>. If the commit was already shared, coordinate with the team and prefer <code>git push --force-with-lease</code> rather than an unconditional force push.</div></div>
+</section>
+<section class="section" id="scenarios"><h2>Scenario and Behavioral Questions</h2>
+<div class="question"><h3>Describe a difficult production incident.</h3><div class="answer">Use a concise Situation, Task, Action, Result structure. Explain how you detected the issue, reduced user impact, communicated status, validated the fix, and prevented recurrence. Include measurable results where possible, without claiming experience you do not have.</div></div>
+<div class="question"><h3>How do you approach cost optimization?</h3><div class="answer">Start with usage and ownership data, then right-size compute, use autoscaling, select Spot capacity for interruptible workloads, apply storage lifecycle policies, remove unused resources, optimize data transfer, and track savings without reducing reliability or security.</div></div>
+<div class="question"><h3>How do you manage data loss risk for critical applications?</h3><div class="answer">Define RPO and RTO, use synchronous or asynchronous replication as appropriate, automated encrypted backups, point-in-time recovery, cross-region copies where justified, access controls, integrity checks, and regular restore and failover exercises.</div></div>
+<div class="question"><h3>What are your daily DevOps responsibilities?</h3><div class="answer">Monitor reliability and security, support deployments, automate infrastructure and delivery, troubleshoot incidents, review changes, improve cost and performance, maintain documentation, and collaborate with development and product teams.</div></div>
+</section>
+</main>
+</div>
+<script>
+const input=document.getElementById('search');const questions=[...document.querySelectorAll('.question')];const count=document.getElementById('count');
+function filter(){const query=input.value.trim().toLowerCase();let visible=0;questions.forEach(q=>{const match=!query||q.textContent.toLowerCase().includes(query);q.classList.toggle('hidden',!match);if(match)visible++});count.textContent=visible+' matching question'+(visible===1?'':'s')}
+input.addEventListener('input',filter);filter();
+</script>
+</body>
+</html>

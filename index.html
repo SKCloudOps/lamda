@@ -19,7 +19,7 @@ header h1{margin:0 0 6px;font-size:30px} header p{margin:0;color:#cbd5e1}
 .menu-toggle{position:fixed;left:314px;top:18px;display:flex;align-items:center;gap:7px;border:0;border-radius:8px;background:#2563eb;color:#fff;padding:9px 12px;font-size:14px;font-weight:700;line-height:1;cursor:pointer;z-index:30;box-shadow:0 2px 8px #0003}.menu-toggle:hover{background:#1d4ed8}.menu-toggle span:first-child{font-size:18px;font-weight:400}
 main{max-width:1200px;margin:28px auto;padding:0 20px 40px;margin-left:var(--sidebar-w)}.guide-viewer{display:none;position:fixed;top:20px;right:20px;bottom:20px;width:37vw;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 28px #0000002e;overflow:hidden;z-index:10}.guide-viewer h2{margin:0;padding:14px 16px;font-size:16px;border-bottom:1px solid var(--border)}.guide-viewer p{margin:0;padding:9px 16px;color:var(--muted);font-size:12px;border-bottom:1px solid var(--border)}.guide-viewer iframe{display:block;width:100%;height:calc(100% - 76px);border:0;background:var(--bg)}
 .guide-viewer-header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}.guide-viewer-header h2{border:0}.guide-viewer-close{display:none;margin-right:10px;border:1px solid var(--border);border-radius:7px;background:#f8fafc;color:#263449;padding:7px 10px;font-weight:700;cursor:pointer}.guide-viewer-close:hover,.guide-viewer-close:focus-visible{background:#e8f0ff;outline:2px solid #60a5fa;outline-offset:1px}.iframe-active .guide-viewer-close{display:block}
-.iframe-active header,.iframe-active main{display:none}.iframe-active .guide-viewer{display:block;left:320px;width:auto}
+.iframe-active header,.iframe-active main{display:none}.iframe-active .guide-viewer{display:block;left:320px;width:auto}.menu-hidden.iframe-active .guide-viewer{left:20px}
 section{background:var(--card);margin:0 0 22px;padding:26px;border:1px solid var(--border);border-radius:12px;box-shadow:0 2px 8px #0000000a}
 h2{margin-top:0;color:#111827;border-bottom:2px solid #e8edf4;padding-bottom:8px}
 h3{color:#263449;margin-bottom:6px}.answer{background:#eff6ff;border-left:4px solid var(--accent);padding:12px 16px;margin:14px 0}
@@ -29,7 +29,7 @@ table{width:100%;border-collapse:collapse;margin:14px 0}th,td{border:1px solid v
 .badge{display:inline-block;background:#e8f0ff;color:#1d4ed8;border-radius:20px;padding:4px 10px;margin:3px;font-size:13px}
 ul,ol{padding-left:24px}.small{color:var(--muted);font-size:14px}
 .top{color:#fff;text-decoration:none}.menu-hidden .sidebar{transform:translateX(-100%)}.menu-hidden header,.menu-hidden main{margin-left:0}.menu-hidden .menu-toggle{left:14px}
-@media(max-width:700px){:root{--sidebar-w:286px}header{margin-left:0;padding:28px 20px}main{margin-left:0}.menu-toggle{left:300px;top:14px}.menu-hidden .menu-toggle{left:14px}section{padding:18px}h1{font-size:24px}.menu-toggle-text{display:none}.nav-desc{display:none}}
+@media(max-width:700px){:root{--sidebar-w:286px}header{margin-left:0;padding:28px 20px}main{margin-left:0}.menu-toggle{left:300px;top:14px}.menu-hidden .menu-toggle{left:14px}section{padding:18px}h1{font-size:24px}.nav-desc{display:none}}
 @media(max-width:900px){.iframe-active .guide-viewer{left:16px;right:16px;top:16px;bottom:16px;width:auto}}
 
 .diagram{margin:20px 0;padding:14px;background:#f8fafc;border:1px solid #dce3ed;border-radius:10px;overflow:auto}
@@ -39,7 +39,7 @@ ul,ol{padding-left:24px}.small{color:var(--muted);font-size:14px}
 </head>
 <body id="top">
 
-<button class="menu-toggle" type="button" aria-controls="site-menu" aria-expanded="true" aria-label="Collapse menu"><span aria-hidden="true">&#9776;</span><span class="menu-toggle-text">Menu</span></button>
+<button class="menu-toggle" type="button" aria-controls="site-menu" aria-expanded="true" aria-label="Collapse menu"><span aria-hidden="true">&#9776;</span></button>
 
 <header>
 <h1>DevOps / AWS / Kubernetes Interview Master Notes</h1>

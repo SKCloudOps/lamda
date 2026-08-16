@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise Observability Dashboard</title>
+<style>
+:root{
+  --bg:#0b1220;--panel:#111a2b;--panel2:#172238;--border:#26344d;
+  --text:#e6edf7;--muted:#91a0b8;--blue:#4dabf7;--green:#51cf66;
+  --orange:#ffa94d;--red:#ff6b6b;--purple:#b197fc;--cyan:#22b8cf;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif}
+.header{height:72px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:#0d1525;position:sticky;top:0;z-index:10}
+.brand{font-size:20px;font-weight:700}.brand span{color:var(--blue)}
+.header-right{display:flex;gap:12px;align-items:center;color:var(--muted);font-size:13px}
+.env{padding:5px 9px;border:1px solid #245b3a;background:#10261a;color:#7bea9a;border-radius:999px}
+.layout{display:flex;min-height:calc(100vh - 72px)}
+.sidebar{width:235px;border-right:1px solid var(--border);padding:22px 14px;background:#0d1525}
+.sidebar h4{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#71829d;margin:12px 10px 7px}
+.sidebar a{display:block;padding:10px 12px;color:#aab7ca;text-decoration:none;border-radius:7px;font-size:13px;margin:2px 0}
+.sidebar a.active,.sidebar a:hover{background:#17263e;color:#fff}
+main{flex:1;padding:25px;max-width:1500px;margin:auto}
+.title-row{display:flex;justify-content:space-between;align-items:end;margin-bottom:22px}
+h1{font-size:27px;margin:0}.subtitle{color:var(--muted);font-size:13px;margin-top:5px}
+.filters{display:flex;gap:8px}.filter{background:var(--panel);border:1px solid var(--border);color:#b9c6d9;padding:8px 11px;border-radius:6px;font-size:12px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px}
+.card-label{color:var(--muted);font-size:12px}.value{font-size:27px;font-weight:700;margin:5px 0}.delta{font-size:11px}.up{color:var(--green)}.warn{color:var(--orange)}.down{color:var(--red)}
+.section{margin-top:20px}.section-title{font-size:16px;font-weight:700;margin-bottom:10px}
+.grid2{display:grid;grid-template-columns:1.35fr 1fr;gap:15px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px}
+.panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.panel-head h3{font-size:14px;margin:0}.panel-head span{font-size:11px;color:var(--muted)}
+.chart{height:220px;position:relative;border-left:1px solid #34445f;border-bottom:1px solid #34445f;background:linear-gradient(to bottom,transparent 24%,#1b2940 25%,transparent 26%,transparent 49%,#1b2940 50%,transparent 51%,transparent 74%,#1b2940 75%,transparent 76%)}
+.chart svg{width:100%;height:100%}
+.axis{position:absolute;left:-30px;top:0;height:100%;display:flex;flex-direction:column;justify-content:space-between;color:#71829d;font-size:10px}
+.legend{display:flex;gap:15px;font-size:11px;color:var(--muted);margin-top:8px}.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px}
+.health{display:flex;gap:10px;align-items:center}.health-dot{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 9px #51cf66}
+.service{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:12px}.service:last-child{border-bottom:0}
+.bar-wrap{height:8px;background:#202d43;border-radius:99px;overflow:hidden;margin-top:7px}.bar{height:100%;border-radius:99px}
+.big-number{font-size:31px;font-weight:700}.small-muted{font-size:11px;color:var(--muted)}
+.table{width:100%;border-collapse:collapse;font-size:12px}.table th,.table td{padding:9px;border-bottom:1px solid var(--border);text-align:left}.table th{color:#8495ad;font-weight:600}.status{padding:3px 7px;border-radius:99px;font-size:10px}.ok{background:#12301d;color:#79e89a}.critical{background:#35181b;color:#ff8585}.warning{background:#382813;color:#ffc078}
+.arch{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;padding:20px 5px}.arch-box{padding:13px 15px;border:1px solid var(--border);background:var(--panel2);border-radius:8px;text-align:center;min-width:130px}.arch-box strong{display:block;font-size:12px}.arch-box small{color:var(--muted);font-size:10px}.arrow{color:#60708a;font-size:18px}
+footer{color:#62728a;font-size:11px;text-align:center;padding:25px}
+@media(max-width:1000px){.cards{grid-template-columns:repeat(2,1fr)}.grid2,.grid3{grid-template-columns:1fr}.sidebar{display:none}}
+@media(max-width:600px){.cards{grid-template-columns:1fr}.title-row{display:block}.filters{margin-top:12px;flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="brand">Enterprise <span>Observability</span></div>
+  <div class="header-right"><span>Global E-Commerce Platform</span><span class="env">● PROD</span><span>Last 5 minutes</span></div>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <h4>Dashboards</h4>
+  <a class="active" href="#overview">Overview</a>
+  <a href="#applications">Applications</a>
+  <a href="#infrastructure">Infrastructure</a>
+  <a href="#database">Database</a>
+  <a href="#logs">Logs</a>
+  <a href="#traces">Distributed Tracing</a>
+  <h4>Services</h4>
+  <a href="#services">EKS Services</a>
+  <a href="#aws">AWS Services</a>
+  <h4>Operations</h4>
+  <a href="#alerts">Alerts</a>
+  <a href="#pipeline">Observability Pipeline</a>
+</aside>
+
+<main>
+<section id="overview">
+  <div class="title-row">
+    <div><h1>Platform Overview</h1><div class="subtitle">Application, infrastructure, logs, metrics and distributed tracing</div></div>
+    <div class="filters"><div class="filter">Region: Global</div><div class="filter">Environment: Production</div><div class="filter">5m ▾</div></div>
+  </div>
+
+  <div class="cards">
+    <div class="card"><div class="card-label">Request Rate</div><div class="value">18.4K/s</div><div class="delta up">▲ 8.2% vs previous period</div></div>
+    <div class="card"><div class="card-label">Error Rate</div><div class="value">0.18%</div><div class="delta up">Healthy · target &lt; 1%</div></div>
+    <div class="card"><div class="card-label">P95 Latency</div><div class="value">184 ms</div><div class="delta warn">▲ 12 ms vs baseline</div></div>
+    <div class="card"><div class="card-label">Availability</div><div class="value">99.98%</div><div class="delta up">SLO 99.95%</div></div>
+  </div>
+</section>
+
+<section class="section" id="pipeline">
+<div class="section-title">Observability Architecture</div>
+<div class="panel">
+<div class="arch">
+  <div class="arch-box"><strong>Applications</strong><small>EKS Pods / Lambda</small></div><div class="arrow">→</div>
+  <div class="arch-box"><strong>Logs</strong><small>CloudWatch Logs</small></div><div class="arrow">→</div>
+  <div class="arch-box"><strong>Metrics</strong><small>Prometheus / AMP</small></div><div class="arrow">→</div>
+  <div class="arch-box"><strong>Dashboards</strong><small>Grafana</small></div><div class="arrow">→</div>
+  <div class="arch-box"><strong>Traces</strong><small>OpenTelemetry / X-Ray</small></div>
+</div>
+<div class="arch">
+  <div class="arch-box"><strong>AWS Services</strong><small>ALB • EKS • RDS • SQS</small></div><div class="arrow">→</div>
+  <div class="arch-box"><strong>CloudWatch</strong><small>AWS native metrics</small></div><div class="arrow">→</div>
+  <div class="arch-box"><strong>Grafana</strong><small>Unified dashboards</small></div>
+</div>
+</div>
+</section>
+
+<section class="section" id="applications">
+<div class="section-title">Application Metrics</div>
+<div class="grid2">
+<div class="panel">
+<div class="panel-head"><h3>Requests & Latency</h3><span>Prometheus / AMP</span></div>
+<div class="chart">
+<div class="axis"><span>25K</span><span>20K</span><span>15K</span><span>10K</span><span>5K</span><span>0</span></div>
+<svg viewBox="0 0 800 220" preserveAspectRatio="none">
+<polyline points="0,145 45,132 90,139 135,110 180,120 225,95 270,102 315,82 360,92 405,70 450,88 495,58 540,75 585,52 630,65 675,43 720,56 760,39 800,45" fill="none" stroke="#4dabf7" stroke-width="3"/>
+<polyline points="0,180 45,174 90,181 135,165 180,170 225,150 270,158 315,140 360,150 405,132 450,143 495,125 540,135 585,118 630,127 675,110 720,120 760,104 800,112" fill="none" stroke="#b197fc" stroke-width="2"/>
+</svg></div>
+<div class="legend"><span><i class="dot" style="background:#4dabf7"></i>Requests/sec</span><span><i class="dot" style="background:#b197fc"></i>P95 latency normalized</span></div>
+</div>
+
+<div class="panel">
+<div class="panel-head"><h3>HTTP Status Distribution</h3><span>CloudWatch + Prometheus</span></div>
+<div style="margin:14px 0">
+<div class="service"><span>2xx Success</span><strong>98.74%</strong></div>
+<div class="service"><span>3xx Redirect</span><strong>0.81%</strong></div>
+<div class="service"><span>4xx Client Errors</span><strong>0.31%</strong></div>
+<div class="service"><span>5xx Server Errors</span><strong style="color:var(--red)">0.14%</strong></div>
+</div>
+<div class="bar-wrap"><div class="bar" style="width:98.74%;background:#51cf66"></div></div>
+</div>
+</div>
+</section>
+
+<section class="section" id="services">
+<div class="section-title">EKS Service Health</div>
+<div class="panel">
+<table class="table">
+<tr><th>Service</th><th>Pods</th><th>CPU</th><th>Memory</th><th>P95</th><th>Errors</th><th>Status</th></tr>
+<tr><td>catalog-service</td><td>12 / 12</td><td>42%</td><td>61%</td><td>112 ms</td><td>0.04%</td><td><span class="status ok">Healthy</span></td></tr>
+<tr><td>cart-service</td><td>8 / 8</td><td>51%</td><td>68%</td><td>96 ms</td><td>0.07%</td><td><span class="status ok">Healthy</span></td></tr>
+<tr><td>order-service</td><td>14 / 14</td><td>64%</td><td>72%</td><td>184 ms</td><td>0.18%</td><td><span class="status ok">Healthy</span></td></tr>
+<tr><td>inventory-service</td><td>10 / 10</td><td>71%</td><td>76%</td><td>221 ms</td><td>0.29%</td><td><span class="status warning">Watch</span></td></tr>
+<tr><td>payment-service</td><td>10 / 10</td><td>48%</td><td>57%</td><td>143 ms</td><td>0.03%</td><td><span class="status ok">Healthy</span></td></tr>
+</table>
+</div>
+</section>
+
+<section class="section" id="infrastructure">
+<div class="section-title">Infrastructure Metrics</div>
+<div class="grid3">
+<div class="panel"><div class="panel-head"><h3>EKS Cluster</h3><span>CloudWatch / Prometheus</span></div><div class="big-number">87</div><div class="small-muted">Pods running</div><div class="bar-wrap"><div class="bar" style="width:63%;background:#4dabf7"></div></div><div class="small-muted">CPU utilization 63%</div><br><div class="big-number">71%</div><div class="small-muted">Memory utilization</div></div>
+<div class="panel"><div class="panel-head"><h3>ALB</h3><span>CloudWatch</span></div><div class="health"><i class="health-dot"></i><strong>Healthy</strong></div><br><div class="service"><span>Active connections</span><strong>8,421</strong></div><div class="service"><span>Target response</span><strong>142 ms</strong></div><div class="service"><span>HTTP 5xx</span><strong>0.08%</strong></div></div>
+<div class="panel"><div class="panel-head"><h3>Auto Scaling</h3><span>HPA / Karpenter</span></div><div class="service"><span>Desired pods</span><strong>54</strong></div><div class="service"><span>Current pods</span><strong>54</strong></div><div class="service"><span>Nodes</span><strong>18</strong></div><div class="service"><span>Pending pods</span><strong>0</strong></div></div>
+</div>
+</section>
+
+<section class="section" id="database">
+<div class="section-title">Database & Dependency Metrics</div>
+<div class="grid3">
+<div class="panel"><div class="panel-head"><h3>Aurora</h3><span>CloudWatch</span></div><div class="big-number">38%</div><div class="small-muted">CPU utilization</div><div class="service"><span>Connections</span><strong>412</strong></div><div class="service"><span>Read latency</span><strong>7.8 ms</strong></div><div class="service"><span>Write latency</span><strong>11.4 ms</strong></div></div>
+<div class="panel"><div class="panel-head"><h3>Redis</h3><span>ElastiCache</span></div><div class="big-number">71%</div><div class="small-muted">Memory utilization</div><div class="service"><span>Cache hit ratio</span><strong>96.8%</strong></div><div class="service"><span>Evictions</span><strong>0</strong></div></div>
+<div class="panel"><div class="panel-head"><h3>Kafka / MSK</h3><span>Prometheus</span></div><div class="big-number">1.8K/s</div><div class="small-muted">Messages in</div><div class="service"><span>Consumer lag</span><strong>124</strong></div><div class="service"><span>Messages out</span><strong>1.7K/s</strong></div></div>
+</div>
+</section>
+
+<section class="section" id="logs">
+<div class="section-title">Logs — CloudWatch</div>
+<div class="grid2">
+<div class="panel">
+<div class="panel-head"><h3>Log Volume</h3><span>CloudWatch Logs</span></div>
+<div class="chart">
+<div class="axis"><span>8 GB</span><span>6 GB</span><span>4 GB</span><span>2 GB</span><span>0</span></div>
+<svg viewBox="0 0 800 220" preserveAspectRatio="none">
+<polyline points="0,170 50,158 100,165 150,130 200,145 250,110 300,128 350,100 400,116 450,82 500,94 550,72 600,88 650,58 700,73 750,49 800,60" fill="none" stroke="#22b8cf" stroke-width="3"/>
+</svg></div>
+</div>
+<div class="panel">
+<div class="panel-head"><h3>Recent Log Signals</h3><span>Last 5 min</span></div>
+<div class="service"><span>ERROR</span><strong style="color:var(--red)">143</strong></div>
+<div class="service"><span>WARN</span><strong style="color:var(--orange)">1,204</strong></div>
+<div class="service"><span>INFO</span><strong>1.84M</strong></div>
+<div class="service"><span>Auth failures</span><strong>17</strong></div>
+<div class="service"><span>Timeouts</span><strong>8</strong></div>
+</div>
+</div>
+</section>
+
+<section class="section" id="traces">
+<div class="section-title">Distributed Tracing — OpenTelemetry / X-Ray</div>
+<div class="panel">
+<div class="panel-head"><h3>Sample Checkout Trace</h3><span>Trace ID: 7a91...c42</span></div>
+<div class="arch">
+<div class="arch-box"><strong>API Gateway / ALB</strong><small>12 ms</small></div><div class="arrow">→</div>
+<div class="arch-box"><strong>Order Service</strong><small>46 ms</small></div><div class="arrow">→</div>
+<div class="arch-box"><strong>Inventory</strong><small>38 ms</small></div><div class="arrow">→</div>
+<div class="arch-box"><strong>Payment</strong><small>71 ms</small></div><div class="arrow">→</div>
+<div class="arch-box"><strong>Aurora</strong><small>11 ms</small></div>
+</div>
+<div class="quote" style="border-left-color:#b197fc;background:#19182b;padding:12px;border-radius:7px;color:#c8c0e8">
+OpenTelemetry instrumentation creates spans across services. X-Ray or a compatible tracing backend correlates the request so engineers can identify latency and failure hotspots.
+</div>
+</div>
+</section>
+
+<section class="section" id="aws">
+<div class="section-title">AWS Native Metrics — CloudWatch</div>
+<div class="panel">
+<table class="table">
+<tr><th>Resource</th><th>Metric</th><th>Sample</th><th>Threshold</th><th>Status</th></tr>
+<tr><td>ALB</td><td>TargetResponseTime</td><td>142 ms</td><td>&lt; 300 ms</td><td><span class="status ok">OK</span></td></tr>
+<tr><td>ALB</td><td>HTTPCode_Target_5XX_Count</td><td>12</td><td>&lt; 50 / 5m</td><td><span class="status ok">OK</span></td></tr>
+<tr><td>RDS</td><td>CPUUtilization</td><td>38%</td><td>&lt; 70%</td><td><span class="status ok">OK</span></td></tr>
+<tr><td>RDS</td><td>DatabaseConnections</td><td>412</td><td>&lt; 700</td><td><span class="status ok">OK</span></td></tr>
+<tr><td>EKS</td><td>Node CPU</td><td>63%</td><td>&lt; 80%</td><td><span class="status ok">OK</span></td></tr>
+<tr><td>SQS</td><td>ApproximateAgeOfOldestMessage</td><td>8 sec</td><td>&lt; 60 sec</td><td><span class="status ok">OK</span></td></tr>
+</table>
+</div>
+</section>
+
+<section class="section" id="alerts">
+<div class="section-title">Alert Summary</div>
+<div class="cards">
+<div class="card"><div class="card-label">Critical</div><div class="value" style="color:var(--red)">0</div><div class="small-muted">No active critical alerts</div></div>
+<div class="card"><div class="card-label">Warning</div><div class="value" style="color:var(--orange)">2</div><div class="small-muted">Inventory latency, node memory</div></div>
+<div class="card"><div class="card-label">Resolved</div><div class="value" style="color:var(--green)">18</div><div class="small-muted">Last 24 hours</div></div>
+<div class="card"><div class="card-label">SLO Burn</div><div class="value">0.42x</div><div class="small-muted">Within error budget</div></div>
+</div>
+</section>
+
+<section class="section">
+<div class="panel">
+<div class="panel-head"><h3>Interview Explanation</h3><span>Recommended 60-second answer</span></div>
+<div class="quote">
+“I would implement observability as multiple signals rather than relying on a single monitoring tool. Application and infrastructure logs go to CloudWatch Logs. Application and Kubernetes metrics are collected with Prometheus and stored in Amazon Managed Service for Prometheus. Grafana provides the operational dashboards by combining Prometheus metrics with CloudWatch metrics. For distributed tracing, I would instrument the applications with OpenTelemetry and use AWS X-Ray or the selected tracing backend to follow a request across services. This gives us logs for detailed events, metrics for health and trends, dashboards for operational visibility, and traces for understanding latency and failures across distributed services.”
+</div>
+</div>
+</section>
+
+<footer>Sample enterprise observability dashboard — metrics are illustrative, not live production data.</footer>
+</main>
+</div>
+</body>
+</html>

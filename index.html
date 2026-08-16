@@ -38,18 +38,21 @@ ul,ol{padding-left:24px}.small{color:var(--muted);font-size:14px}
 .diagram-title{font-weight:700;color:#334155;margin:0 0 8px}
 </style>
 </head>
-<body>
+<body id="top">
 
-<button class="menu-toggle" type="button" aria-controls="site-menu" aria-expanded="true" aria-label="Collapse menu">&#9776;</button>
+<button class="menu-toggle" type="button" aria-controls="site-menu" aria-expanded="true" aria-label="Collapse menu"><span aria-hidden="true">&#9776;</span><span class="menu-toggle-text">Menu</span></button>
 
 <header>
 <h1>DevOps / AWS / Kubernetes Interview Master Notes</h1>
 <p>Senior DevOps • Cloud Architect • AWS • EKS • CI/CD • Terraform • Security • Observability</p>
 </header>
 
-<nav class="sidebar" id="site-menu">
+<nav class="sidebar" id="site-menu" aria-label="Primary navigation">
+<div class="sidebar-header">
+<p class="nav-kicker">Study guide</p>
 <h2>Interview Master Notes</h2>
-<p>DevOps, AWS, Kubernetes and cloud architecture</p>
+<p class="nav-help">Jump to a topic or preview a related guide.</p>
+</div>
 <div class="nav-search"><input type="search" id="nav-filter" placeholder="Filter topics…" aria-label="Filter topics in this page"><span class="nav-search-empty" id="nav-filter-empty" hidden>No matches</span></div>
 <div class="nav-group"><p class="nav-label">This page</p><a href="index.html" aria-current="page">Home / Master Notes</a></div>
 <div class="nav-group" data-group="identity"><button class="tree-toggle" type="button" aria-expanded="true">Identity &amp; Access <span>−</span></button><div class="tree-branch">

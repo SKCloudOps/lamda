@@ -37,11 +37,17 @@
   .toc a{color:#285b9d;text-decoration:none}
   .toc li{margin:5px 0}
   .small{font-size:13px;color:#5c6678}
+  .troubleshooting-diagram{background:#f8fafc;border:1px solid #dfe5ee;border-radius:8px;padding:20px;margin:18px 0;overflow:auto}
+  .flow-step,.flow-decision{max-width:700px;margin:0 auto;border:1px solid #b9c9dc;border-radius:8px;background:#fff;padding:14px 18px;box-shadow:0 2px 5px rgba(23,32,51,.06)}
+  .flow-step{display:flex;align-items:flex-start;gap:12px}.flow-step strong,.flow-decision strong{display:block;color:#173b70}.flow-step small,.flow-decision small{display:block;color:#5c6678;margin-top:3px}.flow-number{flex:0 0 28px;height:28px;border-radius:50%;background:#285b9d;color:#fff;text-align:center;line-height:28px;font-weight:bold}.flow-arrow{text-align:center;color:#3978c7;font-size:24px;line-height:1.2;height:30px}.flow-decision{border-color:#d8891d;background:#fffaf2}.flow-decision>.flow-number{background:#d8891d}.flow-branches{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.flow-branch{border-radius:7px;padding:12px;border:1px solid #cbd5e1;background:#f8fafc}.flow-branch b{display:block;margin-bottom:5px}.flow-branch.fail{border-left:4px solid #c92a2a}.flow-branch.pass{border-left:4px solid #2b8a3e}.flow-branch ul{margin:6px 0 0;padding-left:18px}.flow-branch li{margin:2px 0}
+  .observability-flow{background:#f8fafc;border:1px solid #dfe5ee;border-radius:8px;padding:20px;margin:18px 0;overflow:auto}.signal-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:700px;margin:0 auto}.signal-card{border:1px solid #b9c9dc;border-radius:7px;background:#fff;padding:12px;text-align:center;min-width:130px}.signal-card strong{display:block;color:#173b70}.signal-card small{display:block;color:#5c6678;margin-top:4px}.observability-flow .flow-branches{grid-template-columns:repeat(4,1fr)}.observability-flow .flow-branch{min-width:145px}.observability-flow .flow-branch b{color:#173b70}
   @media(max-width:900px){
     .sidebar{position:relative;width:auto;height:auto;max-height:none}
     .content,header{margin-left:0}
     .sidebar a{display:inline-block;padding:7px 12px}
     .sidebar .group{display:block}
+    .flow-branches,.observability-flow .flow-branches{grid-template-columns:1fr}
+    .signal-grid{grid-template-columns:repeat(2,1fr)}
   }
 </style>
 </head>
@@ -545,6 +551,33 @@ environments/
 
 <section id="troubleshooting">
 <h2>15. Kubernetes Troubleshooting Flow</h2>
+<div class="troubleshooting-diagram" role="img" aria-label="Detailed Kubernetes troubleshooting workflow from symptom observation through pod health, service routing, network, resources, dependencies, and resolution">
+  <div class="flow-step"><span class="flow-number">1</span><div><strong>Capture the symptom and scope</strong><small>Record namespace, workload, affected endpoint, start time, recent deploys, and whether the issue affects one pod, one service, or the whole cluster.</small></div></div>
+  <div class="flow-arrow" aria-hidden="true">↓</div>
+  <div class="flow-step"><span class="flow-number">2</span><div><strong>Establish current state</strong><small>Check nodes, pods, events, rollout status, and recent logs before changing anything.</small></div></div>
+  <div class="flow-arrow" aria-hidden="true">↓</div>
+  <div class="flow-decision"><div style="display:flex;align-items:flex-start;gap:12px"><span class="flow-number">3</span><div><strong>Are the pods healthy and ready?</strong><small>Use pod phase, readiness conditions, restart count, probe failures, and container exit reason.</small></div></div><div class="flow-branches"><div class="flow-branch fail"><b>No: isolate the workload failure</b><ul><li><code>describe pod</code> and inspect events</li><li>Review current and <code>--previous</code> logs</li><li>Check image, probes, config, secrets, and scheduling</li><li>Validate requests, limits, taints, and node capacity</li></ul></div><div class="flow-branch pass"><b>Yes: follow the traffic path</b><ul><li>Confirm Service selector and ports</li><li>Check EndpointSlice addresses and readiness</li><li>Inspect Ingress, ALB target health, and DNS</li><li>Test the endpoint from inside the cluster</li></ul></div></div></div>
+  <div class="flow-arrow" aria-hidden="true">↓</div>
+  <div class="flow-step"><span class="flow-number">4</span><div><strong>Validate Service and EndpointSlice</strong><small>Confirm the selector matches pod labels, target ports are correct, endpoints exist, and ready addresses are receiving traffic.</small></div></div>
+  <div class="flow-arrow" aria-hidden="true">↓</div>
+  <div class="flow-step"><span class="flow-number">5</span><div><strong>Trace external and internal networking</strong><small>Check Ingress or ALB rules, target-group health, DNS resolution, HTTP response codes, NetworkPolicy, security groups, and CNI behavior.</small></div></div>
+  <div class="flow-arrow" aria-hidden="true">↓</div>
+  <div class="flow-step"><span class="flow-number">6</span><div><strong>Check capacity and dependencies</strong><small>Inspect CPU and memory pressure, throttling, HPA behavior, node conditions, database or cache reachability, queues, and third-party APIs.</small></div></div>
+  <div class="flow-arrow" aria-hidden="true">↓</div>
+  <div class="flow-step"><span class="flow-number">7</span><div><strong>Apply the smallest safe remediation and verify</strong><small>Roll back or correct the configuration, watch recovery metrics and events, retest from the client path, and document the root cause and prevention.</small></div></div>
+</div>
+<h3>Observability-Based Debugging Flow</h3>
+<div class="observability-flow" role="img" aria-label="Observability debugging workflow using metrics, logs, traces, events, correlation, hypothesis validation, remediation, and post-fix monitoring">
+  <div class="flow-step"><span class="flow-number">1</span><div><strong>Start with an alert or user report</strong><small>Capture service, environment, time window, affected request, severity, and the first known symptom. Freeze the investigation window before querying data.</small></div></div>
+  <div class="flow-arrow" aria-hidden="true">↓</div>
+  <div class="signal-grid"><div class="signal-card"><strong>Metrics</strong><small>Rate, errors, duration, saturation, golden signals</small></div><div class="signal-card"><strong>Logs</strong><small>Structured error, request ID, pod, container, stack trace</small></div><div class="signal-card"><strong>Traces</strong><small>Slow span, failing service, downstream latency</small></div><div class="signal-card"><strong>Events</strong><small>Deployments, probes, scheduling, node and Kubernetes events</small></div></div>
+  <div class="flow-arrow" aria-hidden="true">↓</div>
+  <div class="flow-decision"><div style="display:flex;align-items:flex-start;gap:12px"><span class="flow-number">2</span><div><strong>Correlate the signals and identify the failing layer</strong><small>Use the same timestamp, namespace, workload, pod, request ID, trace ID, and deployment revision across dashboards and telemetry.</small></div></div><div class="flow-branches"><div class="flow-branch"><b>Traffic layer</b><small>5xx, latency, DNS, ALB target health, Ingress access logs</small></div><div class="flow-branch"><b>Workload layer</b><small>Restarts, probe failures, exceptions, image or configuration errors</small></div><div class="flow-branch"><b>Platform layer</b><small>CPU, memory, throttling, node pressure, scheduling, CNI</small></div><div class="flow-branch"><b>Dependency layer</b><small>Database, cache, queue, API timeout, connection pool, rate limit</small></div></div></div>
+  <div class="flow-arrow" aria-hidden="true">↓</div>
+  <div class="flow-step"><span class="flow-number">3</span><div><strong>Form and validate one hypothesis</strong><small>Compare the failing window with a healthy baseline, follow the trace to the first bad span, match logs to the request, and confirm the suspected component with a focused query or controlled test.</small></div></div>
+  <div class="flow-arrow" aria-hidden="true">↓</div>
+  <div class="flow-step"><span class="flow-number">4</span><div><strong>Remediate, observe, and close</strong><small>Roll back or repair the smallest change, watch error rate and latency return to baseline, confirm recovery across logs and traces, then record the root cause, dashboard, alert, and prevention action.</small></div></div>
+</div>
 <pre><code>Application issue
       ↓
 kubectl get pods

@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Terraform Interview Guide — Senior DevOps / Cloud Architect</title>
+<style>
+:root{--navy:#102a43;--blue:#1769aa;--cyan:#0b7285;--green:#2b8a3e;--orange:#e67700;--purple:#6741d9;--red:#c92a2a;--bg:#f5f7fa;--card:#fff;--border:#d9e2ec;--text:#243b53}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.55}
+nav{position:fixed;left:0;top:0;bottom:0;width:270px;background:var(--navy);color:#fff;padding:24px 16px;overflow:auto}
+nav h1{font-size:19px;margin:0 0 5px}nav p{font-size:12px;color:#bcccdc;margin:0 0 18px}
+nav .group{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#7cc4ff;font-weight:700;margin:18px 10px 5px}
+nav a{display:block;color:#d9e2ec;text-decoration:none;font-size:13px;padding:8px 10px;border-radius:6px}nav a:hover{background:#243b53;color:#fff}
+main{margin-left:270px;padding:32px 42px;max-width:1450px}.hero{background:linear-gradient(135deg,#102a43,#1769aa);color:#fff;border-radius:14px;padding:30px 34px;margin-bottom:22px}
+.hero h2{font-size:30px;margin:0 0 7px}.hero p{margin:4px 0;color:#e6f0f8}
+.badges{display:flex;gap:7px;flex-wrap:wrap;margin-top:15px}.badge{background:#e7f5ff;color:#075985;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:700}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;margin:18px 0;box-shadow:0 3px 14px rgba(16,42,67,.08)}
+h2{color:var(--navy);font-size:24px;margin-top:0}h3{color:var(--blue);margin-top:24px}h4{color:var(--navy);margin-bottom:6px}
+.quote{border-left:4px solid var(--blue);background:#f0f7ff;padding:15px 17px;border-radius:0 8px 8px 0}
+.warn{border-left:4px solid var(--orange);background:#fff8e6;padding:14px 17px;border-radius:0 8px 8px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px}.mini{border:1px solid var(--border);padding:14px;border-radius:9px;background:#fbfcfe}.mini strong{display:block;color:var(--navy);margin-bottom:4px}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid var(--border);padding:9px;text-align:left;vertical-align:top}th{background:#eef2f6;color:var(--navy)}
+pre{background:#102a43;color:#e6f0f8;border-radius:8px;padding:14px;overflow:auto;font-size:12px}
+.answer{background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:13px;margin:9px 0}
+.question{color:var(--navy);font-weight:700}.tag{display:inline-block;font-size:10px;padding:3px 6px;border-radius:5px;background:#e7f5ff;color:#075985;margin-left:5px}
+.footer{text-align:center;color:#829ab1;font-size:12px;margin:35px 0}
+@media(max-width:850px){nav{position:relative;width:auto;height:auto}main{margin-left:0;padding:20px}}
+</style>
+</head>
+<body>
+<nav>
+<h1>Terraform Interview Guide</h1>
+<p>Senior DevOps / Cloud Architect level</p>
+<div class="group">Start</div>
+<a href="#intro">How to use this guide</a><a href="#story">Your Terraform story</a>
+<div class="group">Core</div>
+<a href="#fundamentals">Fundamentals</a><a href="#state">State & Drift</a><a href="#cloud">Terraform Cloud</a>
+<a href="#modules">Modules</a><a href="#aws">AWS Security</a><a href="#lifecycle">Lifecycle & Dependencies</a>
+<div class="group">Enterprise</div>
+<a href="#cicd">CI/CD</a><a href="#governance">Governance & Security</a><a href="#scenarios">Architect Scenarios</a>
+<div class="group">Real Experience</div>
+<a href="#mypkfit">myPKFiT Questions</a><a href="#priority">Top 10 Questions</a>
+</nav>
+
+<main>
+<section class="hero">
+<h2>Terraform Interview Questions</h2>
+<p><strong>Senior DevOps Engineer / Cloud Architect</strong></p>
+<p>Focused on enterprise AWS, Terraform Cloud, private modules, Vault, STS, state management, governance and real-world architecture.</p>
+<div class="badges"><span class="badge">Terraform Cloud</span><span class="badge">AWS</span><span class="badge">Vault</span><span class="badge">STS</span><span class="badge">Modules</span><span class="badge">CI/CD</span><span class="badge">TFLint</span><span class="badge">Enterprise IaC</span></div>
+</section>
+
+<section id="intro" class="card">
+<h2>How to Use This Guide</h2>
+<div class="quote"><strong>At your level, don't answer Terraform questions as a command memorization exercise.</strong> Explain the design, security, governance, trade-offs and operational impact.</div>
+<div class="grid">
+<div class="mini"><strong>Business requirement</strong>Why did the organization need IaC?</div>
+<div class="mini"><strong>Architecture</strong>How are Terraform Cloud, AWS, Vault and modules connected?</div>
+<div class="mini"><strong>Security</strong>How are credentials, secrets and permissions controlled?</div>
+<div class="mini"><strong>Governance</strong>How do you prevent insecure infrastructure?</div>
+<div class="mini"><strong>Operations</strong>How do you handle state, drift and failures?</div>
+<div class="mini"><strong>Your role</strong>What did you personally design or implement?</div>
+</div>
+</section>
+
+<section id="story" class="card">
+<h2>Your Strong Terraform Introduction</h2>
+<div class="quote">
+“My Terraform experience is primarily around enterprise AWS infrastructure. I have worked with Terraform Cloud for centralized state and execution, private reusable enterprise modules, Vault-based temporary STS credentials, environment and region-specific configurations, and automated infrastructure provisioning. For example, in the myPKFiT architecture, Terraform provisioned EC2-based application components, internal ALB routing, security groups and supporting resources, while approved RHEL8 Golden AMIs were dynamically selected from a shared AWS account. My focus was not just writing Terraform code, but designing reusable, secure and governed IaC patterns that could be consistently used across environments.”
+</div>
+</section>
+
+<section id="fundamentals" class="card">
+<h2>1. Terraform Fundamentals</h2>
+
+<h3>Q1. What is Terraform and why did you choose it for enterprise infrastructure?</h3>
+<div class="answer">Terraform is an Infrastructure as Code tool that defines infrastructure declaratively. In an enterprise environment, the major benefits are consistency, repeatability, version control, reusable modules, automated change management and the ability to manage infrastructure across multiple AWS accounts and environments.</div>
+
+<h3>Q2. Terraform vs CloudFormation — why Terraform?</h3>
+<div class="answer">Terraform provides a common IaC model across multiple providers and has a strong module ecosystem. In an enterprise environment, private reusable Terraform modules and Terraform Cloud can provide centralized state and execution. This supports standardization instead of allowing every team to implement infrastructure differently.</div>
+
+<h3>Q3. Explain the Terraform workflow.</h3>
+<pre>Terraform Code
+      |
+      v
+terraform init
+      |
+      v
+terraform validate
+      |
+      v
+terraform plan
+      |
+      v
+Approval / Policy
+      |
+      v
+terraform apply
+      |
+      v
+AWS Infrastructure</pre>
+<p>Important commands:</p>
+<pre>terraform init
+terraform fmt
+terraform validate
+terraform plan
+terraform apply
+terraform destroy</pre>
+
+<h3>Q4. What is the difference between declarative and imperative infrastructure?</h3>
+<div class="answer"><strong>Declarative:</strong> describe the desired end state; Terraform determines the actions required to reach it. <strong>Imperative:</strong> explicitly define the sequence of commands or actions. Terraform's declarative model makes infrastructure repeatable and easier to review.</div>
+</section>
+
+<section id="state" class="card">
+<h2>2. Terraform State, Remote State & Drift</h2>
+
+<h3>Q5. What is Terraform state?</h3>
+<div class="answer">Terraform state maintains Terraform's understanding of the infrastructure it manages. It maps Terraform resources to real infrastructure and helps Terraform determine what needs to be created, changed or destroyed.</div>
+
+<h3>Q6. Why don't you store Terraform state locally?</h3>
+<div class="answer">Local state creates collaboration, security, locking and recovery problems. In an enterprise environment, remote state in Terraform Cloud provides centralized access control, consistent state management and controlled Terraform execution.</div>
+
+<h3>Q7. What problems can happen with Terraform state?</h3>
+<ul><li>State corruption</li><li>Concurrent modifications</li><li>Sensitive information exposure</li><li>State drift</li><li>Manual state changes</li><li>Incorrect resource mapping</li><li>Accidental resource deletion</li></ul>
+
+<h3>Q8. What is state locking?</h3>
+<div class="answer">State locking prevents multiple Terraform operations from modifying the same state concurrently. This protects against race conditions and state corruption.</div>
+
+<h3>Q9. What is infrastructure drift?</h3>
+<pre>Terraform says: EC2 = t3.large
+                 |
+                 | someone changes AWS manually
+                 v
+AWS actually:    EC2 = t3.xlarge</pre>
+<div class="answer">Terraform detects differences during <code>terraform plan</code>. The desired configuration, state and real infrastructure are reconciled through the plan.</div>
+
+<h3>Q10. How do you handle drift?</h3>
+<div class="answer">First identify why the drift occurred. If the manual change is not intended, Terraform should reconcile it. If the change is legitimate, update the Terraform configuration so the source of truth remains the code rather than the console.</div>
+
+<h3>Q11. What is <code>terraform import</code>?</h3>
+<pre>terraform import aws_instance.app i-1234567890</pre>
+<div class="answer">Import brings an existing resource into Terraform state. It does not automatically create the correct Terraform configuration, so configuration must be written and validated afterward.</div>
+</section>
+
+<section id="cloud" class="card">
+<h2>3. Terraform Cloud</h2>
+
+<h3>Q12. Why did you use Terraform Cloud?</h3>
+<div class="answer">“We used Terraform Cloud to provide centralized remote state management and controlled Terraform execution. We also leveraged Takeda's private modules and enterprise governance. This gave us a standardized IaC model rather than allowing every team to implement AWS infrastructure independently.”</div>
+
+<h3>Q13. State management vs Terraform Cloud execution — what's the difference?</h3>
+<table><tr><th>Capability</th><th>Purpose</th></tr>
+<tr><td>Remote State</td><td>Centralized state storage and access control.</td></tr>
+<tr><td>Remote Execution</td><td>Run plan/apply in a controlled environment.</td></tr>
+<tr><td>Variables</td><td>Environment/workspace configuration.</td></tr>
+<tr><td>Policies</td><td>Govern infrastructure before apply.</td></tr>
+<tr><td>Approvals</td><td>Control production changes.</td></tr></table>
+
+<h3>Q14. How would you manage DEV, TEST, UAT and PROD?</h3>
+<div class="answer">Use clear environment isolation, usually with separate Terraform Cloud workspaces or projects and separate state. Keep reusable logic in modules and environment-specific values outside the module implementation.</div>
+<pre>Terraform Cloud
+|
++-- DEV Workspace
++-- TEST Workspace
++-- UAT Workspace
++-- PROD Workspace</pre>
+
+<h3>Q15. How do you handle concurrent production changes?</h3>
+<div class="answer">Use remote state locking/controlled runs, code review, plan review, policy checks and approval gates. The goal is that production infrastructure changes are serialized and auditable.</div>
+</section>
+
+<section id="modules" class="card">
+<h2>4. Terraform Modules</h2>
+
+<h3>Q16. What is a Terraform module?</h3>
+<div class="answer">A module is a reusable collection of Terraform resources, variables and outputs that encapsulates an infrastructure pattern.</div>
+
+<pre>Application
+    |
+    v
+Takeda EC2 Module
+    |
+    +-- EC2
+    +-- IAM
+    +-- Tags
+    +-- AMI
+    +-- Security configuration</pre>
+
+<h3>Q17. Why use private enterprise modules?</h3>
+<div class="answer">Private modules enforce enterprise standards. Instead of every team designing EC2, ALB, IAM or networking differently, an approved module provides a controlled implementation that teams consume through inputs and outputs.</div>
+
+<h3>Q18. What should be inside a reusable module?</h3>
+<pre>modules/ec2/
+├── main.tf
+├── variables.tf
+├── outputs.tf
+├── versions.tf
+└── README.md</pre>
+
+<h3>Q19. What should not be hardcoded?</h3>
+<div class="answer">Avoid hardcoding AMI IDs, Regions, environments, account IDs, VPC IDs, subnet IDs and application names. Pass them as variables or derive them through data sources.</div>
+
+<h3>Q20. How do you version modules?</h3>
+<div class="answer">Use Git tags or an enterprise module registry. Applications should consume an explicit tested module version instead of automatically taking untested changes.</div>
+<pre>EC2 Module
+v1.0.0
+v1.1.0
+v2.0.0</pre>
+</section>
+
+<section id="aws" class="card">
+<h2>5. Terraform + AWS Security</h2>
+
+<h3>Q21. How do you authenticate Terraform to AWS?</h3>
+<pre>Terraform Cloud
+      |
+      v
+    Vault
+      |
+      v
+Temporary STS credentials
+      |
+      v
+AWS</pre>
+<div class="answer">“We did not hardcode AWS access keys. Terraform integrated with Vault to obtain temporary STS credentials. This reduces the risk associated with long-lived credentials.”</div>
+
+<h3>Q22. Why are temporary STS credentials better?</h3>
+<div class="answer">They are short-lived and reduce the exposure window if credentials are compromised. They also support stronger enterprise credential management than static access keys.</div>
+
+<h3>Q23. Would you store AWS credentials in Terraform variables?</h3>
+<div class="answer"><strong>No.</strong> Prefer IAM roles, OIDC, STS, Vault or supported dynamic credentials mechanisms. Never commit long-lived AWS access keys to Terraform code.</div>
+
+<h3>Q24. How do you manage secrets in Terraform?</h3>
+<div class="answer">Use services such as AWS Secrets Manager or Vault. Be careful: secret values can still enter Terraform state depending on how they are consumed. Avoid unnecessarily passing secret values through Terraform and prefer runtime retrieval where possible.</div>
+
+<h3>Q25. How do you implement least privilege?</h3>
+<div class="answer">Give the Terraform execution identity only the permissions required for the infrastructure it manages. Separate roles by environment and use explicit IAM policies rather than broad administrator permissions where practical.</div>
+</section>
+
+<section id="lifecycle" class="card">
+<h2>6. Lifecycle, Dependencies & Data Sources</h2>
+
+<h3>Q26. What is <code>create_before_destroy</code>?</h3>
+<pre>lifecycle {
+  create_before_destroy = true
+}</pre>
+<div class="answer">It tells Terraform to create a replacement resource before destroying the old one when the resource supports that lifecycle behavior. It can help reduce downtime during replacement.</div>
+
+<h3>Q27. What is <code>prevent_destroy</code>?</h3>
+<pre>lifecycle {
+  prevent_destroy = true
+}</pre>
+<div class="answer">It prevents Terraform from destroying a protected resource through normal Terraform operations. It is useful for critical resources but should be used thoughtfully.</div>
+
+<h3>Q28. What is <code>ignore_changes</code>?</h3>
+<div class="answer">It tells Terraform to ignore changes to selected resource attributes. It can be useful when an external system legitimately manages an attribute, but excessive use can hide real drift.</div>
+
+<h3>Q29. How does Terraform know resource dependencies?</h3>
+<pre>subnet_id = aws_subnet.private.id</pre>
+<div class="answer">Terraform builds a dependency graph from resource references. In this example, the EC2 resource depends on the subnet resource.</div>
+
+<h3>Q30. What is <code>depends_on</code>?</h3>
+<div class="answer">An explicit dependency used when Terraform cannot infer a dependency automatically. Use it only when a real dependency exists.</div>
+
+<h3>Q31. What is a data source?</h3>
+<div class="answer">A data source queries existing information rather than creating it. In your Golden AMI example, Terraform can query an approved RHEL8 AMI and pass the selected ID into the EC2 module.</div>
+<pre>Shared AWS Account
+       |
+Approved RHEL8 AMIs
+       |
+Terraform Data Source
+       |
+Selected AMI
+       |
+EC2 Module</pre>
+</section>
+
+<section id="cicd" class="card">
+<h2>7. Terraform CI/CD</h2>
+
+<h3>Q32. Design a Terraform CI/CD pipeline.</h3>
+<pre>Developer
+    |
+    v
+GitHub
+    |
+    v
+Pull Request
+    |
+    +---- terraform fmt
+    |
+    +---- terraform validate
+    |
+    +---- TFLint
+    |
+    +---- Security Scan
+    |
+    v
+terraform plan
+    |
+    v
+Code Review
+    |
+    v
+Policy / Approval
+    |
+    v
+Terraform Cloud
+    |
+    v
+terraform apply</pre>
+
+<h3>Q33. Should terraform apply run automatically on every commit?</h3>
+<div class="answer">Not necessarily. Automatic apply can be appropriate for lower environments. For production, I prefer controlled approval, policy checks, clear separation of duties and auditable execution.</div>
+
+<h3>Q34. How do you handle production changes?</h3>
+<pre>PR
+ ↓
+Format / Validate
+ ↓
+Lint / Security
+ ↓
+Plan
+ ↓
+Review
+ ↓
+Policy
+ ↓
+Approval
+ ↓
+Apply</pre>
+
+<h3>Q35. How do you make Terraform CI/CD secure?</h3>
+<ul><li>Use OIDC/STS or Vault instead of long-lived keys.</li><li>Run validation and security checks before apply.</li><li>Use protected branches and required reviewers.</li><li>Separate non-production and production roles.</li><li>Restrict who can execute production applies.</li><li>Keep state remote and access controlled.</li></ul>
+</section>
+
+<section id="governance" class="card">
+<h2>8. Enterprise Governance & Security</h2>
+
+<h3>Q36. How do you prevent teams from creating insecure infrastructure?</h3>
+<div class="answer">Use private approved modules, policy-as-code, CI/CD checks, code review, security scanning, TFLint, mandatory tagging and controlled Terraform Cloud execution.</div>
+
+<h3>Q37. What Terraform security tools do you know?</h3>
+<table><tr><th>Tool</th><th>Primary purpose</th></tr>
+<tr><td>TFLint</td><td>Terraform linting and provider-specific configuration checks.</td></tr>
+<tr><td>Checkov</td><td>Infrastructure security/policy scanning.</td></tr>
+<tr><td>tfsec</td><td>Terraform security scanning.</td></tr>
+<tr><td>Terraform Cloud policies</td><td>Enterprise governance and policy enforcement.</td></tr></table>
+
+<h3>Q38. What does TFLint do?</h3>
+<div class="answer">TFLint is primarily a Terraform linter. It detects potential errors, provider-specific issues, deprecated syntax and configuration problems before infrastructure is deployed. It is not a complete security solution by itself.</div>
+
+<h3>Q39. How would you enforce mandatory tags?</h3>
+<div class="answer">Use reusable modules, AWS provider default tags where appropriate, CI validation and policy-as-code. Typical enterprise tags include Application, Environment, Owner, CostCenter, APMSID, RecoveryTier and Compliance.</div>
+
+<h3>Q40. A developer wants an internet-facing ALB but policy requires internal ALBs. What do you do?</h3>
+<div class="answer">Enforce the requirement with policy-as-code rather than relying only on documentation. The Terraform plan should fail if the ALB violates the enterprise policy.</div>
+<pre>Terraform Plan
+     |
+     v
+Policy Check
+     |
+     +-- internal = true  → PASS
+     |
+     +-- internet-facing  → FAIL</pre>
+</section>
+
+<section id="scenarios" class="card">
+<h2>9. Advanced Architect Scenarios</h2>
+
+<h3>Q41. What happens if Terraform apply fails halfway through?</h3>
+<div class="answer">Terraform records successfully created resources in state and reports the failure. After correcting the issue, another plan/apply can reconcile the infrastructure to the desired state. Investigate the failure before blindly rerunning.</div>
+
+<h3>Q42. Someone manually deletes an EC2 instance. What happens?</h3>
+<div class="answer">Run <code>terraform plan</code>. Terraform sees that the desired resource is missing and normally proposes recreating it.</div>
+
+<h3>Q43. How do you handle provider upgrades?</h3>
+<div class="answer">Use explicit provider version constraints, test upgrades in lower environments, review the plan for breaking changes and promote the tested version to production.</div>
+<pre>terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 6.0"
+    }
+  }
+}</pre>
+
+<h3>Q44. What is the difference between exact version and <code>~&gt;</code>?</h3>
+<div class="answer">An exact version pins a specific version. A pessimistic constraint such as <code>~&gt; 6.0</code> allows compatible releases within the defined constraint rather than taking arbitrary major-version changes.</div>
+
+<h3>Q45. You have 100 AWS accounts. How would you manage Terraform?</h3>
+<div class="answer">Use centralized Terraform Cloud organization/project/workspace structure, separate state per environment/account, reusable modules, controlled IAM roles, OIDC/STS or Vault, policy-as-code, tagging standards and clear ownership.</div>
+<pre>Terraform Cloud
+|
++-- Organization
+    |
+    +-- Projects
+        |
+        +-- Workspaces
+            |
+            +-- AWS Accounts / Environments</pre>
+
+<h3>Q46. How would you onboard an existing manually-created AWS environment?</h3>
+<pre>Existing AWS
+     |
+     v
+terraform import
+     |
+     v
+Terraform State
+     |
+     v
+Write matching configuration
+     |
+     v
+terraform plan
+     |
+     v
+Reconcile drift</pre>
+<div class="answer">Do not immediately apply. First understand the existing environment, import resources, write matching configuration and use plan to verify the desired result.</div>
+</section>
+
+<section id="mypkfit" class="card">
+<h2>10. Your Real-World myPKFiT Terraform Questions</h2>
+
+<h3>Q47. Walk me through your myPKFiT Terraform architecture.</h3>
+<div class="answer">
+<pre>Git
+ ↓
+Terraform Cloud
+ ↓
+Vault
+ ↓
+Temporary STS
+ ↓
+AWS
+ ↓
+Private Modules
+ ↓
+EC2 + ALB + Security Groups
+ ↓
+Golden AMI</pre>
+Explain that Terraform Cloud provides centralized state/execution, Vault provides temporary credentials, private modules standardize infrastructure, and the AWS resources include EC2 application components, internal ALB routing and security groups.</div>
+
+<h3>Q48. Why did you use a private Terraform module for EC2?</h3>
+<div class="answer">To standardize EC2 provisioning across the enterprise, including approved AMIs, tagging, security controls and reusable implementation patterns.</div>
+
+<h3>Q49. How did you dynamically select the Golden AMI?</h3>
+<div class="answer">Use a Terraform data source to query the approved RHEL8 AMIs in the shared AWS account, select the appropriate image based on the required filters, and pass that AMI ID to the private EC2 module.</div>
+
+<h3>Q50. How did Terraform create the ALB architecture?</h3>
+<pre>Terraform
+   |
+   +-- Internal ALB
+   |
+   +-- Listener :80
+   |
+   +-- Host-header Rules
+   |
+   +-- Target Groups
+   |
+   +-- Security Groups
+   |
+   +-- EC2 Targets
+   |
+   +-- Health Checks /index.html</pre>
+
+<h3>Q51. Why host-based routing?</h3>
+<div class="answer">Multiple application components can share one ALB while still routing different hostnames to separate target groups. This reduces duplicated infrastructure while keeping application routing logically separated.</div>
+
+<h3>Q52. Why separate target groups?</h3>
+<div class="answer">Each application component can have independent routing, health checks, registration, scaling and operational isolation.</div>
+
+<h3>Q53. Why an internal ALB?</h3>
+<div class="answer">The application is intended for private enterprise access rather than direct public Internet exposure. The internal ALB reduces the public attack surface while still providing Layer 7 routing inside the enterprise network path.</div>
+
+<h3>Q54. Why Golden AMIs?</h3>
+<div class="answer">Golden AMIs provide an approved, standardized and controlled RHEL8 operating-system baseline that can include required patches, hardening and enterprise agents.</div>
+</section>
+
+<section id="priority" class="card">
+<h2>11. Top 10 Questions to Memorize First</h2>
+<table>
+<tr><th>#</th><th>Question</th><th>What the interviewer is testing</th></tr>
+<tr><td>1</td><td>How does Terraform work?</td><td>Core Terraform understanding</td></tr>
+<tr><td>2</td><td>What is Terraform state and why remote state?</td><td>Collaboration and operational maturity</td></tr>
+<tr><td>3</td><td>Why Terraform Cloud?</td><td>Enterprise IaC architecture</td></tr>
+<tr><td>4</td><td>How do you secure Terraform AWS credentials?</td><td>Cloud security</td></tr>
+<tr><td>5</td><td>Why Vault + temporary STS credentials?</td><td>Credential architecture</td></tr>
+<tr><td>6</td><td>How do Terraform modules work?</td><td>Reusability and standardization</td></tr>
+<tr><td>7</td><td>How do you manage DEV/UAT/PROD?</td><td>Environment isolation</td></tr>
+<tr><td>8</td><td>How do you design Terraform CI/CD?</td><td>DevSecOps and governance</td></tr>
+<tr><td>9</td><td>How do you detect and handle drift?</td><td>Operations and state management</td></tr>
+<tr><td>10</td><td>Walk me through your real-world Terraform architecture.</td><td>Architectural ownership and communication</td></tr>
+</table>
+
+<h3>One-line architect mindset</h3>
+<div class="quote"><strong>“I don't look at Terraform only as a provisioning tool. I use it to create standardized, secure, reusable and governed infrastructure patterns that can be consistently deployed across environments.”</strong></div>
+</section>
+
+<section class="card">
+<h2>Rapid-Fire Commands</h2>
+<table>
+<tr><th>Command</th><th>Purpose</th></tr>
+<tr><td><code>terraform init</code></td><td>Initialize working directory, backend and providers.</td></tr>
+<tr><td><code>terraform fmt</code></td><td>Format Terraform files.</td></tr>
+<tr><td><code>terraform validate</code></td><td>Validate configuration syntax and internal consistency.</td></tr>
+<tr><td><code>terraform plan</code></td><td>Preview infrastructure changes.</td></tr>
+<tr><td><code>terraform apply</code></td><td>Apply approved changes.</td></tr>
+<tr><td><code>terraform destroy</code></td><td>Destroy managed infrastructure.</td></tr>
+<tr><td><code>terraform import</code></td><td>Import existing resource into state.</td></tr>
+<tr><td><code>terraform state list</code></td><td>List resources tracked in state.</td></tr>
+<tr><td><code>terraform state show</code></td><td>Inspect a resource in state.</td></tr>
+<tr><td><code>terraform output</code></td><td>Display configured outputs.</td></tr>
+</table>
+</section>
+
+<div class="footer">Terraform Interview Guide • Senior DevOps / Cloud Architect • Enterprise AWS</div>
+</main>
+</body>
+</html>

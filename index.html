@@ -7,7 +7,7 @@
 <title>DevOps Interview Master Notes</title>
 <style>
 :root{--bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#5d6878;--accent:#2563eb;--code:#0f172a;--border:#dce3ed;--sidebar-w:300px}
-*{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+*{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
 header{background:#111827;color:#fff;padding:34px 5%;margin-left:var(--sidebar-w)}
 header h1{margin:0 0 6px;font-size:30px} header p{margin:0;color:#cbd5e1}
 .sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sidebar-w);background:#111827;color:#fff;padding:18px 14px;overflow:auto;z-index:20;transition:transform .25s ease}
@@ -17,9 +17,9 @@ header h1{margin:0 0 6px;font-size:30px} header p{margin:0;color:#cbd5e1}
 .tree-toggle{width:100%;display:flex;justify-content:space-between;align-items:center;border:0;border-radius:8px;background:#172133;color:#bfdbfe;padding:9px 10px;font:700 11px Arial,Helvetica,sans-serif;letter-spacing:.08em;text-align:left;text-transform:uppercase;cursor:pointer}.tree-toggle:hover,.tree-toggle:focus-visible{background:#1f2937;color:#fff;outline:2px solid #60a5fa;outline-offset:1px}.tree-toggle span{font-size:17px;font-weight:400;line-height:1}.tree-branch{padding:6px 0 0 8px;border-left:1px solid #334155;margin-left:10px}.guide-link .nav-index{font-size:10px}
 .nav-actions{display:grid;grid-template-columns:1fr;gap:6px;margin:0 0 12px}.home-link{background:#172133}.preview-close{display:none;border:1px solid #334155;border-radius:8px;background:transparent;color:#dbeafe;padding:9px 10px;font:700 12px Arial,Helvetica,sans-serif;text-align:left;cursor:pointer}.preview-close:hover,.preview-close:focus-visible{background:#1f2937;color:#fff;outline:2px solid #60a5fa;outline-offset:1px}.iframe-active .preview-close{display:block}
 .menu-toggle{position:fixed;left:314px;top:18px;display:flex;align-items:center;gap:7px;border:0;border-radius:8px;background:#2563eb;color:#fff;padding:9px 12px;font-size:14px;font-weight:700;line-height:1;cursor:pointer;z-index:30;box-shadow:0 2px 8px #0003}.menu-toggle:hover{background:#1d4ed8}.menu-toggle span:first-child{font-size:18px;font-weight:400}
-main{max-width:1200px;margin:28px auto;padding:0 20px;margin-right:40vw}.guide-viewer{position:fixed;top:210px;right:20px;bottom:20px;width:37vw;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 2px 8px #00000014;overflow:hidden;z-index:10}.guide-viewer h2{margin:0;padding:14px 16px;font-size:16px;border-bottom:1px solid var(--border)}.guide-viewer p{margin:0;padding:9px 16px;color:var(--muted);font-size:12px;border-bottom:1px solid var(--border)}.guide-viewer iframe{display:block;width:100%;height:calc(100% - 76px);border:0;background:var(--bg)}
+main{max-width:1200px;margin:28px auto;padding:0 20px 40px;margin-left:var(--sidebar-w)}.guide-viewer{display:none;position:fixed;top:20px;right:20px;bottom:20px;width:37vw;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 28px #0000002e;overflow:hidden;z-index:10}.guide-viewer h2{margin:0;padding:14px 16px;font-size:16px;border-bottom:1px solid var(--border)}.guide-viewer p{margin:0;padding:9px 16px;color:var(--muted);font-size:12px;border-bottom:1px solid var(--border)}.guide-viewer iframe{display:block;width:100%;height:calc(100% - 76px);border:0;background:var(--bg)}
 .guide-viewer-header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}.guide-viewer-header h2{border:0}.guide-viewer-close{display:none;margin-right:10px;border:1px solid var(--border);border-radius:7px;background:#f8fafc;color:#263449;padding:7px 10px;font-weight:700;cursor:pointer}.guide-viewer-close:hover,.guide-viewer-close:focus-visible{background:#e8f0ff;outline:2px solid #60a5fa;outline-offset:1px}.iframe-active .guide-viewer-close{display:block}
-.iframe-active header,.iframe-active main{display:none}.iframe-active .guide-viewer{left:320px;top:20px;width:auto}
+.iframe-active header,.iframe-active main{display:none}.iframe-active .guide-viewer{display:block;left:320px;width:auto}
 section{background:var(--card);margin:0 0 22px;padding:26px;border:1px solid var(--border);border-radius:12px;box-shadow:0 2px 8px #0000000a}
 h2{margin-top:0;color:#111827;border-bottom:2px solid #e8edf4;padding-bottom:8px}
 h3{color:#263449;margin-bottom:6px}.answer{background:#eff6ff;border-left:4px solid var(--accent);padding:12px 16px;margin:14px 0}
@@ -29,9 +29,8 @@ table{width:100%;border-collapse:collapse;margin:14px 0}th,td{border:1px solid v
 .badge{display:inline-block;background:#e8f0ff;color:#1d4ed8;border-radius:20px;padding:4px 10px;margin:3px;font-size:13px}
 ul,ol{padding-left:24px}.small{color:var(--muted);font-size:14px}
 .top{color:#fff;text-decoration:none}.menu-hidden .sidebar{transform:translateX(-100%)}.menu-hidden header,.menu-hidden main{margin-left:0}.menu-hidden .menu-toggle{left:14px}
-@media(max-width:700px){:root{--sidebar-w:286px}header{margin-left:0;padding:28px 20px}.menu-toggle{left:300px;top:14px}.menu-hidden .menu-toggle{left:14px}section{padding:18px}h1{font-size:24px}.menu-toggle-text{display:none}.nav-desc{display:none}}
-@media(max-width:900px){main{margin-right:auto}.guide-viewer{position:relative;top:auto;right:auto;bottom:auto;left:auto;width:auto;height:650px;margin:28px 20px 20px}.iframe-active .guide-viewer{left:auto}}
-@media(max-width:700px){.guide-viewer{height:520px;margin:20px}}
+@media(max-width:700px){:root{--sidebar-w:286px}header{margin-left:0;padding:28px 20px}main{margin-left:0}.menu-toggle{left:300px;top:14px}.menu-hidden .menu-toggle{left:14px}section{padding:18px}h1{font-size:24px}.menu-toggle-text{display:none}.nav-desc{display:none}}
+@media(max-width:900px){.iframe-active .guide-viewer{left:16px;right:16px;top:16px;bottom:16px;width:auto}}
 
 .diagram{margin:20px 0;padding:14px;background:#f8fafc;border:1px solid #dce3ed;border-radius:10px;overflow:auto}
 .diagram svg{display:block;width:100%;height:auto;min-width:700px}
@@ -56,42 +55,42 @@ ul,ol{padding-left:24px}.small{color:var(--muted);font-size:14px}
 <div class="nav-search"><input type="search" id="nav-filter" placeholder="Filter topics..." aria-label="Filter topics in this page"><span class="nav-search-empty" id="nav-filter-empty" hidden>No matches</span></div>
 <div class="nav-actions"><button class="preview-close" type="button">Close related guide preview</button></div>
 <div class="nav-group"><p class="nav-label">This page</p><a href="#top" aria-current="page"><span class="n">TOP</span>Master Notes</a></div>
-<div class="nav-group" data-group="identity"><button class="tree-toggle" type="button" aria-expanded="true">Identity &amp; Access <span>−</span></button><div class="tree-branch">
+<div class="nav-group" data-group="identity"><button class="tree-toggle" type="button" aria-expanded="false">Identity &amp; Access <span>+</span></button><div class="tree-branch" hidden>
 <a href="#pod"><span class="n">1</span>Pod Identity vs IRSA</a>
 <a href="#iam"><span class="n">2</span>IAM User vs Role</a>
 </div></div>
-<div class="nav-group" data-group="cicd"><button class="tree-toggle" type="button" aria-expanded="true">Git &amp; CI/CD <span>−</span></button><div class="tree-branch">
+<div class="nav-group" data-group="cicd"><button class="tree-toggle" type="button" aria-expanded="false">Git &amp; CI/CD <span>+</span></button><div class="tree-branch" hidden>
 <a href="#branch"><span class="n">3</span>Branching &amp; Hotfixes</a>
 <a href="#antipatterns"><span class="n">7</span>Anti-patterns</a>
 <a href="#shiftleft"><span class="n">8</span>Shift Left</a>
 <a href="#deploy"><span class="n">9</span>Blue/Green vs Canary</a>
 </div></div>
-<div class="nav-group" data-group="k8s"><button class="tree-toggle" type="button" aria-expanded="true">Kubernetes &amp; EKS <span>−</span></button><div class="tree-branch">
+<div class="nav-group" data-group="k8s"><button class="tree-toggle" type="button" aria-expanded="false">Kubernetes &amp; EKS <span>+</span></button><div class="tree-branch" hidden>
 <a href="#eks"><span class="n">4</span>EKS &amp; K8s Concepts</a>
 <a href="#debug"><span class="n">11</span>Diagnostics &amp; Debugging</a>
 <a href="#resources"><span class="n">12</span>Requests &amp; Limits</a>
 </div></div>
-<div class="nav-group" data-group="serverless"><button class="tree-toggle" type="button" aria-expanded="true">Serverless <span>−</span></button><div class="tree-branch">
+<div class="nav-group" data-group="serverless"><button class="tree-toggle" type="button" aria-expanded="false">Serverless <span>+</span></button><div class="tree-branch" hidden>
 <a href="#lambda"><span class="n">5</span>Sync vs Async Lambda</a>
 <a href="#job"><span class="n">6</span>Async Job Status</a>
 </div></div>
-<div class="nav-group" data-group="iac"><button class="tree-toggle" type="button" aria-expanded="true">Infrastructure as Code <span>−</span></button><div class="tree-branch">
+<div class="nav-group" data-group="iac"><button class="tree-toggle" type="button" aria-expanded="false">Infrastructure as Code <span>+</span></button><div class="tree-branch" hidden>
 <a href="#terraform"><span class="n">10</span>Terraform State &amp; Secrets</a>
 </div></div>
-<div class="nav-group" data-group="network"><button class="tree-toggle" type="button" aria-expanded="true">Networking &amp; Security <span>−</span></button><div class="tree-branch">
+<div class="nav-group" data-group="network"><button class="tree-toggle" type="button" aria-expanded="false">Networking &amp; Security <span>+</span></button><div class="tree-branch" hidden>
 <a href="#vpc"><span class="n">13</span>Secure VPC Design</a>
 <a href="#financial"><span class="n">18</span>Financial Hardening</a>
 </div></div>
-<div class="nav-group" data-group="ops"><button class="tree-toggle" type="button" aria-expanded="true">Operations &amp; Reliability <span>−</span></button><div class="tree-branch">
+<div class="nav-group" data-group="ops"><button class="tree-toggle" type="button" aria-expanded="false">Operations &amp; Reliability <span>+</span></button><div class="tree-branch" hidden>
 <a href="#cost"><span class="n">14</span>Cloud Cost Reduction</a>
 <a href="#incident"><span class="n">15</span>Incident Response</a>
 <a href="#observability"><span class="n">16</span>Logs, Metrics &amp; Traces</a>
 </div></div>
-<div class="nav-group" data-group="reference"><button class="tree-toggle" type="button" aria-expanded="true">Quick Reference <span>−</span></button><div class="tree-branch">
+<div class="nav-group" data-group="reference"><button class="tree-toggle" type="button" aria-expanded="false">Quick Reference <span>+</span></button><div class="tree-branch" hidden>
 <a href="#visual-ref"><span class="n">REF</span>Visual Architecture</a>
 <a href="#pattern"><span class="n">19</span>Answer Pattern</a>
 </div></div>
-<div class="nav-group" data-group="guides"><button class="tree-toggle" type="button" aria-expanded="true">Related guides <span>−</span></button><div class="tree-branch">
+<div class="nav-group" data-group="guides"><button class="tree-toggle" type="button" aria-expanded="false">Related guides <span>+</span></button><div class="tree-branch" hidden>
 <a href="obervability-dashboard.html" target="guide-frame"><span class="n">OBS</span>Observability Dashboard</a>
 <a href="devops_agent_interview_guide.html" target="guide-frame"><span class="n">AI</span>DevOps Agent Interview</a>
 <a href="devops_cloud_architect_interview_questions.html" target="guide-frame"><span class="n">Q&A</span>Cloud Architect Questions</a>
@@ -1031,10 +1030,14 @@ const clearActiveLinks = () => {
   });
 };
 
-const closeGuidePreview = () => {
+const exitGuidePreview = () => {
   document.body.classList.remove('iframe-active');
   if (guideFrame) guideFrame.src = 'about:blank';
   guideLinks.forEach((link) => link.classList.remove('is-active'));
+};
+
+const closeGuidePreview = () => {
+  exitGuidePreview();
   clearActiveLinks();
   homeLink.setAttribute('aria-current', 'page');
 };
@@ -1052,10 +1055,7 @@ document.querySelectorAll('.preview-close,.guide-viewer-close').forEach((button)
 });
 
 inPageLinks.forEach((link) => {
-  link.addEventListener('click', () => {
-    document.body.classList.remove('iframe-active');
-    guideLinks.forEach((guideLink) => guideLink.classList.remove('is-active'));
-  });
+  link.addEventListener('click', exitGuidePreview);
 });
 
 document.querySelectorAll('.tree-toggle').forEach((toggle) => {

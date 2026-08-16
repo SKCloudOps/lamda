@@ -16,7 +16,7 @@ header h1{margin:0 0 6px;font-size:30px} header p{margin:0;color:#cbd5e1}
 .nav-group{margin:18px 0 0}.nav-group:first-of-type{margin-top:0}.nav-label{margin:0 0 5px;padding:0 12px;color:#93c5fd;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
 .tree-toggle{width:100%;display:flex;justify-content:space-between;align-items:center;border:0;border-radius:7px;background:transparent;color:#93c5fd;padding:8px 12px;font:700 11px Arial,Helvetica,sans-serif;letter-spacing:.08em;text-align:left;text-transform:uppercase;cursor:pointer}.tree-toggle:hover,.tree-toggle:focus-visible{background:#1f2937;color:#fff;outline:2px solid #60a5fa;outline-offset:1px}.tree-toggle span{font-size:17px;font-weight:400;line-height:1}.tree-branch{padding-left:8px;border-left:1px solid #334155}
 .menu-toggle{position:fixed;left:284px;top:18px;border:0;border-radius:6px;background:#2563eb;color:#fff;padding:9px 12px;font-size:18px;line-height:1;cursor:pointer;z-index:30;box-shadow:0 2px 8px #0003}.menu-toggle:hover{background:#1d4ed8}
-main{max-width:1200px;margin:28px auto;padding:0 20px}
+main{max-width:1200px;margin:28px auto;padding:0 20px;margin-right:40vw}.guide-viewer{position:fixed;top:28px;right:20px;bottom:20px;width:37vw;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 2px 8px #00000014;overflow:hidden;z-index:10}.guide-viewer h2{margin:0;padding:14px 16px;font-size:16px;border-bottom:1px solid var(--border)}.guide-viewer p{margin:0;padding:9px 16px;color:var(--muted);font-size:12px;border-bottom:1px solid var(--border)}.guide-viewer iframe{display:block;width:100%;height:calc(100% - 76px);border:0;background:var(--bg)}
 section{background:var(--card);margin:0 0 22px;padding:26px;border:1px solid var(--border);border-radius:12px;box-shadow:0 2px 8px #0000000a}
 h2{margin-top:0;color:#111827;border-bottom:2px solid #e8edf4;padding-bottom:8px}
 h3{color:#263449;margin-bottom:6px}.answer{background:#eff6ff;border-left:4px solid var(--accent);padding:12px 16px;margin:14px 0}
@@ -27,6 +27,8 @@ table{width:100%;border-collapse:collapse;margin:14px 0}th,td{border:1px solid v
 ul,ol{padding-left:24px}.small{color:var(--muted);font-size:14px}
 .top{color:#fff;text-decoration:none}.menu-hidden .sidebar{transform:translateX(-100%)}.menu-hidden header,.menu-hidden main{margin-left:0}.menu-hidden .menu-toggle{left:14px}
 @media(max-width:700px){header{margin-left:0;padding:28px 20px}.sidebar{width:270px}.menu-toggle{left:284px;top:14px}.menu-hidden .menu-toggle{left:14px}section{padding:18px}h1{font-size:24px}}
+@media(max-width:900px){main{margin-right:auto}.guide-viewer{position:relative;top:auto;right:auto;bottom:auto;width:auto;height:650px;margin:28px 20px 20px}}
+@media(max-width:700px){.guide-viewer{height:520px;margin:20px}}
 
 .diagram{margin:20px 0;padding:14px;background:#f8fafc;border:1px solid #dce3ed;border-radius:10px;overflow:auto}
 .diagram svg{display:block;width:100%;height:auto;min-width:700px}
@@ -50,7 +52,7 @@ ul,ol{padding-left:24px}.small{color:var(--muted);font-size:14px}
 <a href="#lambda">Lambda</a><a href="#antipatterns">Anti-patterns</a><a href="#shiftleft">Shift Left</a>
 <a href="#deploy">Deployments</a><a href="#terraform">Terraform</a><a href="#debug">Debugging</a></div></div>
 <div class="nav-group"><button class="tree-toggle" type="button" aria-expanded="true">Operations <span>−</span></button><div class="tree-branch"><a href="#resources">Resources</a><a href="#vpc">VPC</a><a href="#cost">Cost</a><a href="#incident">Incident</a><a href="#observability">Observability</a></div></div>
-<div class="nav-group"><button class="tree-toggle" type="button" aria-expanded="true">Related guides <span>−</span></button><div class="tree-branch"><a href="obervability-dashboard.html">Observability Dashboard</a><a href="devops_agent_interview_guide.html">DevOps Agent Interview Guide</a><a href="devops_cloud_architect_interview_questions.html">DevOps Cloud Architect Interview Questions</a><a href="k8s.html">Kubernetes Guide</a><a href="k8s-enterprise-arc.html">Enterprise EKS Architecture</a><a href="kubernetes_eks_interview_master_summary.html">Kubernetes EKS Summary</a><a href="enterprise_architecture_interview_guide_4_patterns.html">Enterprise Architecture Patterns</a><a href="terraform_interview_questions_senior_cloud_architect.html">Terraform Senior Cloud Architect</a></div></div>
+<div class="nav-group"><button class="tree-toggle" type="button" aria-expanded="true">Related guides <span>−</span></button><div class="tree-branch"><a href="obervability-dashboard.html" target="guide-frame">Observability Dashboard</a><a href="devops_agent_interview_guide.html" target="guide-frame">DevOps Agent Interview Guide</a><a href="devops_cloud_architect_interview_questions.html" target="guide-frame">DevOps Cloud Architect Interview Questions</a><a href="k8s.html" target="guide-frame">Kubernetes Guide</a><a href="k8s-enterprise-arc.html" target="guide-frame">Enterprise EKS Architecture</a><a href="kubernetes_eks_interview_master_summary.html" target="guide-frame">Kubernetes EKS Summary</a><a href="enterprise_architecture_interview_guide_4_patterns.html" target="guide-frame">Enterprise Architecture Patterns</a><a href="terraform_interview_questions_senior_cloud_architect.html" target="guide-frame">Terraform Senior Cloud Architect</a></div></div>
 </nav>
 
 <main>
@@ -946,6 +948,11 @@ Response</pre>
 </section>
 
 </main>
+<aside class="guide-viewer" aria-label="Related guide viewer">
+<h2>Related guide preview</h2>
+<p>Select an HTML guide from the left menu to open it here.</p>
+<iframe name="guide-frame" title="Related guide preview" src="about:blank"></iframe>
+</aside>
 <script>
 const menuToggle = document.querySelector('.menu-toggle');
 menuToggle.addEventListener('click', () => {

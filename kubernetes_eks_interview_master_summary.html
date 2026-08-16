@@ -73,6 +73,7 @@
 
   <div class="group">Architecture & Deployment</div>
   <a href="#multiaz">8. Multi-AZ EKS</a>
+  <a href="#karpenter">Karpenter Node Autoscaling</a>
   <a href="#deployments">9. Blue-Green vs Canary</a>
   <a href="#helm">14. Helm & Version Management</a>
 
@@ -106,6 +107,7 @@
 <li><a href="#scheduling">Taints, Tolerations, Affinity</a></li>
 <li><a href="#networkpolicy">NetworkPolicy</a></li>
 <li><a href="#multiaz">Multi-AZ</a></li>
+<li><a href="#karpenter">Karpenter Node Autoscaling</a></li>
 <li><a href="#deployments">Blue-Green vs Canary</a></li>
 <li><a href="#rbac">RBAC</a></li>
 <li><a href="#iam">IAM vs RBAC in EKS</a></li>
@@ -343,6 +345,47 @@ kubectl describe networkpolicy &lt;policy&gt; -n &lt;namespace&gt;</code></pre>
 Canary
 → Which application version gets traffic?
 → Deployment risk reduction</code></pre>
+</section>
+
+<section id="karpenter">
+<h2>Karpenter on EKS</h2>
+<p>Karpenter is a Kubernetes node autoscaler that observes unschedulable Pods and provisions right-sized EC2 capacity from their scheduling requirements. It can select instance types, Availability Zones, capacity types, and architectures without waiting for a fixed Auto Scaling Group template.</p>
+<pre><code>Pending Pod
+  ↓
+Karpenter observes scheduling requirements
+  ↓
+NodePool + EC2NodeClass constraints
+  ↓
+Launch right-sized EC2 node
+  ↓
+Schedule Pod and register node</code></pre>
+<h3>Karpenter versus Cluster Autoscaler</h3>
+<table>
+<tr><th>Area</th><th>Karpenter</th><th>Cluster Autoscaler</th></tr>
+<tr><td>Scaling decision</td><td>Provisions capacity based on pending Pod requirements.</td><td>Adjusts the size of configured node groups.</td></tr>
+<tr><td>Instance selection</td><td>Can choose from flexible instance families, sizes, zones, and capacity types.</td><td>Usually scales a predefined node-group template.</td></tr>
+<tr><td>Consolidation</td><td>Can consolidate underutilized or replaceable nodes when disruption is allowed.</td><td>Removes empty or underutilized nodes according to its scale-down rules.</td></tr>
+<tr><td>Best fit</td><td>Mixed workloads, fast provisioning, cost optimization, and flexible capacity.</td><td>Environments standardized around managed node groups.</td></tr>
+</table>
+<h3>Important production controls</h3>
+<ul>
+<li>Use NodePool requirements for instance family, architecture, zone, capacity type, and workload labels.</li>
+<li>Use limits to cap total CPU or memory that Karpenter may provision.</li>
+<li>Use disruption budgets and consolidation policies so voluntary replacements respect availability requirements.</li>
+<li>Use PodDisruptionBudgets, topology spread constraints, and multiple replicas for resilient workloads.</li>
+<li>Give Karpenter least-privilege IAM permissions and verify its interruption handling for Spot capacity.</li>
+<li>Keep critical system workloads on reliable capacity and avoid allowing consolidation to remove all replicas of a service.</li>
+</ul>
+<h3>Karpenter troubleshooting</h3>
+<pre class="cmd"><code>kubectl get nodepools
+kubectl describe nodepool &lt;nodepool&gt;
+kubectl get nodeclaims
+kubectl describe nodeclaim &lt;nodeclaim&gt;
+kubectl get pods -n kube-system -l app.kubernetes.io/name=karpenter
+kubectl logs -n kube-system -l app.kubernetes.io/name=karpenter --since=30m
+kubectl get events -A --sort-by='.lastTimestamp'
+kubectl get pods -A --field-selector=status.phase=Pending</code></pre>
+<div class="note"><b>Interview answer:</b> “Karpenter provisions nodes from pending Pod requirements instead of scaling only a fixed node-group template. I would control it with NodePools, limits, disruption budgets, topology rules, least-privilege IAM, and careful monitoring of pending Pods, NodeClaims, provisioning errors, and consolidation events.”</div>
 </section>
 
 <section id="deployments">

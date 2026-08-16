@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise Architecture Interview Guide - 3 Patterns</title>
+<style>
+:root{
+  --navy:#102a43; --blue:#1769aa; --cyan:#0b7285; --green:#2b8a3e;
+  --orange:#e67700; --purple:#6741d9; --red:#c92a2a; --gray:#52606d;
+  --light:#f5f7fa; --border:#d9e2ec; --white:#fff; --shadow:0 3px 14px rgba(16,42,67,.10);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;color:#243b53;background:#f5f7fa;line-height:1.55}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:270px;background:#102a43;color:white;padding:24px 18px;overflow:auto}
+.sidebar h1{font-size:19px;margin:0 0 6px}
+.sidebar p{font-size:12px;color:#bcccdc;margin:0 0 22px}
+.sidebar a{display:block;color:#d9e2ec;text-decoration:none;padding:10px 12px;border-radius:7px;font-size:13px;margin:3px 0}
+.sidebar a:hover{background:#243b53;color:white}
+.sidebar .group{margin-top:18px;color:#7cc4ff;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:0 12px}
+main{margin-left:270px;padding:30px 42px 60px;max-width:1500px}
+.hero{background:linear-gradient(135deg,#102a43,#1769aa);color:#fff;border-radius:14px;padding:30px 34px;box-shadow:var(--shadow);margin-bottom:25px}
+.hero h2{font-size:30px;margin:0 0 8px}
+.hero p{margin:5px 0;color:#e6f0f8}
+.card{background:white;border:1px solid var(--border);border-radius:12px;padding:22px;margin:20px 0;box-shadow:var(--shadow)}
+h2{color:var(--navy);margin-top:0;font-size:25px}
+h3{color:#243b53;margin-top:22px}
+h4{margin-bottom:7px;color:var(--blue)}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}
+.badge{padding:5px 9px;border-radius:999px;background:#e7f5ff;color:#075985;font-size:12px;font-weight:700}
+.quote{border-left:4px solid var(--blue);background:#f0f7ff;padding:16px 18px;margin:14px 0;border-radius:0 8px 8px 0}
+.warn{border-left:4px solid var(--orange);background:#fff8e6;padding:14px 18px;border-radius:0 8px 8px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.mini{border:1px solid var(--border);border-radius:9px;padding:15px;background:#fbfcfe}
+.mini strong{display:block;color:var(--navy);margin-bottom:5px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{border:1px solid var(--border);padding:9px 10px;text-align:left;vertical-align:top}
+th{background:#eef2f6;color:var(--navy)}
+.diagram{overflow:auto;background:#fbfcfe;border:1px solid var(--border);border-radius:10px;padding:14px}
+.diagram svg{min-width:1050px;width:100%;height:auto;display:block}
+.node{fill:#fff;stroke:#78909c;stroke-width:1.5}
+.node-blue{fill:#e7f5ff;stroke:#1971c2}
+.node-green{fill:#ebfbee;stroke:#2b8a3e}
+.node-purple{fill:#f3f0ff;stroke:#6741d9}
+.node-orange{fill:#fff4e6;stroke:#e67700}
+.node-red{fill:#fff5f5;stroke:#c92a2a}
+.node-gray{fill:#f1f3f5;stroke:#868e96}
+.zone{fill:#f8fafc;stroke:#9fb3c8;stroke-width:2}
+.title{font-size:17px;font-weight:700;fill:#102a43}
+.label{font-size:13px;font-weight:700;fill:#243b53}
+.small{font-size:11px;fill:#52606d}
+.arrow{stroke:#52606d;stroke-width:2;fill:none;marker-end:url(#arrow)}
+.arrow-blue{stroke:#1769aa;stroke-width:2.2;fill:none;marker-end:url(#arrowBlue)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;margin:10px 0}
+.legend span{display:inline-flex;align-items:center;gap:5px}.dot{width:12px;height:12px;border-radius:3px;display:inline-block}
+ol li,ul li{margin:5px 0}
+.code{font-family:Consolas,monospace;background:#102a43;color:#e6f0f8;padding:12px 14px;border-radius:8px;overflow:auto;font-size:12px}
+.tocnum{color:#7cc4ff;font-weight:700}
+.footer{color:#829ab1;font-size:12px;text-align:center;margin-top:40px}
+@media(max-width:900px){
+ .sidebar{position:relative;width:auto;height:auto}
+ main{margin-left:0;padding:20px}
+}
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <h1>Architecture Interview Guide</h1>
+  <p>Four real-world enterprise architecture patterns</p>
+  <div class="group">Other Guides</div>
+  <a href="index.html">DevOps Interview Master Notes</a>
+  <div class="group">Overview</div>
+  <a href="#how">How to explain architecture</a>
+  <a href="#compare">Compare the 3 patterns</a>
+  <div class="group">Pattern 1</div>
+  <a href="#p1">myPKFiT overview</a>
+  <a href="#p1diagram">myPKFiT diagram</a>
+  <a href="#p1story">Interview story</a>
+  <a href="#p1questions">Likely questions</a>
+  <div class="group">Pattern 2</div>
+  <a href="#p2">OneSourceQA overview</a>
+  <a href="#p2diagram">OneSourceQA diagram</a>
+  <a href="#p2story">Interview story</a>
+  <a href="#p2questions">Likely questions</a>
+  <div class="group">Pattern 3</div>
+  <a href="#p3">VDZ / Spring Cloud overview</a>
+  <a href="#p3diagram">VDZ diagram</a>
+  <a href="#p3story">Interview story</a>
+  <a href="#p3questions">Likely questions</a>
+  <div class="group">Global E-Commerce</div>
+  <a href="#p4">E-commerce DR architecture</a>
+  <a href="#p4diagram">Database & DR diagram</a>
+  <a href="#p4story">Interview story</a>
+  <a href="#p4questions">Likely questions</a>
+  <div class="group">Interview</div>
+  <a href="#decision">Architectural decisions</a>
+  <a href="#closing">Strong closing answer</a>
+</nav>
+
+<main>
+<section class="hero">
+  <h2>Enterprise Architecture Interview Guide</h2>
+  <p><strong>Three architecture patterns from your experience</strong></p>
+  <p>1. myPKFiT — Terraform + EC2 + Internal ALB &nbsp; | &nbsp;
+     2. OneSourceQA — Serverless + API + Data Platform &nbsp; | &nbsp;
+     3. VDZ — Spring Cloud Microservices + EKS &nbsp; | &nbsp; 4. Global E-Commerce — EKS + DR</p>
+  <div class="badges">
+    <span class="badge">AWS</span><span class="badge">Terraform</span><span class="badge">EKS</span>
+    <span class="badge">Lambda</span><span class="badge">API Gateway</span><span class="badge">ALB</span>
+    <span class="badge">CI/CD</span><span class="badge">Enterprise Security</span>
+  </div>
+</section>
+
+<section id="how" class="card">
+<h2>How to Explain Any Architecture in an Interview</h2>
+<div class="quote">
+<strong>Do not start by listing AWS services.</strong><br>
+Start with the business requirement, then explain how each architectural layer solves that requirement.
+</div>
+<div class="grid">
+<div class="mini"><strong>1. Business problem</strong>What were you trying to achieve?</div>
+<div class="mini"><strong>2. Entry / access</strong>How do users or systems reach the application?</div>
+<div class="mini"><strong>3. Application flow</strong>How does a request move through the platform?</div>
+<div class="mini"><strong>4. Data</strong>Where is data stored and how is it accessed?</div>
+<div class="mini"><strong>5. Security</strong>Identity, authorization, network, secrets and encryption.</div>
+<div class="mini"><strong>6. Deployment</strong>How are infrastructure and applications released?</div>
+<div class="mini"><strong>7. Resilience</strong>How do you handle failure and scale?</div>
+<div class="mini"><strong>8. Your role</strong>What did you personally design, implement or decide?</div>
+</div>
+</section>
+
+<section id="compare" class="card">
+<h2>Three Patterns at a Glance</h2>
+<table>
+<tr><th>Pattern</th><th>Primary architecture</th><th>Main strength</th><th>Key technologies</th></tr>
+<tr><td><strong>1. myPKFiT</strong></td><td>EC2-based enterprise application</td><td>Standardized IaC and private application access</td><td>Terraform Cloud, Vault, EC2, ALB, Route 53, Golden AMI</td></tr>
+<tr><td><strong>2. OneSourceQA</strong></td><td>Serverless API + data platform</td><td>Private-by-default access and fine-grained authorization</td><td>Entra ID, WAF, CloudFront, S3, API Gateway, Lambda, Databricks, GitHub Actions</td></tr>
+<tr><td><strong>3. VDZ</strong></td><td>Spring Cloud microservices on EKS</td><td>Independent services, scaling and Kubernetes orchestration</td><td>EKS, ALB Ingress, Helm, Eureka, Config Server, RDS, JFrog, Harness</td></tr>
+</table>
+</section>
+
+<!-- PATTERN 1 -->
+<section id="p1" class="card">
+<h2>Pattern 1 — myPKFiT: Enterprise IaC + EC2 + Internal ALB</h2>
+<p><strong>Architecture objective:</strong> Standardize AWS infrastructure provisioning for an enterprise EC2 application while enforcing secure credentials, approved operating-system baselines, private network access and reusable infrastructure patterns.</p>
+<div class="grid">
+<div class="mini"><strong>IaC</strong>Terraform + Takeda private Terraform Cloud modules</div>
+<div class="mini"><strong>Credentials</strong>Vault issues temporary STS credentials</div>
+<div class="mini"><strong>Compute</strong>EC2 instances using approved RHEL8 Golden AMIs</div>
+<div class="mini"><strong>Traffic</strong>Internal ALB with host-header routing</div>
+<div class="mini"><strong>Routing</strong>Separate target groups for pkc3, pkc2, mma2 and vdz1</div>
+<div class="mini"><strong>Health</strong>HTTP /index.html health checks</div>
+</div>
+</section>
+
+<section id="p1diagram" class="card">
+<h2>Pattern 1 — Enterprise Architecture Diagram</h2>
+<div class="diagram">
+<svg viewBox="0 0 1400 690" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#52606d"/></marker>
+<marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#1769aa"/></marker>
+</defs>
+<rect x="15" y="15" width="1370" height="660" rx="12" class="zone"/>
+<text x="35" y="45" class="title">Enterprise DevOps / IaC</text>
+<rect x="35" y="65" width="250" height="150" rx="10" class="node-blue"/>
+<text x="55" y="92" class="label">Developer / Git</text><text x="55" y="120" class="small">Terraform code</text><text x="55" y="145" class="small">Environment configuration</text><text x="55" y="170" class="small">Reusable modules</text>
+<rect x="320" y="65" width="260" height="150" rx="10" class="node-purple"/>
+<text x="340" y="92" class="label">Terraform Cloud</text><text x="340" y="120" class="small">Takeda organization</text><text x="340" y="145" class="small">Remote state • Plan / Apply</text><text x="340" y="170" class="small">Private modules / policy controls</text>
+<rect x="615" y="65" width="235" height="150" rx="10" class="node-purple"/>
+<text x="635" y="92" class="label">Vault</text><text x="635" y="120" class="small">Temporary AWS credentials</text><text x="635" y="145" class="small">STS federation</text><text x="635" y="170" class="small">No hardcoded long-lived keys</text>
+<path d="M285 140 L320 140" class="arrow-blue"/><path d="M580 140 L615 140" class="arrow-blue"/>
+
+<rect x="35" y="250" width="1330" height="395" rx="12" class="zone"/>
+<text x="55" y="280" class="title">AWS Account / VPC — usvga / dev</text>
+
+<rect x="60" y="305" width="220" height="115" rx="10" class="node-gray"/>
+<text x="80" y="335" class="label">Route 53 / Network</text><text x="80" y="362" class="small">Enterprise DNS / private access</text><text x="80" y="389" class="small">Security group controls</text>
+
+<rect x="320" y="305" width="310" height="115" rx="10" class="node-blue"/>
+<text x="340" y="335" class="label">Internal Application Load Balancer</text><text x="340" y="362" class="small">HTTP :80</text><text x="340" y="389" class="small">Host-header listener rules</text>
+
+<rect x="675" y="305" width="285" height="115" rx="10" class="node-orange"/>
+<text x="695" y="335" class="label">Target Groups</text><text x="695" y="362" class="small">TG-pkc3 • TG-pkc2</text><text x="695" y="389" class="small">TG-mma2 • TG-vdz1</text>
+
+<rect x="1005" y="305" width="330" height="115" rx="10" class="node-green"/>
+<text x="1025" y="335" class="label">EC2 Application Components</text><text x="1025" y="362" class="small">pkc3 • pkc2 • mma2 • vdz1</text><text x="1025" y="389" class="small">RHEL8 approved Golden AMI</text>
+
+<path d="M280 362 L320 362" class="arrow-blue"/><path d="M630 362 L675 362" class="arrow-blue"/><path d="M960 362 L1005 362" class="arrow-blue"/>
+<path d="M740 440 L740 485" class="arrow"/><path d="M1165 440 L1165 485" class="arrow"/>
+
+<rect x="500" y="485" width="280" height="110" rx="10" class="node-orange"/>
+<text x="520" y="515" class="label">Golden AMI Source</text><text x="520" y="542" class="small">Shared AWS account</text><text x="520" y="569" class="small">Approved RHEL8 baseline</text>
+
+<rect x="820" y="485" width="280" height="110" rx="10" class="node-green"/>
+<text x="840" y="515" class="label">ALB Health Checks</text><text x="840" y="542" class="small">HTTP GET /index.html</text><text x="840" y="569" class="small">Unhealthy instances removed</text>
+
+<rect x="1135" y="455" width="195" height="140" rx="10" class="node-purple"/>
+<text x="1155" y="485" class="label">Reusable Patterns</text><text x="1155" y="512" class="small">RDS MySQL</text><text x="1155" y="535" class="small">S3 backup</text><text x="1155" y="558" class="small">IAM / Mgmt EC2</text><text x="1155" y="581" class="small">Couchbase / ALB</text>
+
+<path d="M735 215 L735 250" class="arrow-blue"/>
+<text x="752" y="238" class="small">Provision</text>
+</svg>
+</div>
+</section>
+
+<section id="p1story" class="card">
+<h2>Pattern 1 — Interview Story</h2>
+<div class="quote">
+<strong>60–90 seconds:</strong><br>
+“I worked on the myPKFiT infrastructure architecture using Terraform. The main objective was to provision AWS infrastructure consistently using Takeda’s enterprise standards and reusable private Terraform Cloud modules. Terraform state was maintained remotely in Terraform Cloud, while AWS authentication was integrated with Vault so Terraform received temporary STS credentials rather than using static AWS access keys.
+<br><br>
+For the application layer, we provisioned EC2 instances for components such as pkc3, pkc2, mma2 and vdz1. The instances used approved RHEL8 Golden AMIs selected dynamically from a shared AWS account. This gave us a controlled and consistent operating-system baseline.
+<br><br>
+Traffic was handled by an internal Application Load Balancer. Host-header listener rules routed requests to separate target groups for each application component. The ALB used HTTP health checks against /index.html so unhealthy instances were removed from traffic.
+<br><br>
+The architecture was also modular. Environment-specific configuration was separated from reusable modules for EC2, ALB, RDS, S3, IAM and other infrastructure. The main benefits were standardization, security, reusability and controlled private access.”
+</div>
+<h3>What you should emphasize</h3>
+<ul>
+<li><strong>Security:</strong> Vault + temporary STS credentials, no static AWS keys.</li>
+<li><strong>Enterprise standardization:</strong> private modules and approved Golden AMIs.</li>
+<li><strong>Networking:</strong> internal ALB rather than direct internet exposure.</li>
+<li><strong>Scalability of the design:</strong> separate target groups and reusable modules.</li>
+<li><strong>Operations:</strong> ALB health checks and centralized Terraform state.</li>
+</ul>
+</section>
+
+<section id="p1questions" class="card">
+<h2>Pattern 1 — Likely Interview Questions</h2>
+<table>
+<tr><th>Question</th><th>Strong answer direction</th></tr>
+<tr><td>Why Terraform Cloud?</td><td>Centralized remote state, controlled execution, reusable private modules and enterprise governance.</td></tr>
+<tr><td>Why Vault?</td><td>Avoid long-lived AWS access keys; obtain short-lived STS credentials for Terraform.</td></tr>
+<tr><td>Why Golden AMI?</td><td>Approved, hardened and consistent OS baseline across enterprise workloads.</td></tr>
+<tr><td>Why internal ALB?</td><td>The application is intended for private enterprise access, reducing public attack surface.</td></tr>
+<tr><td>Why host-based routing?</td><td>Multiple application components can share one ALB while routing to separate target groups.</td></tr>
+<tr><td>Why separate target groups?</td><td>Independent health checks, routing, scaling and operational isolation.</td></tr>
+<tr><td>What happens when EC2 is unhealthy?</td><td>ALB health checks fail and the instance is removed from the traffic rotation.</td></tr>
+</table>
+</section>
+
+<!-- PATTERN 2 -->
+<section id="p2" class="card">
+<h2>Pattern 2 — OneSourceQA: Private Serverless API + Data Platform</h2>
+<p><strong>Architecture objective:</strong> Build a private enterprise application with SSO/MFA, fine-grained authorization, private frontend hosting, API-driven services, private data connectivity and secure automated deployment.</p>
+<div class="grid">
+<div class="mini"><strong>Identity</strong>Microsoft Entra ID, Enterprise SSO, MFA, OAuth/OIDC</div>
+<div class="mini"><strong>Edge</strong>Route 53, WAF and CloudFront</div>
+<div class="mini"><strong>Frontend</strong>Private S3 React application, OAC and KMS</div>
+<div class="mini"><strong>API</strong>Regional API Gateway with explicit E01–E26 routes</div>
+<div class="mini"><strong>Authorization</strong>Lambda REQUEST Authorizer + JWT/JWKS + user/role/center checks</div>
+<div class="mini"><strong>Data</strong>Lambda to Databricks through Site-to-Site VPN; Lakebase / ODS</div>
+</div>
+</section>
+
+<section id="p2diagram" class="card">
+<h2>Pattern 2 — Enterprise Architecture Diagram</h2>
+<div class="diagram">
+<svg viewBox="0 0 1400 760" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<marker id="arrow2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#52606d"/></marker>
+</defs>
+<rect x="15" y="15" width="1370" height="730" rx="12" class="zone"/>
+<text x="35" y="45" class="title">OneSourceQA — Private Enterprise Serverless Platform</text>
+
+<rect x="35" y="75" width="180" height="210" rx="10" class="node-blue"/>
+<text x="55" y="105" class="label">Users / Identity</text><text x="55" y="140" class="small">Takeda internal users</text><text x="55" y="165" class="small">My Apps portal</text><text x="55" y="190" class="small">Entra ID</text><text x="55" y="215" class="small">SSO + MFA</text><text x="55" y="240" class="small">OAuth 2.0 / OIDC</text>
+
+<rect x="250" y="75" width="190" height="210" rx="10" class="node-red"/>
+<text x="270" y="105" class="label">DNS / Edge</text><text x="270" y="140" class="small">Private Route 53</text><text x="270" y="170" class="small">AWS WAF</text><text x="270" y="200" class="small">CloudFront</text><text x="270" y="230" class="small">SPA routing</text>
+
+<rect x="475" y="75" width="205" height="210" rx="10" class="node-green"/>
+<text x="495" y="105" class="label">Frontend</text><text x="495" y="140" class="small">Private S3 bucket</text><text x="495" y="170" class="small">React application</text><text x="495" y="200" class="small">Origin Access Control</text><text x="495" y="230" class="small">SSE-KMS</text>
+
+<rect x="715" y="75" width="205" height="210" rx="10" class="node-purple"/>
+<text x="735" y="105" class="label">API Layer</text><text x="735" y="140" class="small">Regional REST API Gateway</text><text x="735" y="170" class="small">Explicit API routes</text><text x="735" y="200" class="small">E01 ... E26</text><text x="735" y="230" class="small">/api/*</text>
+
+<rect x="955" y="75" width="205" height="210" rx="10" class="node-orange"/>
+<text x="975" y="105" class="label">Authorization</text><text x="975" y="135" class="small">Lambda REQUEST Authorizer</text><text x="975" y="165" class="small">Validate Entra JWT</text><text x="975" y="190" class="small">JWKS signature</text><text x="975" y="215" class="small">User / Role / Center</text><text x="975" y="240" class="small">ODS authorization</text>
+
+<rect x="1195" y="75" width="165" height="210" rx="10" class="node-green"/>
+<text x="1215" y="105" class="label">Services</text><text x="1215" y="140" class="small">Lambda services</text><text x="1215" y="170" class="small">Private subnets</text><text x="1215" y="200" class="small">Multi-AZ</text><text x="1215" y="230" class="small">Private ECR</text>
+
+<path d="M215 180 L250 180" class="arrow2"/><path d="M440 180 L475 180" class="arrow2"/><path d="M680 180 L715 180" class="arrow2"/><path d="M920 180 L955 180" class="arrow2"/><path d="M1160 180 L1195 180" class="arrow2"/>
+
+<rect x="35" y="330" width="620" height="250" rx="10" class="zone"/>
+<text x="55" y="360" class="title">Private Data Connectivity</text>
+<rect x="65" y="390" width="240" height="120" rx="10" class="node-blue"/>
+<text x="85" y="420" class="label">Lambda Services</text><text x="85" y="450" class="small">Business APIs</text><text x="85" y="480" class="small">Reports Lambda</text>
+<rect x="350" y="390" width="240" height="120" rx="10" class="node-purple"/>
+<text x="370" y="420" class="label">Site-to-Site VPN</text><text x="370" y="450" class="small">Private connectivity</text><text x="370" y="480" class="small">No direct user access</text>
+<path d="M305 450 L350 450" class="arrow2"/>
+<rect x="350" y="525" width="240" height="35" rx="8" class="node-gray"/>
+<text x="370" y="548" class="small">Databricks / Lakebase / ODS</text>
+<path d="M470 510 L470 525" class="arrow2"/>
+
+<rect x="685" y="330" width="675" height="250" rx="10" class="zone"/>
+<text x="705" y="360" class="title">DevOps / Delivery</text>
+<rect x="715" y="390" width="180" height="120" rx="10" class="node-gray"/>
+<text x="735" y="420" class="label">GitHub</text><text x="735" y="450" class="small">Source repository</text><text x="735" y="480" class="small">Pull requests</text>
+<rect x="950" y="390" width="180" height="120" rx="10" class="node-blue"/>
+<text x="970" y="420" class="label">GitHub Actions</text><text x="970" y="450" class="small">Build / Test</text><text x="970" y="480" class="small">Security / Deploy</text>
+<rect x="1180" y="390" width="150" height="120" rx="10" class="node-orange"/>
+<text x="1200" y="420" class="label">AWS OIDC</text><text x="1200" y="450" class="small">Federated IAM</text><text x="1200" y="480" class="small">No long-lived keys</text>
+<path d="M895 450 L950 450" class="arrow2"/><path d="M1130 450 L1180 450" class="arrow2"/>
+
+<rect x="35" y="610" width="1325" height="100" rx="10" class="node-gray"/>
+<text x="55" y="640" class="title">Cross-Cutting Security / Operations</text>
+<text x="55" y="675" class="small">IAM least privilege • KMS encryption • Secrets Manager • WAF • CloudWatch • CloudTrail • VPC private networking • AWS Config / compliance</text>
+</svg>
+</div>
+</section>
+
+<section id="p2story" class="card">
+<h2>Pattern 2 — Interview Story</h2>
+<div class="quote">
+<strong>2 minutes:</strong><br>
+“OneSourceQA is a private enterprise application running in AWS. The main design goals were private-by-default access, enterprise SSO and MFA, fine-grained authorization, private data connectivity and automated secure deployment.
+<br><br>
+Users access the application through the Takeda internal application portal and Microsoft Entra ID. Private DNS is used for the application endpoint. The request enters through WAF and CloudFront. CloudFront serves the React frontend from a private S3 bucket using Origin Access Control and KMS encryption.
+<br><br>
+API traffic is forwarded to a Regional API Gateway. Instead of using a generic catch-all route, the API uses explicit E01 through E26 routes. Before the business Lambda executes, API Gateway invokes a Lambda REQUEST Authorizer. The authorizer validates the Entra JWT and performs application-specific user, role and center authorization.
+<br><br>
+Once authorized, the request is routed to the appropriate Lambda service running in private networking. The services use private container images from ECR and communicate with the data platform through a Site-to-Site VPN. The platform includes Databricks, Lakebase and ODS data. Reporting is separated into a dedicated Reports Lambda.
+<br><br>
+From the DevOps side, GitHub Actions handles build, test, security checks and deployment. GitHub uses OIDC federation to obtain AWS access instead of storing long-lived AWS credentials.”
+</div>
+<h3>Architectural principles</h3>
+<ul>
+<li>Private-by-default application access.</li>
+<li>Enterprise identity separated from application authorization.</li>
+<li>Explicit API routing instead of a generic proxy.</li>
+<li>Independent Lambda services for scaling and failure isolation.</li>
+<li>Private connectivity to the data platform.</li>
+<li>OIDC-based CI/CD authentication.</li>
+</ul>
+</section>
+
+<section id="p2questions" class="card">
+<h2>Pattern 2 — Likely Interview Questions</h2>
+<table>
+<tr><th>Question</th><th>Strong answer direction</th></tr>
+<tr><td>Why Lambda Authorizer?</td><td>Authorization required application-specific user, role and center checks in addition to JWT validation.</td></tr>
+<tr><td>Why explicit API routes?</td><td>Better routing, authorization, observability and service ownership than a generic catch-all.</td></tr>
+<tr><td>Why private S3?</td><td>Prevent direct public bucket access; CloudFront accesses the bucket through OAC.</td></tr>
+<tr><td>Why CloudFront?</td><td>Edge delivery, SPA routing and a controlled entry point in front of private origins.</td></tr>
+<tr><td>Why Site-to-Site VPN?</td><td>Private connectivity between AWS workloads and the external data platform.</td></tr>
+<tr><td>How is CI/CD secured?</td><td>GitHub Actions uses OIDC federation and IAM rather than long-lived AWS keys.</td></tr>
+<tr><td>How do you protect secrets?</td><td>Use managed secret storage such as Secrets Manager and least-privilege IAM.</td></tr>
+</table>
+</section>
+
+<!-- PATTERN 3 -->
+<section id="p3" class="card">
+<h2>Pattern 3 — VDZ: Spring Cloud Microservices on Amazon EKS</h2>
+<p><strong>Architecture objective:</strong> Run business services as containerized microservices on Kubernetes, allowing independent deployment, service discovery, centralized configuration and horizontal scaling.</p>
+<div class="grid">
+<div class="mini"><strong>Ingress</strong>AWS ALB through Kubernetes Ingress with TLS</div>
+<div class="mini"><strong>Business services</strong>vdz-app and vdz-calculator</div>
+<div class="mini"><strong>Spring Cloud</strong>Eureka service discovery and Config Server</div>
+<div class="mini"><strong>Platform</strong>AWS EKS + Kubernetes Services + Helm</div>
+<div class="mini"><strong>Data</strong>AWS RDS MySQL</div>
+<div class="mini"><strong>Delivery</strong>JFrog Artifactory + Harness CI/CD</div>
+<div class="mini"><strong>Scaling</strong>HPA for Kubernetes workloads</div>
+<div class="mini"><strong>Security</strong>TLS, RBAC, image pull secrets and Kubernetes controls</div>
+</div>
+</section>
+
+<section id="p3diagram" class="card">
+<h2>Pattern 3 — Enterprise Architecture Diagram</h2>
+<div class="diagram">
+<svg viewBox="0 0 1400 720" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<marker id="arrow3" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#52606d"/></marker>
+</defs>
+<rect x="15" y="15" width="1370" height="690" rx="12" class="zone"/>
+<text x="35" y="45" class="title">VDZ — Spring Cloud Microservices Platform on AWS EKS</text>
+
+<rect x="45" y="80" width="190" height="120" rx="10" class="node-blue"/>
+<text x="65" y="110" class="label">Users / Clients</text><text x="65" y="140" class="small">Application consumers</text><text x="65" y="170" class="small">HTTPS / TLS</text>
+
+<rect x="285" y="80" width="220" height="120" rx="10" class="node-purple"/>
+<text x="305" y="110" class="label">AWS ALB Ingress</text><text x="305" y="140" class="small">TLS termination</text><text x="305" y="170" class="small">Host / path routing</text>
+
+<path d="M235 140 L285 140" class="arrow3"/>
+
+<rect x="555" y="60" width="750" height="535" rx="12" class="zone"/>
+<text x="580" y="90" class="title">Amazon EKS Cluster</text>
+<text x="580" y="112" class="small">Kubernetes + Helm + HPA + RBAC</text>
+
+<rect x="590" y="140" width="205" height="125" rx="10" class="node-blue"/>
+<text x="610" y="170" class="label">vdz-app</text><text x="610" y="200" class="small">Port 80</text><text x="610" y="225" class="small">Main application / API</text><text x="610" y="248" class="small">Kubernetes Service</text>
+
+<rect x="835" y="140" width="205" height="125" rx="10" class="node-green"/>
+<text x="855" y="170" class="label">vdz-calculator</text><text x="855" y="200" class="small">Port 8081</text><text x="855" y="225" class="small">Calculation service</text><text x="855" y="248" class="small">Kubernetes Service</text>
+
+<rect x="1080" y="140" width="190" height="125" rx="10" class="node-purple"/>
+<text x="1100" y="170" class="label">Spring Cloud</text><text x="1100" y="200" class="small">Eureka :8761</text><text x="1100" y="225" class="small">Config :8888</text><text x="1100" y="248" class="small">Platform services</text>
+
+<path d="M505 140 L590 190" class="arrow3"/>
+<path d="M795 205 L835 205" class="arrow3"/>
+<path d="M1040 205 L1080 205" class="arrow3"/>
+
+<rect x="590" y="315" width="205" height="120" rx="10" class="node-orange"/>
+<text x="610" y="345" class="label">Helm Releases</text><text x="610" y="375" class="small">Values / templates</text><text x="610" y="405" class="small">Repeatable deployment</text>
+
+<rect x="835" y="315" width="205" height="120" rx="10" class="node-green"/>
+<text x="855" y="345" class="label">HPA / Resilience</text><text x="855" y="375" class="small">Horizontal scaling</text><text x="855" y="405" class="small">Pod lifecycle</text>
+
+<rect x="1080" y="315" width="190" height="120" rx="10" class="node-red"/>
+<text x="1100" y="345" class="label">K8s Security</text><text x="1100" y="375" class="small">RBAC</text><text x="1100" y="405" class="small">Image pull secrets</text>
+
+<rect x="590" y="475" width="205" height="90" rx="10" class="node-gray"/>
+<text x="610" y="505" class="label">Container Images</text><text x="610" y="535" class="small">JFrog Artifactory</text>
+
+<rect x="835" y="475" width="205" height="90" rx="10" class="node-blue"/>
+<text x="855" y="505" class="label">Persistent Storage</text><text x="855" y="535" class="small">EFS / PVC as configured</text>
+
+<rect x="1080" y="475" width="190" height="90" rx="10" class="node-orange"/>
+<text x="1100" y="505" class="label">Application Data</text><text x="1100" y="535" class="small">RDS MySQL</text>
+
+<path d="M690 435 L690 475" class="arrow3"/>
+<path d="M935 435 L935 475" class="arrow3"/>
+<path d="M1175 435 L1175 475" class="arrow3"/>
+
+<rect x="45" y="300" width="430" height="170" rx="10" class="zone"/>
+<text x="65" y="330" class="title">CI/CD</text>
+<rect x="70" y="355" width="150" height="85" rx="10" class="node-gray"/>
+<text x="90" y="385" class="label">Source</text><text x="90" y="415" class="small">Application code</text>
+<rect x="250" y="355" width="190" height="85" rx="10" class="node-blue"/>
+<text x="270" y="385" class="label">Harness CI/CD</text><text x="270" y="415" class="small">Build / Test / Helm Deploy</text>
+<path d="M220 397 L250 397" class="arrow3"/>
+<path d="M440 397 L555 280" class="arrow3"/>
+
+<rect x="45" y="515" width="430" height="100" rx="10" class="node-gray"/>
+<text x="65" y="545" class="title">Build</text><text x="65" y="575" class="small">Maven + OpenJDK 11 → container image → private JFrog Artifactory</text>
+</svg>
+</div>
+</section>
+
+<section id="p3story" class="card">
+<h2>Pattern 3 — Interview Story</h2>
+<div class="quote">
+<strong>90 seconds:</strong><br>
+“Another architecture I worked with was a Spring Cloud microservices platform running on Amazon EKS. The main objective was to move the application into a cloud-native Kubernetes architecture where individual services could be deployed and scaled independently.
+<br><br>
+At the entry point, an AWS Application Load Balancer was integrated through Kubernetes Ingress. The ALB handled TLS and routed requests to the appropriate Kubernetes service.
+<br><br>
+The application consisted of separate Spring Boot services such as vdz-app and vdz-calculator. We also had Spring Cloud platform services: Eureka for service discovery and Config Server for centralized configuration. The services were deployed as Kubernetes workloads and packaged using Helm charts.
+<br><br>
+For scalability, we used Kubernetes HPA so workloads could scale horizontally based on demand. For persistence, the application used AWS RDS MySQL. Persistent storage was handled through the configured EFS/PVC approach where required.
+<br><br>
+Container images were built with Maven and OpenJDK 11 and stored in Takeda’s private JFrog Artifactory. Harness was used for CI/CD and Helm-based deployment. Security included TLS at the ingress layer, Kubernetes RBAC and image pull secrets.
+<br><br>
+The key architectural benefits were independent service deployment, Kubernetes-based scaling, centralized configuration, service discovery and clear separation between business services, platform services and the data layer.”
+</div>
+<h3>Important interview nuance: Eureka vs Kubernetes Service Discovery</h3>
+<div class="warn">
+<strong>Be ready for this question:</strong> “Why did you use Eureka when Kubernetes already provides service discovery?”<br><br>
+A safe answer is: “Kubernetes provides native service discovery through Kubernetes Services and DNS. In this architecture, Eureka was part of the existing Spring Cloud application platform and provided application-level service registration/discovery. If I were redesigning the platform today, I would evaluate whether Eureka is still necessary and whether Kubernetes-native discovery would simplify the architecture.”
+</div>
+</section>
+
+<section id="p3questions" class="card">
+<h2>Pattern 3 — Likely Interview Questions</h2>
+<table>
+<tr><th>Question</th><th>Strong answer direction</th></tr>
+<tr><td>Why EKS?</td><td>Container orchestration, independent service deployment, Kubernetes ecosystem and horizontal scaling.</td></tr>
+<tr><td>Why Helm?</td><td>Reusable Kubernetes templates, environment-specific values and repeatable releases.</td></tr>
+<tr><td>Why HPA?</td><td>Automatically adjust pod replica count based on workload demand/metrics.</td></tr>
+<tr><td>Why ALB Ingress?</td><td>Expose Kubernetes services through AWS-managed Layer 7 routing and TLS.</td></tr>
+<tr><td>Why Eureka?</td><td>It was part of the Spring Cloud application architecture; acknowledge Kubernetes-native discovery as an alternative.</td></tr>
+<tr><td>Why Config Server?</td><td>Centralized Spring application configuration rather than duplicating configuration across services.</td></tr>
+<tr><td>Why RDS?</td><td>Managed relational database service with AWS operational capabilities.</td></tr>
+<tr><td>How do you secure EKS?</td><td>IAM/RBAC, private networking, security groups, image controls, secrets management and workload least privilege.</td></tr>
+</table>
+</section>
+
+
+<!-- GLOBAL E-COMMERCE -->
+<section id="p4" class="card">
+<h2>Pattern 4 — Global E-Commerce on EKS with Database & Disaster Recovery</h2>
+<p><strong>Architecture objective:</strong> Build a globally scalable e-commerce platform on Amazon EKS with multi-AZ high availability, multi-Region disaster recovery, resilient transactional data, globally distributed cart/session data, asynchronous event processing and controlled Regional failover.</p>
+
+<div class="grid">
+<div class="mini"><strong>Global traffic</strong>Route 53 + AWS Global Accelerator for health-aware Regional routing</div>
+<div class="mini"><strong>Edge security</strong>CloudFront + AWS WAF + Shield</div>
+<div class="mini"><strong>Compute</strong>Multi-AZ EKS clusters in primary and DR Regions</div>
+<div class="mini"><strong>Transactional database</strong>Aurora Global Database for orders/customer data where the consistency model fits</div>
+<div class="mini"><strong>Global state</strong>DynamoDB Global Tables for suitable cart/preferences/session workloads</div>
+<div class="mini"><strong>Cache</strong>ElastiCache Redis for low-latency temporary data</div>
+<div class="mini"><strong>Events</strong>Amazon MSK/Kafka for asynchronous order, payment and inventory events</div>
+<div class="mini"><strong>Object data</strong>S3 with versioning and Cross-Region Replication</div>
+<div class="mini"><strong>DR</strong>Warm/active Regional stack, automated traffic failover and tested runbooks</div>
+</div>
+
+<div class="warn">
+<strong>Architect-level principle:</strong> Do not force every workload into one database or make every database active-active. The data strategy should follow transactionality, consistency, latency, replication characteristics and the business RPO/RTO.
+</div>
+</section>
+
+<section id="p4diagram" class="card">
+<h2>Global E-Commerce — Database & Disaster Recovery Architecture</h2>
+<div class="diagram">
+<svg viewBox="0 0 1450 900" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<marker id="arrow4" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#52606d"/></marker>
+<marker id="arrow4blue" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#1769aa"/></marker>
+</defs>
+
+<rect x="15" y="15" width="1420" height="870" rx="14" class="zone"/>
+<text x="35" y="48" class="title">Global E-Commerce — EKS Multi-Region Architecture with Database Disaster Recovery</text>
+
+<!-- Global -->
+<rect x="45" y="75" width="180" height="100" rx="10" class="node-blue"/>
+<text x="65" y="105" class="label">Global Users</text>
+<text x="65" y="135" class="small">Web • Mobile • Partners</text>
+<text x="65" y="158" class="small">Global internet traffic</text>
+
+<rect x="270" y="75" width="225" height="100" rx="10" class="node-purple"/>
+<text x="290" y="105" class="label">Global Traffic</text>
+<text x="290" y="135" class="small">Route 53 health checks</text>
+<text x="290" y="158" class="small">Global Accelerator</text>
+
+<rect x="540" y="75" width="230" height="100" rx="10" class="node-red"/>
+<text x="560" y="105" class="label">Edge Security</text>
+<text x="560" y="135" class="small">CloudFront + WAF</text>
+<text x="560" y="158" class="small">Shield / rate controls</text>
+
+<path d="M225 125 L270 125" class="arrow4blue"/>
+<path d="M495 125 L540 125" class="arrow4blue"/>
+
+<!-- Region A -->
+<rect x="45" y="220" width="650" height="430" rx="12" class="zone"/>
+<text x="65" y="250" class="title">PRIMARY REGION — us-east-1</text>
+<text x="65" y="272" class="small">VPC • Multi-AZ • Application stack</text>
+
+<rect x="75" y="295" width="255" height="100" rx="10" class="node-blue"/>
+<text x="95" y="325" class="label">Internet-facing ALB</text>
+<text x="95" y="355" class="small">Public subnets / Multi-AZ</text>
+<text x="95" y="378" class="small">TLS + path/host routing</text>
+
+<rect x="365" y="295" width="280" height="100" rx="10" class="node-green"/>
+<text x="385" y="325" class="label">Amazon EKS</text>
+<text x="385" y="355" class="small">Private subnets / Multi-AZ</text>
+<text x="385" y="378" class="small">HPA + Karpenter / Autoscaling</text>
+
+<path d="M330 345 L365 345" class="arrow4blue"/>
+
+<rect x="75" y="425" width="570" height="95" rx="10" class="node-purple"/>
+<text x="95" y="455" class="label">E-Commerce Microservices</text>
+<text x="95" y="485" class="small">User • Catalog • Cart • Order • Inventory • Payment • Notification</text>
+<text x="95" y="505" class="small">Pods spread across AZs with readiness/liveness probes and PDBs</text>
+
+<path d="M505 395 L360 425" class="arrow4"/>
+
+<rect x="75" y="550" width="170" height="75" rx="10" class="node-orange"/>
+<text x="95" y="580" class="label">Aurora Writer</text>
+<text x="95" y="605" class="small">Orders / Customers</text>
+
+<rect x="265" y="550" width="170" height="75" rx="10" class="node-green"/>
+<text x="285" y="580" class="label">DynamoDB</text>
+<text x="285" y="605" class="small">Cart / Preferences</text>
+
+<rect x="455" y="550" width="190" height="75" rx="10" class="node-blue"/>
+<text x="475" y="580" class="label">Redis + MSK</text>
+<text x="475" y="605" class="small">Cache / Events</text>
+
+<path d="M245 590 L265 590" class="arrow4"/>
+<path d="M435 590 L455 590" class="arrow4"/>
+
+<!-- Region B -->
+<rect x="755" y="220" width="650" height="430" rx="12" class="zone"/>
+<text x="775" y="250" class="title">DR / SECONDARY REGION — us-west-2</text>
+<text x="775" y="272" class="small">Independent VPC • Multi-AZ • Recovery-ready stack</text>
+
+<rect x="785" y="295" width="255" height="100" rx="10" class="node-blue"/>
+<text x="805" y="325" class="label">Regional ALB</text>
+<text x="805" y="355" class="small">Public subnets / Multi-AZ</text>
+<text x="805" y="378" class="small">Receives traffic after failover</text>
+
+<rect x="1075" y="295" width="280" height="100" rx="10" class="node-green"/>
+<text x="1095" y="325" class="label">Amazon EKS</text>
+<text x="1095" y="355" class="small">Private subnets / Multi-AZ</text>
+<text x="1095" y="378" class="small">Warm / active recovery capacity</text>
+
+<path d="M1040 345 L1075 345" class="arrow4blue"/>
+
+<rect x="785" y="425" width="570" height="95" rx="10" class="node-purple"/>
+<text x="805" y="455" class="label">Same Microservice Set</text>
+<text x="805" y="485" class="small">User • Catalog • Cart • Order • Inventory • Payment • Notification</text>
+<text x="805" y="505" class="small">Deployment parity maintained through IaC + GitOps</text>
+
+<path d="M1215 395 L1070 425" class="arrow4"/>
+
+<rect x="785" y="550" width="170" height="75" rx="10" class="node-orange"/>
+<text x="805" y="580" class="label">Aurora Secondary</text>
+<text x="805" y="605" class="small">Promote during DR</text>
+
+<rect x="975" y="550" width="170" height="75" rx="10" class="node-green"/>
+<text x="995" y="580" class="label">DynamoDB</text>
+<text x="995" y="605" class="small">Global table replica</text>
+
+<rect x="1165" y="550" width="190" height="75" rx="10" class="node-blue"/>
+<text x="1185" y="580" class="label">Redis + MSK</text>
+<text x="1185" y="605" class="small">Regional cache/events</text>
+
+<!-- Replication -->
+<path d="M245 625 C500 700 950 700 785 625" class="arrow4blue"/>
+<text x="515" y="700" class="small">Aurora Global Database cross-Region replication</text>
+
+<path d="M435 625 C620 735 900 735 975 625" class="arrow4"/>
+<text x="615" y="755" class="small">DynamoDB Global Tables replication</text>
+
+<path d="M645 625 C770 780 1060 780 1165 625" class="arrow4"/>
+<text x="820" y="805" class="small">Event / cache strategy replicated or rebuilt per workload</text>
+
+<!-- Global failover -->
+<path d="M655 175 C700 205 740 205 795 175" class="arrow4blue"/>
+<text x="675" y="195" class="small">Global health-based routing</text>
+
+<!-- Bottom strategy -->
+<rect x="45" y="690" width="1360" height="165" rx="12" class="node-gray"/>
+<text x="65" y="720" class="title">Database & Disaster Recovery Strategy</text>
+
+<text x="65" y="750" class="label">Aurora:</text>
+<text x="125" y="750" class="small">Transactional orders/customer data; cross-Region secondary; promote during Regional failure.</text>
+
+<text x="65" y="780" class="label">DynamoDB:</text>
+<text x="145" y="780" class="small">Cart/preferences/session-like workloads where multi-Region writes fit the consistency model.</text>
+
+<text x="65" y="810" class="label">S3:</text>
+<text x="105" y="810" class="small">Versioning + Cross-Region Replication for product assets, documents and static objects.</text>
+
+<text x="65" y="840" class="label">DR:</text>
+<text x="105" y="840" class="small">Detect → stop traffic → route to healthy Region → promote data → validate critical flows → operate → fail back after recovery.</text>
+</svg>
+</div>
+</section>
+
+<section id="p4story" class="card">
+<h2>Global E-Commerce — Interview Explanation</h2>
+<div class="quote">
+<strong>2–3 minute architect answer:</strong><br>
+“For a global e-commerce application, I would design the platform as a multi-Region and multi-AZ EKS architecture. The important point is that the application tier and data tier have different availability and consistency requirements, so I would design them separately.
+<br><br>
+At the global entry point, Route 53 and AWS Global Accelerator can provide health-aware traffic routing to Regional endpoints. CloudFront would cache static product content and AWS WAF would provide application-layer protection. Each Region would have its own VPC spanning multiple Availability Zones, with an ALB in the public subnets and EKS workloads running in private subnets.
+<br><br>
+The EKS platform would contain independently deployable services such as catalog, customer, cart, order, inventory, payment and notification. HPA would scale pods, while Karpenter or Cluster Autoscaler would scale the underlying nodes. Pods would be distributed across Availability Zones, with readiness probes, disruption budgets and appropriate topology rules.
+<br><br>
+The database strategy is workload-specific. For transactional workloads such as orders and customer data, Aurora Global Database is a strong option when the application's consistency model fits a primary-writer architecture. The secondary Region can be promoted during a Regional disaster. For highly distributed workloads such as shopping carts or preferences, DynamoDB Global Tables can be considered because it supports multi-Region reads and writes, but I would explicitly evaluate its consistency and conflict model before choosing it.
+<br><br>
+S3 would be used for product images and documents with versioning and Cross-Region Replication. Redis would provide low-latency caching, and MSK/Kafka would decouple order, payment, inventory and notification workflows through asynchronous events.
+<br><br>
+For disaster recovery, both Regions would be provisioned through Infrastructure as Code and kept deployment-compatible. Container images would be available in the recovery Region, secrets and configuration would have an appropriate recovery strategy, and the database replication path would be continuously monitored. During a Regional failure, global traffic would move to the healthy Region, the transactional database would be promoted according to the DR runbook, and critical flows such as checkout, inventory and payment would be validated.
+<br><br>
+Finally, I would define RPO and RTO with the business before claiming the architecture meets a DR target. We would regularly test Regional failure, database promotion, traffic failover and failback.”
+</div>
+</section>
+
+<section id="p4questions" class="card">
+<h2>Global E-Commerce — Interview Questions</h2>
+<table>
+<tr><th>Question</th><th>Strong answer direction</th></tr>
+<tr><td>Did you consider the database?</td><td>Yes. Database architecture is a first-class part of the design. Separate transactional, globally distributed, cache and object-storage workloads.</td></tr>
+<tr><td>Why Aurora Global Database?</td><td>Strong candidate for transactional relational workloads requiring ACID semantics and cross-Region recovery.</td></tr>
+<tr><td>Why not use DynamoDB for everything?</td><td>Different workloads have different transaction and consistency requirements. Use DynamoDB where its access model and consistency characteristics fit.</td></tr>
+<tr><td>Can both Regions accept writes?</td><td>Only where the workload and data model support it. Do not assume active-active writes are safe for orders/inventory.</td></tr>
+<tr><td>What happens if the primary Region fails?</td><td>Health-aware traffic routing sends requests to the recovery Region; promote the transactional database; validate critical application flows.</td></tr>
+<tr><td>What is your RPO?</td><td>It is a business requirement. Quantify it against the actual replication technology and measured replication lag.</td></tr>
+<tr><td>What is your RTO?</td><td>Also a business requirement. It must be validated through DR exercises rather than assumed from the architecture diagram.</td></tr>
+<tr><td>How do you prevent duplicate payments?</td><td>Idempotency keys, durable payment state and safe retry handling.</td></tr>
+<tr><td>How do you prevent inventory overselling?</td><td>Atomic/conditional reservation logic, concurrency control and an explicit inventory reservation model.</td></tr>
+<tr><td>Why Kafka/MSK?</td><td>Decouple services and process order/payment/inventory/notification events asynchronously.</td></tr>
+<tr><td>How do you protect the EKS platform?</td><td>Private subnets, IAM least privilege, Pod Identity/IRSA, RBAC, NetworkPolicy, WAF, image scanning, secrets management and centralized audit.</td></tr>
+<tr><td>How do you test DR?</td><td>Regular Regional failure drills, database promotion tests, traffic failover, dependency validation and documented failback runbooks.</td></tr>
+</table>
+
+<h3>Critical interview distinction</h3>
+<div class="warn">
+<strong>Do not say:</strong> “The entire architecture is active-active, so there is zero data loss.”<br><br>
+<strong>Say:</strong> “The application tier can be active-active across Regions, but database write patterns are workload-specific. For transactional data I would use a controlled primary/secondary model unless the business and database consistency model justify active-active writes.”
+</div>
+</section>
+
+<!-- DECISIONS -->
+<section id="decision" class="card">
+<h2>Architectural Decision Matrix</h2>
+<table>
+<tr><th>Concern</th><th>myPKFiT</th><th>OneSourceQA</th><th>VDZ</th></tr>
+<tr><td>Compute model</td><td>EC2</td><td>Lambda</td><td>Kubernetes pods / EKS</td></tr>
+<tr><td>Traffic entry</td><td>Internal ALB</td><td>CloudFront + API Gateway</td><td>ALB Ingress</td></tr>
+<tr><td>Application style</td><td>EC2 application components</td><td>Serverless API services</td><td>Spring Cloud microservices</td></tr>
+<tr><td>Infrastructure automation</td><td>Terraform Cloud</td><td>Terraform Cloud / IaC</td><td>Helm + Kubernetes / IaC</td></tr>
+<tr><td>Authentication</td><td>Enterprise/private network model</td><td>Entra ID SSO + MFA</td><td>TLS / platform controls</td></tr>
+<tr><td>Authorization</td><td>Security groups / IAM controls</td><td>Lambda Authorizer + application authorization</td><td>Kubernetes RBAC + application controls</td></tr>
+<tr><td>Data</td><td>Application-specific AWS resources</td><td>Databricks / Lakebase / ODS</td><td>RDS MySQL</td></tr>
+<tr><td>Container platform</td><td>Not central</td><td>Lambda container images / ECR</td><td>EKS / Kubernetes</td></tr>
+<tr><td>CI/CD</td><td>Terraform workflow</td><td>GitHub Actions</td><td>Harness</td></tr>
+</table>
+<h3>How to choose between them</h3>
+<ul>
+<li><strong>EC2:</strong> Good when the application/runtime is VM-oriented or needs OS-level control.</li>
+<li><strong>Lambda:</strong> Good for event/API-driven workloads where managed serverless execution reduces operational overhead.</li>
+<li><strong>EKS:</strong> Good when you need Kubernetes orchestration, multiple containerized services, platform control and portability.</li>
+</ul>
+</section>
+
+<section id="closing" class="card">
+<h2>Strong Architect-Level Closing</h2>
+<div class="quote">
+“When I look at these architectures, I don't start with the AWS services. I start with the application requirements and operational constraints. For the EC2 pattern, the priorities were standardized infrastructure, approved AMIs, secure credentials and private load balancing. For OneSourceQA, the priorities were private-by-default access, enterprise identity, fine-grained authorization and secure API/data connectivity. For the EKS platform, the priorities were independent microservices, Kubernetes orchestration, service discovery, centralized configuration and horizontal scaling.
+<br><br>
+My role as an architect is to understand those requirements, select the appropriate platform, define the security and networking boundaries, automate the infrastructure and deployment, and make sure the architecture can operate reliably at scale.”
+</div>
+<h3>One sentence to remember</h3>
+<p><strong>“I choose the architecture based on the business and operational requirements first, and then use the appropriate AWS and platform services to satisfy those requirements securely and at scale.”</strong></p>
+</section>
+
+<div class="footer">
+Enterprise Architecture Interview Guide • myPKFiT • OneSourceQA • VDZ / Spring Cloud EKS
+</div>
+</main>
+</body>
+</html>

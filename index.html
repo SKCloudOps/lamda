@@ -88,10 +88,19 @@ ul,ol{padding-left:24px}.small{color:var(--muted);font-size:14px}
 <a href="#observability"><span class="n">16</span>Logs, Metrics &amp; Traces</a>
 </div></div>
 <div class="nav-group" data-group="reference"><button class="tree-toggle" type="button" aria-expanded="true">Quick Reference <span>−</span></button><div class="tree-branch">
-<a href="#visual-ref">Visual Architecture</a>
+<a href="#visual-ref"><span class="n">REF</span>Visual Architecture</a>
 <a href="#pattern"><span class="n">19</span>Answer Pattern</a>
 </div></div>
-<div class="nav-group" data-group="guides"><button class="tree-toggle" type="button" aria-expanded="true">Related guides <span>−</span></button><div class="tree-branch"><a href="obervability-dashboard.html" target="guide-frame">Observability Dashboard</a><a href="devops_agent_interview_guide.html" target="guide-frame">DevOps Agent Interview Guide</a><a href="devops_cloud_architect_interview_questions.html" target="guide-frame">DevOps Cloud Architect Interview Questions</a><a href="k8s.html" target="guide-frame">Kubernetes Guide</a><a href="k8s-enterprise-arc.html" target="guide-frame">Enterprise EKS Architecture</a><a href="kubernetes_eks_interview_master_summary.html" target="guide-frame">Kubernetes EKS Summary</a><a href="enterprise_architecture_interview_guide_4_patterns.html" target="guide-frame">Enterprise Architecture Patterns</a><a href="terraform_interview_questions_senior_cloud_architect.html" target="guide-frame">Terraform Senior Cloud Architect</a></div></div>
+<div class="nav-group" data-group="guides"><button class="tree-toggle" type="button" aria-expanded="true">Related guides <span>−</span></button><div class="tree-branch">
+<a href="obervability-dashboard.html" target="guide-frame"><span class="n">OBS</span>Observability Dashboard</a>
+<a href="devops_agent_interview_guide.html" target="guide-frame"><span class="n">AI</span>DevOps Agent Interview</a>
+<a href="devops_cloud_architect_interview_questions.html" target="guide-frame"><span class="n">Q&A</span>Cloud Architect Questions</a>
+<a href="k8s.html" target="guide-frame"><span class="n">K8S</span>Kubernetes Guide</a>
+<a href="k8s-enterprise-arc.html" target="guide-frame"><span class="n">EKS</span>Enterprise EKS Architecture</a>
+<a href="kubernetes_eks_interview_master_summary.html" target="guide-frame"><span class="n">SUM</span>Kubernetes EKS Summary</a>
+<a href="enterprise_architecture_interview_guide_4_patterns.html" target="guide-frame"><span class="n">PAT</span>Architecture Patterns</a>
+<a href="terraform_interview_questions_senior_cloud_architect.html" target="guide-frame"><span class="n">TF</span>Terraform Architect Guide</a>
+</div></div>
 </nav>
 
 <main>
@@ -988,32 +997,133 @@ Response</pre>
 
 </main>
 <aside class="guide-viewer" aria-label="Related guide viewer">
-<h2>Related guide preview</h2>
+<div class="guide-viewer-header"><h2>Related guide preview</h2><button class="guide-viewer-close" type="button">Close</button></div>
 <p>Select an HTML guide from the left menu to open it here.</p>
 <iframe name="guide-frame" title="Related guide preview" src="about:blank"></iframe>
 </aside>
 <script>
 const menuToggle = document.querySelector('.menu-toggle');
+const guideFrame = document.querySelector('iframe[name="guide-frame"]');
+const homeLink = document.querySelector('a[aria-current="page"]');
+const sectionLinks = Array.from(document.querySelectorAll('.tree-branch a[href^="#"]'));
+const guideLinks = Array.from(document.querySelectorAll('a[target="guide-frame"]'));
+const inPageLinks = Array.from(document.querySelectorAll('.sidebar a[href^="#"]'));
+const navFilter = document.querySelector('#nav-filter');
+const navFilterEmpty = document.querySelector('#nav-filter-empty');
+
 menuToggle.addEventListener('click', () => {
   const isHidden = document.body.classList.toggle('menu-hidden');
   menuToggle.setAttribute('aria-expanded', String(!isHidden));
   menuToggle.setAttribute('aria-label', isHidden ? 'Expand menu' : 'Collapse menu');
 });
-document.querySelectorAll('a[target="guide-frame"]').forEach((link) => {
-  link.addEventListener('click', () => document.body.classList.add('iframe-active'));
-});
-document.querySelector('a[aria-current="page"]').addEventListener('click', () => {
+
+const setExpanded = (toggle, expanded) => {
+  const branch = toggle.nextElementSibling;
+  toggle.setAttribute('aria-expanded', String(expanded));
+  branch.hidden = !expanded;
+  toggle.querySelector('span').textContent = expanded ? '−' : '+';
+};
+
+const clearActiveLinks = () => {
+  document.querySelectorAll('.sidebar a').forEach((link) => {
+    link.classList.remove('is-active');
+    link.removeAttribute('aria-current');
+  });
+};
+
+const closeGuidePreview = () => {
   document.body.classList.remove('iframe-active');
-});
-document.querySelectorAll('.tree-toggle').forEach((toggle) => {
-  toggle.addEventListener('click', () => {
-    const branch = toggle.nextElementSibling;
-    const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
-    toggle.setAttribute('aria-expanded', String(!isExpanded));
-    branch.hidden = isExpanded;
-    toggle.querySelector('span').textContent = isExpanded ? '+' : '−';
+  if (guideFrame) guideFrame.src = 'about:blank';
+  guideLinks.forEach((link) => link.classList.remove('is-active'));
+  clearActiveLinks();
+  homeLink.setAttribute('aria-current', 'page');
+};
+
+guideLinks.forEach((link) => {
+  link.addEventListener('click', () => {
+    document.body.classList.add('iframe-active');
+    clearActiveLinks();
+    link.classList.add('is-active');
   });
 });
+
+document.querySelectorAll('.preview-close,.guide-viewer-close').forEach((button) => {
+  button.addEventListener('click', closeGuidePreview);
+});
+
+inPageLinks.forEach((link) => {
+  link.addEventListener('click', () => {
+    document.body.classList.remove('iframe-active');
+    guideLinks.forEach((guideLink) => guideLink.classList.remove('is-active'));
+  });
+});
+
+document.querySelectorAll('.tree-toggle').forEach((toggle) => {
+  toggle.addEventListener('click', () => {
+    const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+    setExpanded(toggle, !isExpanded);
+  });
+});
+
+if (navFilter) {
+  navFilter.addEventListener('input', () => {
+    const query = navFilter.value.trim().toLowerCase();
+    let matchCount = 0;
+
+    document.querySelectorAll('.nav-group[data-group]').forEach((group) => {
+      const links = Array.from(group.querySelectorAll('a'));
+      const toggle = group.querySelector('.tree-toggle');
+      let groupMatches = false;
+
+      links.forEach((link) => {
+        const isMatch = !query || link.textContent.toLowerCase().includes(query);
+        link.hidden = !isMatch;
+        groupMatches = groupMatches || isMatch;
+        if (isMatch && query) matchCount += 1;
+      });
+
+      group.hidden = Boolean(query && !groupMatches);
+      if (query && groupMatches && toggle) setExpanded(toggle, true);
+    });
+
+    navFilterEmpty.hidden = !query || matchCount > 0;
+  });
+}
+
+const sections = sectionLinks
+  .map((link) => document.querySelector(link.getAttribute('href')))
+  .filter(Boolean);
+let ticking = false;
+
+const updateActiveSection = () => {
+  ticking = false;
+  if (document.body.classList.contains('iframe-active')) return;
+
+  let current = null;
+  sections.forEach((section) => {
+    if (section.offsetTop <= window.scrollY + 140) current = section;
+  });
+
+  clearActiveLinks();
+  if (!current || window.scrollY < 80) {
+    homeLink.setAttribute('aria-current', 'page');
+    return;
+  }
+
+  const activeLink = document.querySelector(`.sidebar a[href="#${current.id}"]`);
+  if (activeLink) {
+    activeLink.classList.add('is-active');
+    activeLink.setAttribute('aria-current', 'location');
+  }
+};
+
+window.addEventListener('scroll', () => {
+  if (!ticking) {
+    window.requestAnimationFrame(updateActiveSection);
+    ticking = true;
+  }
+}, {passive: true});
+updateActiveSection();
 </script>
 </body>
 </html>

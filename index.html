@@ -6,18 +6,20 @@
 <meta name="robots" content="noindex, nofollow">
 <title>DevOps Interview Master Notes</title>
 <style>
-:root{--bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#5d6878;--accent:#2563eb;--code:#0f172a;--border:#dce3ed}
+:root{--bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#5d6878;--accent:#2563eb;--code:#0f172a;--border:#dce3ed;--sidebar-w:300px}
 *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
-header{background:#111827;color:#fff;padding:34px 5%;margin-left:270px}
+header{background:#111827;color:#fff;padding:34px 5%;margin-left:var(--sidebar-w)}
 header h1{margin:0 0 6px;font-size:30px} header p{margin:0;color:#cbd5e1}
-.sidebar{position:fixed;left:0;top:0;bottom:0;width:270px;background:#111827;color:#fff;padding:24px 18px;overflow:auto;z-index:20;transition:transform .25s ease}
-.sidebar h2{color:#fff;border:0;margin:0 0 6px;font-size:19px}.sidebar p{font-size:12px;color:#cbd5e1;margin:0 0 18px}
-.sidebar a{display:block;color:#dbeafe;text-decoration:none;padding:8px 12px;border-radius:7px;font-size:13px;margin:2px 0;transition:background .15s ease,color .15s ease}.sidebar a:hover,.sidebar a:focus-visible{background:#1f2937;color:#fff;outline:2px solid #60a5fa;outline-offset:1px}.sidebar a[aria-current="page"]{background:#2563eb;color:#fff;font-weight:700}
-.nav-group{margin:18px 0 0}.nav-group:first-of-type{margin-top:0}.nav-label{margin:0 0 5px;padding:0 12px;color:#93c5fd;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-.tree-toggle{width:100%;display:flex;justify-content:space-between;align-items:center;border:0;border-radius:7px;background:transparent;color:#93c5fd;padding:8px 12px;font:700 11px Arial,Helvetica,sans-serif;letter-spacing:.08em;text-align:left;text-transform:uppercase;cursor:pointer}.tree-toggle:hover,.tree-toggle:focus-visible{background:#1f2937;color:#fff;outline:2px solid #60a5fa;outline-offset:1px}.tree-toggle span{font-size:17px;font-weight:400;line-height:1}.tree-branch{padding-left:8px;border-left:1px solid #334155}
-.menu-toggle{position:fixed;left:284px;top:18px;border:0;border-radius:6px;background:#2563eb;color:#fff;padding:9px 12px;font-size:18px;line-height:1;cursor:pointer;z-index:30;box-shadow:0 2px 8px #0003}.menu-toggle:hover{background:#1d4ed8}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sidebar-w);background:#111827;color:#fff;padding:18px 14px;overflow:auto;z-index:20;transition:transform .25s ease}
+.sidebar-header{padding:6px 8px 14px;border-bottom:1px solid #263244;margin-bottom:10px}.sidebar h2{color:#fff;border:0;margin:0 0 6px;font-size:19px;line-height:1.25}.sidebar p{font-size:12px;color:#cbd5e1;margin:0}.nav-kicker{color:#93c5fd;font-weight:700;letter-spacing:.08em;text-transform:uppercase}.nav-help{margin-top:8px!important}
+.sidebar a{color:#dbeafe;text-decoration:none}.nav-link{display:grid;grid-template-columns:32px 1fr;gap:9px;align-items:start;padding:9px 10px;border-radius:8px;margin:3px 0;transition:background .15s ease,color .15s ease,border-color .15s ease}.nav-link:hover,.nav-link:focus-visible{background:#1f2937;color:#fff;outline:2px solid #60a5fa;outline-offset:1px}.nav-link[aria-current="page"],.nav-link.is-active{background:#1d4ed8;color:#fff}.nav-index{display:inline-flex;align-items:center;justify-content:center;width:32px;height:24px;border:1px solid #334155;border-radius:6px;color:#bfdbfe;font-size:11px;font-weight:700}.nav-link[aria-current="page"] .nav-index,.nav-link.is-active .nav-index{background:#eff6ff;color:#1d4ed8;border-color:#eff6ff}.nav-title{display:block;font-size:13px;font-weight:700;line-height:1.25}.nav-desc{display:block;margin-top:2px;color:#aebfd4;font-size:11px;line-height:1.25}.nav-link:hover .nav-desc,.nav-link.is-active .nav-desc,.nav-link[aria-current="page"] .nav-desc{color:#e5efff}
+.nav-group{margin:16px 0 0}.nav-group:first-of-type{margin-top:0}.nav-label{margin:0 0 5px;padding:0 10px;color:#93c5fd;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.tree-toggle{width:100%;display:flex;justify-content:space-between;align-items:center;border:0;border-radius:8px;background:#172133;color:#bfdbfe;padding:9px 10px;font:700 11px Arial,Helvetica,sans-serif;letter-spacing:.08em;text-align:left;text-transform:uppercase;cursor:pointer}.tree-toggle:hover,.tree-toggle:focus-visible{background:#1f2937;color:#fff;outline:2px solid #60a5fa;outline-offset:1px}.tree-toggle span{font-size:17px;font-weight:400;line-height:1}.tree-branch{padding:6px 0 0 8px;border-left:1px solid #334155;margin-left:10px}.guide-link .nav-index{font-size:10px}
+.nav-actions{display:grid;grid-template-columns:1fr;gap:6px;margin:0 0 12px}.home-link{background:#172133}.preview-close{display:none;border:1px solid #334155;border-radius:8px;background:transparent;color:#dbeafe;padding:9px 10px;font:700 12px Arial,Helvetica,sans-serif;text-align:left;cursor:pointer}.preview-close:hover,.preview-close:focus-visible{background:#1f2937;color:#fff;outline:2px solid #60a5fa;outline-offset:1px}.iframe-active .preview-close{display:block}
+.menu-toggle{position:fixed;left:314px;top:18px;display:flex;align-items:center;gap:7px;border:0;border-radius:8px;background:#2563eb;color:#fff;padding:9px 12px;font-size:14px;font-weight:700;line-height:1;cursor:pointer;z-index:30;box-shadow:0 2px 8px #0003}.menu-toggle:hover{background:#1d4ed8}.menu-toggle span:first-child{font-size:18px;font-weight:400}
 main{max-width:1200px;margin:28px auto;padding:0 20px;margin-right:40vw}.guide-viewer{position:fixed;top:28px;right:20px;bottom:20px;width:37vw;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 2px 8px #00000014;overflow:hidden;z-index:10}.guide-viewer h2{margin:0;padding:14px 16px;font-size:16px;border-bottom:1px solid var(--border)}.guide-viewer p{margin:0;padding:9px 16px;color:var(--muted);font-size:12px;border-bottom:1px solid var(--border)}.guide-viewer iframe{display:block;width:100%;height:calc(100% - 76px);border:0;background:var(--bg)}
-.iframe-active header,.iframe-active main{display:none}.iframe-active .guide-viewer{left:290px;width:auto}
+.guide-viewer-header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}.guide-viewer-header h2{border:0}.guide-viewer-close{display:none;margin-right:10px;border:1px solid var(--border);border-radius:7px;background:#f8fafc;color:#263449;padding:7px 10px;font-weight:700;cursor:pointer}.guide-viewer-close:hover,.guide-viewer-close:focus-visible{background:#e8f0ff;outline:2px solid #60a5fa;outline-offset:1px}.iframe-active .guide-viewer-close{display:block}
+.iframe-active header,.iframe-active main{display:none}.iframe-active .guide-viewer{left:320px;width:auto}
 section{background:var(--card);margin:0 0 22px;padding:26px;border:1px solid var(--border);border-radius:12px;box-shadow:0 2px 8px #0000000a}
 h2{margin-top:0;color:#111827;border-bottom:2px solid #e8edf4;padding-bottom:8px}
 h3{color:#263449;margin-bottom:6px}.answer{background:#eff6ff;border-left:4px solid var(--accent);padding:12px 16px;margin:14px 0}
@@ -27,7 +29,7 @@ table{width:100%;border-collapse:collapse;margin:14px 0}th,td{border:1px solid v
 .badge{display:inline-block;background:#e8f0ff;color:#1d4ed8;border-radius:20px;padding:4px 10px;margin:3px;font-size:13px}
 ul,ol{padding-left:24px}.small{color:var(--muted);font-size:14px}
 .top{color:#fff;text-decoration:none}.menu-hidden .sidebar{transform:translateX(-100%)}.menu-hidden header,.menu-hidden main{margin-left:0}.menu-hidden .menu-toggle{left:14px}
-@media(max-width:700px){header{margin-left:0;padding:28px 20px}.sidebar{width:270px}.menu-toggle{left:284px;top:14px}.menu-hidden .menu-toggle{left:14px}section{padding:18px}h1{font-size:24px}}
+@media(max-width:700px){:root{--sidebar-w:286px}header{margin-left:0;padding:28px 20px}.menu-toggle{left:300px;top:14px}.menu-hidden .menu-toggle{left:14px}section{padding:18px}h1{font-size:24px}.menu-toggle-text{display:none}.nav-desc{display:none}}
 @media(max-width:900px){main{margin-right:auto}.guide-viewer{position:relative;top:auto;right:auto;bottom:auto;left:auto;width:auto;height:650px;margin:28px 20px 20px}.iframe-active .guide-viewer{left:auto}}
 @media(max-width:700px){.guide-viewer{height:520px;margin:20px}}
 
@@ -48,12 +50,44 @@ ul,ol{padding-left:24px}.small{color:var(--muted);font-size:14px}
 <nav class="sidebar" id="site-menu">
 <h2>Interview Master Notes</h2>
 <p>DevOps, AWS, Kubernetes and cloud architecture</p>
+<div class="nav-search"><input type="search" id="nav-filter" placeholder="Filter topics…" aria-label="Filter topics in this page"><span class="nav-search-empty" id="nav-filter-empty" hidden>No matches</span></div>
 <div class="nav-group"><p class="nav-label">This page</p><a href="index.html" aria-current="page">Home / Master Notes</a></div>
-<div class="nav-group"><button class="tree-toggle" type="button" aria-expanded="true">Core topics <span>−</span></button><div class="tree-branch"><a href="#pod">Pod Identity</a><a href="#iam">IAM</a><a href="#branch">Branching</a><a href="#eks">EKS</a>
-<a href="#lambda">Lambda</a><a href="#antipatterns">Anti-patterns</a><a href="#shiftleft">Shift Left</a>
-<a href="#deploy">Deployments</a><a href="#terraform">Terraform</a><a href="#debug">Debugging</a></div></div>
-<div class="nav-group"><button class="tree-toggle" type="button" aria-expanded="true">Operations <span>−</span></button><div class="tree-branch"><a href="#resources">Resources</a><a href="#vpc">VPC</a><a href="#cost">Cost</a><a href="#incident">Incident</a><a href="#observability">Observability</a></div></div>
-<div class="nav-group"><button class="tree-toggle" type="button" aria-expanded="true">Related guides <span>−</span></button><div class="tree-branch"><a href="obervability-dashboard.html" target="guide-frame">Observability Dashboard</a><a href="devops_agent_interview_guide.html" target="guide-frame">DevOps Agent Interview Guide</a><a href="devops_cloud_architect_interview_questions.html" target="guide-frame">DevOps Cloud Architect Interview Questions</a><a href="k8s.html" target="guide-frame">Kubernetes Guide</a><a href="k8s-enterprise-arc.html" target="guide-frame">Enterprise EKS Architecture</a><a href="kubernetes_eks_interview_master_summary.html" target="guide-frame">Kubernetes EKS Summary</a><a href="enterprise_architecture_interview_guide_4_patterns.html" target="guide-frame">Enterprise Architecture Patterns</a><a href="terraform_interview_questions_senior_cloud_architect.html" target="guide-frame">Terraform Senior Cloud Architect</a></div></div>
+<div class="nav-group" data-group="identity"><button class="tree-toggle" type="button" aria-expanded="true">Identity &amp; Access <span>−</span></button><div class="tree-branch">
+<a href="#pod"><span class="n">1</span>Pod Identity vs IRSA</a>
+<a href="#iam"><span class="n">2</span>IAM User vs Role</a>
+</div></div>
+<div class="nav-group" data-group="cicd"><button class="tree-toggle" type="button" aria-expanded="true">Git &amp; CI/CD <span>−</span></button><div class="tree-branch">
+<a href="#branch"><span class="n">3</span>Branching &amp; Hotfixes</a>
+<a href="#antipatterns"><span class="n">7</span>Anti-patterns</a>
+<a href="#shiftleft"><span class="n">8</span>Shift Left</a>
+<a href="#deploy"><span class="n">9</span>Blue/Green vs Canary</a>
+</div></div>
+<div class="nav-group" data-group="k8s"><button class="tree-toggle" type="button" aria-expanded="true">Kubernetes &amp; EKS <span>−</span></button><div class="tree-branch">
+<a href="#eks"><span class="n">4</span>EKS &amp; K8s Concepts</a>
+<a href="#debug"><span class="n">11</span>Diagnostics &amp; Debugging</a>
+<a href="#resources"><span class="n">12</span>Requests &amp; Limits</a>
+</div></div>
+<div class="nav-group" data-group="serverless"><button class="tree-toggle" type="button" aria-expanded="true">Serverless <span>−</span></button><div class="tree-branch">
+<a href="#lambda"><span class="n">5</span>Sync vs Async Lambda</a>
+<a href="#job"><span class="n">6</span>Async Job Status</a>
+</div></div>
+<div class="nav-group" data-group="iac"><button class="tree-toggle" type="button" aria-expanded="true">Infrastructure as Code <span>−</span></button><div class="tree-branch">
+<a href="#terraform"><span class="n">10</span>Terraform State &amp; Secrets</a>
+</div></div>
+<div class="nav-group" data-group="network"><button class="tree-toggle" type="button" aria-expanded="true">Networking &amp; Security <span>−</span></button><div class="tree-branch">
+<a href="#vpc"><span class="n">13</span>Secure VPC Design</a>
+<a href="#financial"><span class="n">18</span>Financial Hardening</a>
+</div></div>
+<div class="nav-group" data-group="ops"><button class="tree-toggle" type="button" aria-expanded="true">Operations &amp; Reliability <span>−</span></button><div class="tree-branch">
+<a href="#cost"><span class="n">14</span>Cloud Cost Reduction</a>
+<a href="#incident"><span class="n">15</span>Incident Response</a>
+<a href="#observability"><span class="n">16</span>Logs, Metrics &amp; Traces</a>
+</div></div>
+<div class="nav-group" data-group="reference"><button class="tree-toggle" type="button" aria-expanded="true">Quick Reference <span>−</span></button><div class="tree-branch">
+<a href="#visual-ref">Visual Architecture</a>
+<a href="#pattern"><span class="n">19</span>Answer Pattern</a>
+</div></div>
+<div class="nav-group" data-group="guides"><button class="tree-toggle" type="button" aria-expanded="true">Related guides <span>−</span></button><div class="tree-branch"><a href="obervability-dashboard.html" target="guide-frame">Observability Dashboard</a><a href="devops_agent_interview_guide.html" target="guide-frame">DevOps Agent Interview Guide</a><a href="devops_cloud_architect_interview_questions.html" target="guide-frame">DevOps Cloud Architect Interview Questions</a><a href="k8s.html" target="guide-frame">Kubernetes Guide</a><a href="k8s-enterprise-arc.html" target="guide-frame">Enterprise EKS Architecture</a><a href="kubernetes_eks_interview_master_summary.html" target="guide-frame">Kubernetes EKS Summary</a><a href="enterprise_architecture_interview_guide_4_patterns.html" target="guide-frame">Enterprise Architecture Patterns</a><a href="terraform_interview_questions_senior_cloud_architect.html" target="guide-frame">Terraform Senior Cloud Architect</a></div></div>
 </nav>
 
 <main>
@@ -826,7 +860,7 @@ Response</pre>
 <div class="answer"><b>Interview answer:</b> “Logs tell me what happened, metrics tell me the health and behavior of the system, and traces show me the path of an individual request across distributed services. In AWS microservices, I can use CloudWatch for logs and metrics and OpenTelemetry/ADOT with X-Ray for distributed tracing.”</div>
 </section>
 
-<section>
+<section id="financial">
 <h2>18. Financial Industry Hardening Guidelines</h2>
 <p>For a financial environment, hardening should be treated as defense in depth, least privilege, strong auditability, and controlled change management.</p>
 
@@ -890,7 +924,7 @@ Response</pre>
 </section>
 
 
-<section>
+<section id="visual-ref">
 <h2>Visual Architecture Quick Reference</h2>
 <p>Use these diagrams during interview preparation to quickly explain common AWS/DevOps architectures without getting lost in implementation details.</p>
 <div class="diagram">
@@ -915,7 +949,7 @@ Response</pre>
 </svg>
 </div>
 </section>
-<section>
+<section id="pattern">
 <h2>19. General DevOps Interview Answer Pattern</h2>
 <p>For architecture and troubleshooting questions, use this structure:</p>
 <pre>1. Define the concept

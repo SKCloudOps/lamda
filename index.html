@@ -1114,6 +1114,11 @@ const updateActiveSection = () => {
   if (activeLink) {
     activeLink.classList.add('is-active');
     activeLink.setAttribute('aria-current', 'location');
+    const branch = activeLink.closest('.tree-branch');
+    const toggle = branch && branch.previousElementSibling;
+    if (branch && branch.hidden && toggle && toggle.classList.contains('tree-toggle')) {
+      setExpanded(toggle, true);
+    }
   }
 };
 

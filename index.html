@@ -11,8 +11,10 @@
 header{background:#111827;color:#fff;padding:34px 5%;margin-left:270px}
 header h1{margin:0 0 6px;font-size:30px} header p{margin:0;color:#cbd5e1}
 .sidebar{position:fixed;left:0;top:0;bottom:0;width:270px;background:#111827;color:#fff;padding:24px 18px;overflow:auto;z-index:20;transition:transform .25s ease}
-.sidebar h2{color:#fff;border:0;margin:0 0 6px;font-size:19px}.sidebar p{font-size:12px;color:#cbd5e1;margin:0 0 22px}
-.sidebar a{display:block;color:#dbeafe;text-decoration:none;padding:8px 12px;border-radius:7px;font-size:13px;margin:3px 0}.sidebar a:hover{background:#1f2937;color:#fff}
+.sidebar h2{color:#fff;border:0;margin:0 0 6px;font-size:19px}.sidebar p{font-size:12px;color:#cbd5e1;margin:0 0 18px}
+.sidebar a{display:block;color:#dbeafe;text-decoration:none;padding:8px 12px;border-radius:7px;font-size:13px;margin:2px 0;transition:background .15s ease,color .15s ease}.sidebar a:hover,.sidebar a:focus-visible{background:#1f2937;color:#fff;outline:2px solid #60a5fa;outline-offset:1px}.sidebar a[aria-current="page"]{background:#2563eb;color:#fff;font-weight:700}
+.nav-group{margin:18px 0 0}.nav-group:first-of-type{margin-top:0}.nav-label{margin:0 0 5px;padding:0 12px;color:#93c5fd;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.tree-toggle{width:100%;display:flex;justify-content:space-between;align-items:center;border:0;border-radius:7px;background:transparent;color:#93c5fd;padding:8px 12px;font:700 11px Arial,Helvetica,sans-serif;letter-spacing:.08em;text-align:left;text-transform:uppercase;cursor:pointer}.tree-toggle:hover,.tree-toggle:focus-visible{background:#1f2937;color:#fff;outline:2px solid #60a5fa;outline-offset:1px}.tree-toggle span{font-size:17px;font-weight:400;line-height:1}.tree-branch{padding-left:8px;border-left:1px solid #334155}
 .menu-toggle{position:fixed;left:284px;top:18px;border:0;border-radius:6px;background:#2563eb;color:#fff;padding:9px 12px;font-size:18px;line-height:1;cursor:pointer;z-index:30;box-shadow:0 2px 8px #0003}.menu-toggle:hover{background:#1d4ed8}
 main{max-width:1200px;margin:28px auto;padding:0 20px}
 section{background:var(--card);margin:0 0 22px;padding:26px;border:1px solid var(--border);border-radius:12px;box-shadow:0 2px 8px #0000000a}
@@ -43,10 +45,12 @@ ul,ol{padding-left:24px}.small{color:var(--muted);font-size:14px}
 <nav class="sidebar" id="site-menu">
 <h2>Interview Master Notes</h2>
 <p>DevOps, AWS, Kubernetes and cloud architecture</p>
-<a href="#pod">Pod Identity</a><a href="#iam">IAM</a><a href="#branch">Branching</a><a href="#eks">EKS</a>
+<div class="nav-group"><p class="nav-label">This page</p><a href="index.html" aria-current="page">Home / Master Notes</a></div>
+<div class="nav-group"><button class="tree-toggle" type="button" aria-expanded="true">Core topics <span>−</span></button><div class="tree-branch"><a href="#pod">Pod Identity</a><a href="#iam">IAM</a><a href="#branch">Branching</a><a href="#eks">EKS</a>
 <a href="#lambda">Lambda</a><a href="#antipatterns">Anti-patterns</a><a href="#shiftleft">Shift Left</a>
-<a href="#deploy">Deployments</a><a href="#terraform">Terraform</a><a href="#debug">Debugging</a>
-<a href="#resources">Resources</a><a href="#vpc">VPC</a><a href="#cost">Cost</a><a href="#incident">Incident</a><a href="#observability">Observability</a><a href="obervability-dashboard.html">Observability Dashboard</a><a href="devops_cloud_architect_interview_questions.html">DevOps Cloud Architect Interview Questions</a><a href="k8s.html">Kubernetes Guide</a><a href="k8s-enterprise-arc.html">Enterprise EKS Architecture</a><a href="kubernetes_eks_interview_master_summary.html">Kubernetes EKS Summary</a><a href="enterprise_architecture_interview_guide_4_patterns.html">Enterprise Architecture Patterns</a><a href="terraform_interview_questions_senior_cloud_architect.html">Terraform Senior Cloud Architect</a>
+<a href="#deploy">Deployments</a><a href="#terraform">Terraform</a><a href="#debug">Debugging</a></div></div>
+<div class="nav-group"><button class="tree-toggle" type="button" aria-expanded="true">Operations <span>−</span></button><div class="tree-branch"><a href="#resources">Resources</a><a href="#vpc">VPC</a><a href="#cost">Cost</a><a href="#incident">Incident</a><a href="#observability">Observability</a></div></div>
+<div class="nav-group"><button class="tree-toggle" type="button" aria-expanded="true">Related guides <span>−</span></button><div class="tree-branch"><a href="obervability-dashboard.html">Observability Dashboard</a><a href="devops_agent_interview_guide.html">DevOps Agent Interview Guide</a><a href="devops_cloud_architect_interview_questions.html">DevOps Cloud Architect Interview Questions</a><a href="k8s.html">Kubernetes Guide</a><a href="k8s-enterprise-arc.html">Enterprise EKS Architecture</a><a href="kubernetes_eks_interview_master_summary.html">Kubernetes EKS Summary</a><a href="enterprise_architecture_interview_guide_4_patterns.html">Enterprise Architecture Patterns</a><a href="terraform_interview_questions_senior_cloud_architect.html">Terraform Senior Cloud Architect</a></div></div>
 </nav>
 
 <main>
@@ -948,6 +952,15 @@ menuToggle.addEventListener('click', () => {
   const isHidden = document.body.classList.toggle('menu-hidden');
   menuToggle.setAttribute('aria-expanded', String(!isHidden));
   menuToggle.setAttribute('aria-label', isHidden ? 'Expand menu' : 'Collapse menu');
+});
+document.querySelectorAll('.tree-toggle').forEach((toggle) => {
+  toggle.addEventListener('click', () => {
+    const branch = toggle.nextElementSibling;
+    const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!isExpanded));
+    branch.hidden = isExpanded;
+    toggle.querySelector('span').textContent = isExpanded ? '+' : '−';
+  });
 });
 </script>
 </body>

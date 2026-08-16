@@ -39,6 +39,8 @@ th,td{border:1px solid var(--border);padding:9px 10px;text-align:left;vertical-a
 th{background:#eef2f6;color:var(--navy)}
 .diagram{overflow:auto;background:#fbfcfe;border:1px solid var(--border);border-radius:10px;padding:14px}
 .diagram svg{min-width:1050px;width:100%;height:auto;display:block}
+.pattern-image-wrap{margin:10px 0 16px}
+.pattern-image{display:block;width:100%;height:auto;border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow);background:#fff}
 .node{fill:#fff;stroke:#78909c;stroke-width:1.5}
 .node-blue{fill:#e7f5ff;stroke:#1971c2}
 .node-green{fill:#ebfbee;stroke:#2b8a3e}
@@ -157,6 +159,9 @@ Start with the business requirement, then explain how each architectural layer s
 
 <section id="p1diagram" class="card">
 <h2>Pattern 1 — Enterprise Architecture Diagram</h2>
+<div class="pattern-image-wrap">
+<img class="pattern-image" src="images/pattern1_mypkfit_terraform_ec2_alb.png" alt="Pattern 1 myPKFiT Terraform EC2 ALB architecture" loading="lazy">
+</div>
 <div class="diagram">
 <svg viewBox="0 0 1400 690" xmlns="http://www.w3.org/2000/svg">
 <defs>
@@ -258,6 +263,9 @@ The architecture was also modular. Environment-specific configuration was separa
 
 <section id="p2diagram" class="card">
 <h2>Pattern 2 — Enterprise Architecture Diagram</h2>
+<div class="pattern-image-wrap">
+<img class="pattern-image" src="images/pattern2_onesourceqa_serverless_api.png" alt="Pattern 2 OneSourceQA serverless API and data platform architecture" loading="lazy">
+</div>
 <div class="diagram">
 <svg viewBox="0 0 1400 760" xmlns="http://www.w3.org/2000/svg">
 <defs>
@@ -371,6 +379,9 @@ From the DevOps side, GitHub Actions handles build, test, security checks and de
 
 <section id="p3diagram" class="card">
 <h2>Pattern 3 — Enterprise Architecture Diagram</h2>
+<div class="pattern-image-wrap">
+<img class="pattern-image" src="images/pattern3_vdz_spring_cloud_eks.png" alt="Pattern 3 VDZ Spring Cloud microservices on EKS architecture" loading="lazy">
+</div>
 <div class="diagram">
 <svg viewBox="0 0 1400 720" xmlns="http://www.w3.org/2000/svg">
 <defs>
@@ -504,6 +515,9 @@ A safe answer is: “Kubernetes provides native service discovery through Kubern
 
 <section id="p4diagram" class="card">
 <h2>Global E-Commerce — Database & Disaster Recovery Architecture</h2>
+<div class="pattern-image-wrap">
+<img class="pattern-image" src="images/pattern4_global_ecommerce_eks_dr.png" alt="Pattern 4 global e-commerce EKS multi-region DR architecture" loading="lazy">
+</div>
 <div class="diagram">
 <svg viewBox="0 0 1450 900" xmlns="http://www.w3.org/2000/svg">
 <defs>

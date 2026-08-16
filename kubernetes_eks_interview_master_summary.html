@@ -87,6 +87,7 @@
 
   <div class="group">Command Reference</div>
   <a href="#commands">16. All Important Commands</a>
+  <a href="#observability-tools">Observability Tools</a>
   <a href="#top25">17. Top 25 Commands</a>
   <a href="#memory-map">18. Final Memory Map</a>
 </nav>
@@ -113,6 +114,7 @@
 <li><a href="#helm">Helm & Version Management</a></li>
 <li><a href="#troubleshooting">Troubleshooting Flow</a></li>
 <li><a href="#commands">All Important Commands</a></li>
+<li><a href="#observability-tools">Observability Tools</a></li>
 <li><a href="#top25">Top 25 Commands</a></li>
 </ol>
 </section>
@@ -710,6 +712,46 @@ helm template &lt;release&gt; &lt;chart&gt;
 helm lint &lt;chart&gt;
 helm history &lt;release&gt; -n &lt;namespace&gt;
 helm rollback &lt;release&gt; &lt;revision&gt; -n &lt;namespace&gt;</code></pre>
+
+<section id="observability-tools">
+<h3>Observability Tools</h3>
+<p>Use the four signals together: metrics show that a problem exists, logs explain the event, traces show where time is spent, and Kubernetes or cloud events provide change and platform context.</p>
+<table>
+<tr><th>Signal / Need</th><th>Tools</th><th>What to inspect</th></tr>
+<tr><td>Metrics and alerting</td><td>Prometheus, Alertmanager, Grafana, Amazon Managed Service for Prometheus, Amazon Managed Grafana</td><td>Request rate, error rate, latency, saturation, pod health, recording rules, alert state, and dashboard panels.</td></tr>
+<tr><td>Kubernetes metrics</td><td>Metrics Server, kube-state-metrics, node-exporter, cAdvisor</td><td>Pod and node resource usage, desired versus available replicas, restart counts, limits, throttling, and node pressure.</td></tr>
+<tr><td>Logs</td><td>Fluent Bit, Fluentd, Grafana Loki, OpenSearch, Amazon CloudWatch Logs</td><td>Structured application errors, container logs, access logs, audit logs, request IDs, trace IDs, and previous-container output.</td></tr>
+<tr><td>Distributed tracing</td><td>OpenTelemetry SDKs, OpenTelemetry Collector, Jaeger, Grafana Tempo, AWS X-Ray</td><td>Trace duration, error spans, service dependencies, downstream calls, retries, and missing propagation.</td></tr>
+<tr><td>Events and platform state</td><td>kubectl events, Kubernetes audit logs, EKS control-plane logs, CloudTrail, CloudWatch Container Insights</td><td>Deployments, scheduling failures, probe failures, API activity, node changes, load balancer health, and control-plane errors.</td></tr>
+<tr><td>Application and synthetic checks</td><td>Blackbox Exporter, Grafana Synthetic Monitoring, CloudWatch Synthetics, service health endpoints</td><td>DNS, TLS, HTTP status, response time, user journey, and availability from an external location.</td></tr>
+</table>
+
+<h4>Metrics and resource checks</h4>
+<pre class="cmd"><code>kubectl top nodes
+kubectl top pods -A
+kubectl top pod &lt;pod&gt; -n &lt;namespace&gt; --containers
+kubectl get --raw "/apis/metrics.k8s.io/v1beta1/nodes"
+kubectl get --raw "/apis/metrics.k8s.io/v1beta1/namespaces/&lt;namespace&gt;/pods"
+kubectl get --raw "/apis/custom.metrics.k8s.io/v1beta1"</code></pre>
+
+<h4>Logs, events, and audit context</h4>
+<pre class="cmd"><code>kubectl logs &lt;pod&gt; -n &lt;namespace&gt; --since=30m --timestamps
+kubectl logs &lt;pod&gt; -n &lt;namespace&gt; --previous --timestamps
+kubectl logs &lt;pod&gt; -c &lt;container&gt; -n &lt;namespace&gt; --prefix
+kubectl get events -A --sort-by='.lastTimestamp'
+kubectl get events -n &lt;namespace&gt; --field-selector type=Warning
+kubectl describe pod &lt;pod&gt; -n &lt;namespace&gt;
+aws logs tail /aws/containerinsights/&lt;cluster-name&gt;/application --follow --since 10m</code></pre>
+
+<h4>Tracing and correlation checklist</h4>
+<ul>
+<li>Propagate <code>traceparent</code> and a request or correlation ID across ingress, services, queues, and workers.</li>
+<li>Start with the slowest or failed trace span, then compare its timestamp with application logs and Kubernetes events.</li>
+<li>Verify that the OpenTelemetry Collector has healthy receivers, processors, exporters, and retry queues.</li>
+<li>Check sampling rules before concluding that a missing trace means a missing request.</li>
+<li>Compare the affected service with a healthy baseline for the same release, region, and traffic pattern.</li>
+</ul>
+</section>
 
 <h3>AWS EKS CLI</h3>
 <pre class="cmd"><code>aws eks list-clusters

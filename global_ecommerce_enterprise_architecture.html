@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Global E-Commerce Enterprise Architecture — Interview Guide</title>
+<style>
+:root{--bg:#f4f6fa;--card:#fff;--text:#172033;--muted:#667085;--line:#dfe4ea;--blue:#315efb;--soft:#eef2ff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
+header{background:#101828;color:#fff;padding:34px 42px;position:sticky;top:0;z-index:5}header h1{margin:0 0 8px;font-size:30px}header p{margin:0;color:#cbd5e1}
+.layout{display:grid;grid-template-columns:280px 1fr;min-height:calc(100vh - 115px)}
+nav{background:#fff;border-right:1px solid var(--line);padding:22px 14px;position:sticky;top:115px;height:calc(100vh - 115px);overflow:auto}
+nav .group{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#98a2b3;padding:14px 12px 7px;font-weight:800}
+nav a{display:block;padding:10px 12px;border-radius:8px;text-decoration:none;color:#344054;margin:2px 0}nav a:hover{background:var(--soft);color:#2447c8}
+main{max-width:1250px;padding:30px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px;margin-bottom:22px;box-shadow:0 6px 20px rgba(16,24,40,.05)}
+h2{font-size:24px;margin:0 0 14px}h3{margin:22px 0 9px}.lead{font-size:18px;line-height:1.65}.diagram{width:100%;border:1px solid var(--line);border-radius:12px;background:#fff}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.mini{background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:17px}.mini h3{margin-top:0}
+ul{line-height:1.75;margin-top:8px}.memory{border-left:5px solid var(--blue);background:#f8faff;padding:16px 18px;border-radius:8px;line-height:1.65}
+.flow{font-weight:700;background:#f8fafc;border:1px solid var(--line);padding:18px;border-radius:10px;line-height:2}
+table{width:100%;border-collapse:collapse}th,td{padding:11px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}th{background:#f8fafc}
+.badge{display:inline-block;background:#eef2ff;color:#2447c8;border-radius:999px;padding:4px 9px;font-size:12px;font-weight:700;margin:3px}
+pre{background:#0f172a;color:#e2e8f0;padding:18px;border-radius:10px;overflow:auto;line-height:1.5}
+.small{color:var(--muted)}.q{font-weight:800}.answer{color:#475467}
+@media(max-width:900px){.layout{display:block}nav{position:static;height:auto}.grid{grid-template-columns:1fr}main{padding:16px}}
+</style>
+</head>
+<body>
+<header>
+<h1>Global E-Commerce — Enterprise Multi-Region AWS + EKS</h1>
+<p>Detailed architect interview guide: architecture, trade-offs, failure handling, scalability, security, observability and DR</p>
+</header>
+<div class="layout">
+<nav>
+<div class="group">Architecture</div>
+<a href="#diagram">Enterprise Diagram</a><a href="#principles">Design Principles</a>
+<div class="group">Platform</div>
+<a href="#global">Global Traffic</a><a href="#network">Regional Network</a><a href="#eks">EKS Platform</a><a href="#services">Microservices</a>
+<div class="group">Data</div>
+<a href="#database">Database</a><a href="#cache">Caching</a><a href="#storage">S3</a><a href="#events">Kafka / Events</a>
+<div class="group">Operations</div>
+<a href="#security">Security</a><a href="#observability">Observability</a><a href="#cicd">CI/CD</a><a href="#scaling">Scaling</a>
+<div class="group">DR</div>
+<a href="#dr">DR Strategy</a><a href="#failure">Regional Failure</a><a href="#testing">DR Testing</a>
+<div class="group">Interview</div>
+<a href="#questions">Follow-up Questions</a><a href="#memory">Memory Sheet</a>
+</nav>
+<main>
+
+<section id="diagram" class="card">
+<h2>Enterprise Architecture Diagram</h2>
+<img class="diagram" src="images/aws-eks-ecomm-arc.png" alt="Enterprise multi-region AWS EKS architecture">
+<p class="small">The diagram intentionally separates global traffic, security, regional application platforms, data, events, observability and delivery.</p>
+</section>
+
+<section id="principles" class="card">
+<h2>1. Core Design Principles</h2>
+<div class="grid">
+<div class="mini"><h3>Availability</h3><p>Multi-AZ protects from AZ failure. Multi-Region protects from Regional failure.</p></div>
+<div class="mini"><h3>Scalability</h3><p>Scale Pods and compute independently. Decouple workloads with asynchronous events.</p></div>
+<div class="mini"><h3>Consistency</h3><p>Use strong transactional patterns where required and distributed data models where the business permits them.</p></div>
+<div class="mini"><h3>Recoverability</h3><p>Define RPO/RTO first, then design replication, failover and runbooks around those targets.</p></div>
+</div>
+<div class="memory"><b>Architect mindset:</b> Do not start with AWS services. Start with business requirements, traffic patterns, consistency requirements, failure domains, RPO/RTO and security boundaries.</div>
+</section>
+
+<section id="global" class="card">
+<h2>2. Global Traffic Management</h2>
+<ul>
+<li><b>Route 53:</b> DNS, health checks and routing policies.</li>
+<li><b>Global Accelerator:</b> useful when the application benefits from static anycast IPs and network-level global traffic steering.</li>
+<li><b>CloudFront:</b> caches static/product content and reduces origin load.</li>
+<li><b>WAF:</b> blocks malicious HTTP requests using managed and custom rules.</li>
+<li><b>Shield:</b> DDoS protection for the appropriate edge resources.</li>
+</ul>
+<div class="memory"><b>Trade-off:</b> I would not automatically use Route 53 and Global Accelerator together. I would choose the global entry pattern based on latency, IP requirements, failover behavior and application protocol.</div>
+</section>
+
+<section id="network" class="card">
+<h2>3. Regional Network Architecture</h2>
+<ul>
+<li>One VPC per Region with multiple Availability Zones.</li>
+<li>Public subnets contain ALB and required edge-facing components.</li>
+<li>Private application subnets contain EKS nodes/workloads.</li>
+<li>Private database subnets contain Aurora and other data services where applicable.</li>
+<li>NAT gateways provide controlled outbound internet access when required.</li>
+<li>VPC endpoints can reduce dependency on NAT for AWS services such as S3, ECR and Secrets Manager.</li>
+<li>Security groups provide workload-level network controls.</li>
+</ul>
+</section>
+
+<section id="eks" class="card">
+<h2>4. EKS Enterprise Platform</h2>
+<div class="grid">
+<div class="mini"><h3>Traffic</h3><p>ALB → AWS Load Balancer Controller → Kubernetes Ingress/Service → Pods.</p></div>
+<div class="mini"><h3>Pod Scaling</h3><p>HPA scales Pods from CPU, memory or custom application metrics.</p></div>
+<div class="mini"><h3>Node Scaling</h3><p>Karpenter provisions appropriate compute capacity as Pod scheduling demand changes.</p></div>
+<div class="mini"><h3>Resilience</h3><p>Readiness probes, PDBs and topology spread constraints protect availability during failures and maintenance.</p></div>
+</div>
+<h3>Important EKS components</h3>
+<ul>
+<li>CoreDNS for cluster DNS.</li><li>VPC CNI for AWS VPC networking.</li><li>CSI drivers for storage integration.</li><li>AWS Load Balancer Controller for ALB/NLB integration.</li>
+<li>RBAC for Kubernetes authorization.</li><li>Pod Identity / IRSA patterns for AWS API access from workloads.</li>
+</ul>
+</section>
+
+<section id="services" class="card">
+<h2>5. Microservice Boundaries</h2>
+<table><tr><th>Service</th><th>Typical responsibility</th><th>Important concern</th></tr>
+<tr><td>Catalog</td><td>Product information and availability metadata</td><td>Heavy reads, caching, search</td></tr>
+<tr><td>Customer</td><td>Profile and customer preferences</td><td>PII protection and authorization</td></tr>
+<tr><td>Cart</td><td>Active shopping cart</td><td>Low latency and session continuity</td></tr>
+<tr><td>Order</td><td>Order lifecycle</td><td>Transactional consistency and idempotency</td></tr>
+<tr><td>Inventory</td><td>Stock reservation and updates</td><td>Avoid overselling</td></tr>
+<tr><td>Payment</td><td>Payment orchestration</td><td>Idempotency, security and auditability</td></tr>
+<tr><td>Notification</td><td>Email/SMS/push events</td><td>Asynchronous processing and retries</td></tr></table>
+</section>
+
+<section id="database" class="card">
+<h2>6. Database Strategy</h2>
+<ul>
+<li><b>Aurora Global Database:</b> strong fit for relational transactional workloads when the application's write/consistency model fits a primary-writer architecture.</li>
+<li><b>DynamoDB Global Tables:</b> useful for globally distributed workloads that need multi-Region reads/writes, but explicitly evaluate conflict and consistency behavior.</li>
+<li><b>OpenSearch:</b> useful for product search and discovery rather than as the system of record for orders.</li>
+<li><b>Redis:</b> use as a cache, not automatically as the durable source of truth.</li>
+</ul>
+<div class="memory"><b>Interview phrase:</b> "I would choose the data store per bounded context based on consistency, access pattern, latency, scale and failure behavior."</div>
+</section>
+
+<section id="cache" class="card">
+<h2>7. Caching</h2>
+<ul><li>Cache hot product/catalog data.</li><li>Use TTLs and explicit invalidation for correctness-sensitive data.</li><li>Protect Redis from becoming a single point of failure.</li><li>Use cache-aside patterns where appropriate.</li><li>During cache failure, the application should degrade to the durable data store with controlled load protection.</li></ul>
+</section>
+
+<section id="storage" class="card">
+<h2>8. S3 and Object Storage</h2>
+<ul><li>Product images, documents, exports and static artifacts.</li><li>Versioning for important objects.</li><li>Encryption using KMS where required.</li><li>Cross-Region Replication for recovery requirements.</li><li>CloudFront for global delivery.</li></ul>
+</section>
+
+<section id="events" class="card">
+<h2>9. Kafka / Event-Driven Architecture</h2>
+<div class="flow">Order Service → OrderCreated → Kafka/MSK → Payment Consumer<br>
+Order Service → OrderCreated → Kafka/MSK → Inventory Consumer<br>
+Order Service → OrderCreated → Kafka/MSK → Notification Consumer</div>
+<ul>
+<li>Kafka reduces synchronous coupling between services.</li>
+<li>Consumer groups allow independent scaling.</li>
+<li>Use idempotent consumers because events can be retried or redelivered.</li>
+<li>Use schema governance so event contracts remain compatible.</li>
+<li>For AWS-native simpler messaging, SQS/SNS/EventBridge may complement Kafka.</li>
+</ul>
+</section>
+
+<section id="security" class="card">
+<h2>10. Security Architecture</h2>
+<ul>
+<li>WAF and edge protection at the public boundary.</li>
+<li>IAM with least privilege.</li>
+<li>KMS for encryption.</li>
+<li>Secrets Manager for credentials and secrets.</li>
+<li>Private EKS/database subnets.</li>
+<li>Security groups and network policies for segmentation.</li>
+<li>CloudTrail for API audit trails.</li>
+<li>GuardDuty/Security Hub for security detection and centralized findings.</li>
+<li>JWT/OIDC authentication and service-level authorization where appropriate.</li>
+</ul>
+</section>
+
+<section id="observability" class="card">
+<h2>11. Observability</h2>
+<table><tr><th>Signal</th><th>Examples</th><th>What I would monitor</th></tr>
+<tr><td>Logs</td><td>CloudWatch / centralized log platform</td><td>Error rate, exceptions, business failures</td></tr>
+<tr><td>Metrics</td><td>Prometheus / AMP / CloudWatch</td><td>Latency, CPU, memory, saturation, request rate</td></tr>
+<tr><td>Dashboards</td><td>Grafana</td><td>SLOs, service health, infrastructure health</td></tr>
+<tr><td>Traces</td><td>OpenTelemetry / X-Ray</td><td>Cross-service latency and bottlenecks</td></tr>
+<tr><td>Business</td><td>Custom KPIs</td><td>Checkout success, payment failures, order rate</td></tr></table>
+</section>
+
+<section id="cicd" class="card">
+<h2>12. CI/CD and Platform Delivery</h2>
+<div class="flow">GitHub → Build/Test → Security Scan → Container Image → Registry → Deploy Region A + Region B → Smoke Tests → Approval / Progressive Rollout</div>
+<ul>
+<li>Terraform provisions both Regions consistently.</li>
+<li>Container images are immutable and available to the recovery Region.</li>
+<li>Use automated tests and security checks before deployment.</li>
+<li>Use progressive delivery for high-risk services.</li>
+<li>Monitor deployment health before moving to the next stage.</li>
+</ul>
+</section>
+
+<section id="scaling" class="card">
+<h2>13. Scaling and Peak Traffic</h2>
+<ul>
+<li>CloudFront reduces origin traffic.</li>
+<li>ALB distributes requests across healthy Pods.</li>
+<li>HPA increases Pod replicas.</li>
+<li>Karpenter adds compute capacity.</li>
+<li>Redis reduces database pressure.</li>
+<li>Kafka absorbs asynchronous workload spikes.</li>
+<li>Database read scaling and caching reduce transactional database pressure.</li>
+<li>Load testing should validate the scaling assumptions before major events.</li>
+</ul>
+<div class="memory"><b>Black Friday answer:</b> "I would pre-scale where prediction is reliable, keep autoscaling enabled, validate Kafka/database capacity, protect dependencies with rate limits and backpressure, and monitor business KPIs—not only CPU."</div>
+</section>
+
+<section id="dr" class="card">
+<h2>14. Disaster Recovery Strategy</h2>
+<h3>First define</h3>
+<ul><li>RPO — maximum acceptable data loss.</li><li>RTO — maximum acceptable recovery time.</li><li>Critical business flows — checkout, payment, inventory and order confirmation.</li></ul>
+<h3>Then implement</h3>
+<ul>
+<li>IaC in both Regions.</li><li>Container images available in both Regions.</li><li>Database replication appropriate to workload.</li><li>Secrets/configuration recovery strategy.</li><li>Global health checks and traffic failover.</li><li>Runbook for database promotion and application validation.</li>
+</ul>
+</section>
+
+<section id="failure" class="card">
+<h2>15. Regional Failure — Step by Step</h2>
+<div class="flow">
+1. Region A health signals fail.<br>
+2. Global traffic layer stops sending new traffic to Region A.<br>
+3. Region B receives traffic.<br>
+4. Scale Region B to required DR capacity.<br>
+5. Promote transactional database if required by the selected database architecture.<br>
+6. Validate authentication, cart, checkout, payment and inventory.<br>
+7. Monitor error rate, latency and business KPIs.<br>
+8. Reconcile asynchronous events and failed transactions.<br>
+9. Recover Region A.<br>
+10. Perform controlled failback after validation.
+</div>
+</section>
+
+<section id="testing" class="card">
+<h2>16. DR and Failure Testing</h2>
+<ul>
+<li>AZ failure simulation.</li>
+<li>Pod/node failure.</li>
+<li>Database failover.</li>
+<li>Kafka broker/consumer failure.</li>
+<li>Cache failure.</li>
+<li>Regional traffic failover.</li>
+<li>Dependency outage and graceful degradation.</li>
+<li>Full Regional recovery and failback.</li>
+</ul>
+<div class="memory"><b>Architect statement:</b> "A DR architecture is only credible when we regularly prove the RPO/RTO through controlled failure testing."</div>
+</section>
+
+<section id="questions" class="card">
+<h2>17. Interview Follow-Up Questions</h2>
+<ol>
+<li class="q">Why Global Accelerator instead of Route 53?<br><span class="answer">Compare DNS-level routing with static anycast IPs, network path optimization and failover requirements.</span></li>
+<li class="q">How do you prevent duplicate payments?<br><span class="answer">Use idempotency keys, durable transaction state and carefully designed retry semantics.</span></li>
+<li class="q">What happens if Kafka is unavailable?<br><span class="answer">Define producer durability, retry/backpressure and degraded synchronous behavior for critical flows.</span></li>
+<li class="q">What happens to carts during Regional failure?<br><span class="answer">Use a globally available cart data model or explicitly define acceptable cart loss based on business RPO.</span></li>
+<li class="q">How do you handle Black Friday?<br><span class="answer">Pre-scale, autoscale, cache, decouple with Kafka, protect dependencies and load test.</span></li>
+<li class="q">How do you secure EKS?<br><span class="answer">Private nodes, RBAC, workload identity, network policies, secrets, encryption, image scanning and audit logs.</span></li>
+<li class="q">How do you prove DR?</li><span class="answer">Run controlled game days and measure actual failover time and data loss against RTO/RPO.</span>
+</ol>
+</section>
+
+<section id="memory" class="card">
+<h2>18. Interview Memory Sheet</h2>
+<div class="memory">
+<p><b>GLOBAL:</b> Route 53 + Global Accelerator + CloudFront + WAF</p>
+<p><b>REGIONAL:</b> VPC + Multi-AZ + ALB + private EKS</p>
+<p><b>SCALE:</b> HPA + Karpenter + topology spread + PDB</p>
+<p><b>DATA:</b> Aurora Global + DynamoDB Global + Redis + S3</p>
+<p><b>EVENTS:</b> MSK/Kafka + idempotent consumers + retries</p>
+<p><b>SECURITY:</b> IAM + KMS + Secrets Manager + WAF + private networking</p>
+<p><b>OBSERVABILITY:</b> Logs + Metrics + Traces + SLOs + Business KPIs</p>
+<p><b>DR:</b> RPO/RTO + replication + failover + validation + testing</p>
+</div>
+<h3>30-second architect answer</h3>
+<p class="lead">"I would design the platform as a Multi-Region and Multi-AZ EKS architecture. Global traffic would be managed through health-aware routing, CloudFront and WAF. Each Region would have a VPC across multiple AZs, with ALB in front of private EKS workloads. HPA and Karpenter would provide application and infrastructure scaling. I would use workload-specific data stores—Aurora Global for transactional data, DynamoDB Global Tables where distributed writes fit, Redis for caching and S3 for objects. Kafka would decouple order, payment, inventory and notification workflows. Finally, I would define RPO and RTO with the business and prove the DR design through Regional failover and regular game-day testing."</p>
+</section>
+
+</main></div>
+</body></html>

@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global E-Commerce — Multi-Region AWS + EKS Architecture</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --bg:#0A0F1C;
+    --panel:#0E1526;
+    --panel2:#111B30;
+    --grid:#1B2740;
+    --text:#E7ECF5;
+    --muted:#8996AC;
+    --muted2:#5C6C8A;
+    --primary:#22D3AA;
+    --primary-dim:rgba(34,211,170,.12);
+    --secondary:#8B7FFF;
+    --secondary-dim:rgba(139,127,255,.12);
+    --network:#4C7EFF;
+    --data:#FFB454;
+    --messaging:#FF6FA5;
+    --security:#FF5D5D;
+    --observ:#4FD5E8;
+    --cicd:#FF9900;
+    --edge:#AEB9D4;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;}
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(34,211,170,.08), transparent 60%),
+      radial-gradient(ellipse 900px 500px at 85% -10%, rgba(139,127,255,.08), transparent 60%),
+      var(--bg);
+    min-height:100vh;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+
+  header{
+    padding:26px 32px 18px;
+    border-bottom:1px solid var(--grid);
+    display:flex; flex-wrap:wrap; gap:18px; align-items:flex-end; justify-content:space-between;
+    position:sticky; top:0; z-index:50;
+    background:rgba(10,15,28,.92); backdrop-filter:blur(10px);
+  }
+  header .titleblock{max-width:720px;}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--primary); margin:0 0 8px; display:flex; align-items:center; gap:8px;
+  }
+  .eyebrow::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--primary);box-shadow:0 0 10px var(--primary);}
+  h1{font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:700; margin:0 0 6px; letter-spacing:-.01em;}
+  header p{margin:0; color:var(--muted); font-size:13.5px; line-height:1.5;}
+
+  .controls{display:flex; flex-direction:column; gap:10px; align-items:flex-end;}
+  .btnrow{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;}
+  button.ctl{
+    font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:.03em;
+    background:var(--panel2); border:1px solid var(--grid); color:var(--text);
+    padding:8px 14px; border-radius:7px; cursor:pointer; display:flex; align-items:center; gap:7px;
+    transition:.15s border-color, .15s background;
+  }
+  button.ctl:hover{border-color:var(--primary); background:#132038;}
+  button.ctl.active{border-color:var(--primary); background:var(--primary-dim); color:#B7FFEA;}
+  button.ctl svg{width:12px;height:12px;}
+
+  .layerToggles{display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;}
+  .chip{
+    font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.02em;
+    padding:6px 10px; border-radius:20px; cursor:pointer; user-select:none;
+    border:1px solid var(--grid); color:var(--muted); display:flex; align-items:center; gap:6px;
+    transition:.15s all;
+  }
+  .chip .dot{width:8px;height:8px;border-radius:50%;}
+  .chip.on{color:var(--text); border-color:currentColor; opacity:1;}
+  .chip.off{opacity:.45;}
+
+  .wrap{padding:22px 0 40px; overflow-x:auto;}
+  .canvasHolder{min-width:2480px; padding:0 24px;}
+  svg#diagram{width:100%; height:auto; display:block;}
+
+  .nodeLabel{font-family:'JetBrains Mono',monospace; font-weight:600;}
+  .nodeSub{font-family:'Inter',sans-serif; font-weight:400;}
+  .pillText{font-family:'JetBrains Mono',monospace;}
+
+  footer.legend{
+    padding:18px 32px 34px; border-top:1px solid var(--grid);
+    display:flex; flex-wrap:wrap; gap:22px; align-items:center; color:var(--muted); font-size:12px;
+  }
+  footer.legend .item{display:flex; align-items:center; gap:8px; font-family:'JetBrains Mono',monospace;}
+  footer.legend .sw{width:12px;height:12px;border-radius:3px; display:inline-block;}
+  footer.legend .lineSw{width:26px;height:0;border-top:2px dashed var(--muted2); display:inline-block;}
+  footer.legend .lineSw.solid{border-top:2px solid var(--primary);}
+
+  @media (prefers-reduced-motion: reduce){
+    .packet, .flowline, .pulseDash, .blinkDot{animation:none !important;}
+  }
+
+  /* SVG-native animation classes are defined inline via <style> inside svg for scoping with CSS vars */
+</style>
+</head>
+<body>
+
+<header>
+  <div class="titleblock">
+    <p class="eyebrow">Live reference architecture</p>
+    <h1>Global E-Commerce — Multi-Region AWS + EKS</h1>
+    <p>Active/active edge with active-primary data plane. Traffic path (bright, moving dot) and continuous cross-region replication (amber pulses) are animated. Toggle layers to isolate a concern.</p>
+  </div>
+  <div class="controls">
+    <div class="btnrow">
+      <button class="ctl active" id="playBtn">
+        <svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>
+        <span id="playLabel">Pause animation</span>
+      </button>
+      <button class="ctl" id="resetBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+        Reset layers
+      </button>
+    </div>
+    <div class="layerToggles" id="layerToggles"></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="canvasHolder">
+    <svg id="diagram" viewBox="0 0 2480 1580" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+</div>
+
+<footer class="legend">
+  <span class="item"><span class="sw" style="background:var(--network)"></span>Networking / Edge</span>
+  <span class="item"><span class="sw" style="background:var(--primary)"></span>Compute — Primary region</span>
+  <span class="item"><span class="sw" style="background:var(--secondary)"></span>Compute — Secondary region</span>
+  <span class="item"><span class="sw" style="background:var(--data)"></span>Data / Storage</span>
+  <span class="item"><span class="sw" style="background:var(--messaging)"></span>Messaging / Events</span>
+  <span class="item"><span class="sw" style="background:var(--security)"></span>Security / Identity</span>
+  <span class="item"><span class="sw" style="background:var(--observ)"></span>Observability</span>
+  <span class="item"><span class="sw" style="background:var(--cicd)"></span>CI/CD &amp; IaC</span>
+  <span class="item"><span class="lineSw solid"></span>Live request path</span>
+  <span class="item"><span class="lineSw"></span>Async / replication / health-check</span>
+</footer>
+
+<script>
+(function(){
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = document.getElementById('diagram');
+
+  const CAT = {
+    network:      {stroke:'#4C7EFF', fill:'rgba(76,122,255,.09)',  text:'#C9D6FF'},
+    data:         {stroke:'#FFB454', fill:'rgba(255,180,84,.10)',  text:'#FFE3BD'},
+    messaging:    {stroke:'#FF6FA5', fill:'rgba(255,111,165,.10)', text:'#FFD3E6'},
+    security:     {stroke:'#FF5D5D', fill:'rgba(255,93,93,.10)',   text:'#FFD3D3'},
+    observability:{stroke:'#4FD5E8', fill:'rgba(79,213,232,.10)',  text:'#CFF7FC'},
+    cicd:         {stroke:'#FF9900', fill:'rgba(255,153,0,.12)',   text:'#FFE1B0'},
+    edge:         {stroke:'#AEB9D4', fill:'rgba(174,185,212,.08)', text:'#E7ECF5'},
+  };
+
+  function el(tag, attrs, parent){
+    const e = document.createElementNS(NS, tag);
+    for(const k in attrs) e.setAttribute(k, attrs[k]);
+    if(parent) parent.appendChild(e);
+    return e;
+  }
+
+  function group(cls){ return el('g', {class:cls}, svg); }
+
+  // ---------- defs ----------
+  const defs = el('defs', {}, svg);
+  function glow(id,color){
+    const f = el('filter', {id:id, x:'-80%', y:'-80%', width:'260%', height:'260%'}, defs);
+    el('feGaussianBlur', {stdDeviation:3.2, result:'b'}, f);
+    const m = el('feMerge', {}, f);
+    el('feMergeNode', {in:'b'}, m);
+    el('feMergeNode', {in:'SourceGraphic'}, m);
+  }
+  glow('glowPrimary','#22D3AA'); glow('glowSecondary','#8B7FFF'); glow('glowData','#FFB454');
+
+  ['network','data','messaging','security','observability','cicd','edge','primary','secondary'].forEach(k=>{
+    const c = CAT[k] ? CAT[k].stroke : (k==='primary'?'#22D3AA':'#8B7FFF');
+    const m = el('marker',{id:'arrow-'+k, viewBox:'0 0 10 10', refX:8, refY:5, markerWidth:7, markerHeight:7, orient:'auto-start-reverse'}, defs);
+    el('path',{d:'M0,0 L10,5 L0,10 z', fill:c}, m);
+  });
+
+  // ---------- node/container helpers ----------
+  const registry = {}; // id -> {x,y,w,h,cx,cy}
+
+  function node(g, id, x, y, w, h, label, sub, cat, opts){
+    opts = opts || {};
+    const c = opts.color ? {stroke:opts.color, fill:opts.fill||'rgba(255,255,255,.06)', text:opts.text||'#fff'} : CAT[cat];
+    const wrap = el('g', {class:'node', 'data-id':id}, g);
+    const r = el('rect', {x,y,width:w,height:h,rx:9, fill:c.fill, stroke:c.stroke, 'stroke-width':1.4}, wrap);
+    if(opts.dashed) r.setAttribute('stroke-dasharray','4 3');
+    if(opts.title) el('title',{},wrap).textContent = opts.title;
+    const tx = x+w/2;
+    if(sub){
+      el('text',{x:tx,y:y+h/2-3,'text-anchor':'middle',class:'nodeLabel',fill:c.text,'font-size':opts.fs||12.5}, wrap).textContent = label;
+      el('text',{x:tx,y:y+h/2+13,'text-anchor':'middle',class:'nodeSub',fill:'#8996AC','font-size':10.2}, wrap).textContent = sub;
+    } else {
+      el('text',{x:tx,y:y+h/2+4,'text-anchor':'middle',class:'nodeLabel',fill:c.text,'font-size':opts.fs||12.5}, wrap).textContent = label;
+    }
+    registry[id] = {x,y,w,h,cx:x+w/2,cy:y+h/2};
+    return wrap;
+  }
+
+  function container(g, x,y,w,h,label,cat){
+    const c = CAT[cat];
+    el('rect',{x,y,width:w,height:h,rx:12,fill:'rgba(255,255,255,.015)',stroke:c.stroke,'stroke-width':1,'stroke-dasharray':'2 5','opacity':.85}, g);
+    el('text',{x:x+14,y:y+18,class:'nodeLabel',fill:c.stroke,'font-size':10.5,'letter-spacing':'.04em'}, g).textContent = label.toUpperCase();
+  }
+
+  function pod(g, id, x,y,w,h,label,accent){
+    const wrap = el('g',{class:'node','data-id':id}, g);
+    el('rect',{x,y,width:w,height:h,rx:6, fill:'rgba(255,255,255,.04)', stroke:accent, 'stroke-width':1}, wrap);
+    el('circle',{cx:x+11,cy:y+h/2,r:3,fill:accent}, wrap);
+    el('text',{x:x+20,y:y+h/2+3.5,class:'nodeLabel',fill:'#DCE4F5','font-size':9.6}, wrap).textContent = label;
+    registry[id] = {x,y,w,h,cx:x+w/2,cy:y+h/2};
+  }
+
+  function sectionLabel(g,x,y,text,color){
+    el('text',{x,y,class:'nodeLabel',fill:color,'font-size':11.5,'letter-spacing':'.06em'},g).textContent=text.toUpperCase();
+  }
+
+  // ---------- connector helper ----------
+  function connect(g, fromId, toId, opts){
+    opts = opts||{};
+    const a = registry[fromId], b = registry[toId];
+    if(!a||!b) return;
+    const p1 = opts.from || {x:a.cx, y:opts.fromEdge==='bottom'?a.y+a.h:(opts.fromEdge==='top'?a.y:(opts.fromEdge==='right'?a.y+a.h/2:a.cy))};
+    let sx = opts.sx!=null?opts.sx:a.cx, sy = opts.sy!=null?opts.sy:a.cy+a.h/2;
+    let ex = opts.ex!=null?opts.ex:b.cx, ey = opts.ey!=null?opts.ey:b.cy-b.h/2;
+    if(opts.sPoint){sx=opts.sPoint.x;sy=opts.sPoint.y;}
+    if(opts.ePoint){ex=opts.ePoint.x;ey=opts.ePoint.y;}
+    let d;
+    if(opts.curve==='v'){ // vertical-ish s-curve
+      const midY = (sy+ey)/2;
+      d = `M${sx},${sy} C${sx},${midY} ${ex},${midY} ${ex},${ey}`;
+    } else if(opts.curve==='h'){
+      const midX = (sx+ex)/2;
+      d = `M${sx},${sy} C${midX},${sy} ${midX},${ey} ${ex},${ey}`;
+    } else {
+      d = `M${sx},${sy} L${ex},${ey}`;
+    }
+    const cls = opts.cls || 'flowline';
+    const color = opts.color || '#4C7EFF';
+    const path = el('path',{d, fill:'none', stroke:color, 'stroke-width':opts.width||1.6, class:cls}, g);
+    if(opts.dashed!==false){
+      path.setAttribute('stroke-dasharray', opts.dash || '6 5');
+    }
+    if(opts.marker!==false) path.setAttribute('marker-end', `url(#arrow-${opts.markerCat||'network'})`);
+    if(opts.animate) path.style.animation = `dashflow ${opts.speed||1.2}s linear infinite`;
+    if(opts.reverse) path.style.animationDirection = 'reverse';
+    return path;
+  }
+
+  // ================= GLOBAL EDGE LAYER (y 0-140) =================
+  const gEdge = group('layer-network');
+  container(gEdge, 20, 6, 2440, 138, 'Global Edge & DNS', 'edge');
+  const edgeY = 46, edgeH = 58;
+  node(gEdge,'users',60,edgeY,220,edgeH,'Client Devices','Web · iOS · Android','edge',{title:'End users worldwide, routed to nearest healthy region.'});
+  node(gEdge,'r53',340,edgeY,260,edgeH,'Route 53','Latency + failover routing','network',{title:'DNS with latency-based routing and active health checks driving automatic regional failover.'});
+  node(gEdge,'shield',660,edgeY,200,edgeH,'AWS Shield Adv.','DDoS protection','security',{title:'Always-on network/transport layer DDoS mitigation for CloudFront & ALB.'});
+  node(gEdge,'cf',920,edgeY,230,edgeH,'CloudFront','Global CDN + cache','network',{title:'Edge caching of static assets & API responses across 400+ PoPs.'});
+  node(gEdge,'wafg',1210,edgeY,190,edgeH,'AWS WAF','Global rules, rate-limit','security',{title:'Managed + custom rules: SQLi/XSS, bot control, rate limiting.'});
+  node(gEdge,'edgefn',1460,edgeY,240,edgeH,'Lambda@Edge / CF Fn','Personalization, headers','network',{title:'Edge compute for A/B routing, geo-personalization, header rewrites.'});
+  node(gEdge,'acm',1760,edgeY,160,edgeH,'ACM','TLS certificates','network',{title:'Public certificates for CloudFront & regional ALBs, auto-renewed.'});
+  node(gEdge,'gaccel',1980,edgeY,220,edgeH,'Global Accelerator','Anycast IP, TCP/UDP','network',{title:'Static anycast IPs for non-HTTP traffic and fast regional failover at network layer.'});
+
+  // ================= REGION TEMPLATE =================
+  function buildRegion(originX, originY, accent, accentDim, regionKey, regionLabel, dbRole){
+    const g = group('layer-network region-'+regionKey);
+    const W = 1040, H = 1130;
+    // VPC boundary
+    container(g, originX, originY, W, H, `VPC · ${regionLabel}  ·  10.${regionKey==='pri'?0:1}.0.0/16`, 'network');
+    el('text',{x:originX+W-14,y:originY+18,'text-anchor':'end',class:'nodeLabel',fill:accent,'font-size':12,'letter-spacing':'.03em'},g).textContent = regionLabel.toUpperCase();
+
+    // AZ dividers
+    [originX+346, originX+693].forEach(dx=>{
+      el('line',{x1:dx,y1:originY+26,x2:dx,y2:originY+H-16,stroke:'#22304d','stroke-width':1,'stroke-dasharray':'2 6'},g);
+    });
+    ['AZ-a','AZ-b','AZ-c'].forEach((l,i)=>{
+      el('text',{x:originX+30+i*346,y:originY+38,class:'nodeLabel',fill:'#4A5A7D','font-size':9.5,'letter-spacing':'.08em'},g).textContent=l;
+    });
+
+    const gn = group('layer-network'); g.appendChild(gn);
+    const gc = group('layer-compute'); g.appendChild(gc);
+    const gd = group('layer-data'); g.appendChild(gd);
+    const gm = group('layer-messaging'); g.appendChild(gm);
+    const gs = group('layer-security'); g.appendChild(gs);
+    const go = group('layer-observability'); g.appendChild(go);
+    // Actually we appended sub-groups already inside g; svg nesting via appendChild works since g is an svg <g>.
+
+    const X = x=>originX+x, Y=y=>originY+y;
+    const P = k=>regionKey+'-'+k;
+
+    // Ingress row
+    node(gn,P('waf'),X(40),Y(46),170,56,'WAF (Regional)','Attached to ALB','security',{title:'Regional WAFv2 web ACL protecting the ALB.'});
+    node(gn,P('alb'),X(250),Y(46),250,56,'Application LB','TLS-terminating, multi-AZ','network',{title:'Internet-facing ALB across 3 AZs, terminates TLS, routes by path/host.'});
+    node(gn,P('apigw'),X(540),Y(46),210,56,'API Gateway','Partner / mobile BFF','network',{title:'REST/HTTP API for partner integrations and mobile backend-for-frontend.'});
+    node(gn,P('nat'),X(800),Y(46),200,56,'NAT Gateway','One per AZ','network',{title:'Outbound internet access for private-subnet workloads, one per AZ for resilience.'});
+
+    // Control plane + autoscaling
+    node(gc,P('eks'),X(350),Y(126),340,50,'Amazon EKS Control Plane','Managed K8s 1.31 · multi-AZ','compute',{color:accent,fill:accentDim,text:'#fff',title:'AWS-managed Kubernetes API server & etcd across 3 AZs.'});
+    node(gc,P('karpenter'),X(40),Y(126),290,44,'Karpenter','Node autoscaling','compute',{color:accent,fill:accentDim,text:'#fff',fs:11.5,title:'Just-in-time node provisioning based on pending pod requirements.'});
+    node(gc,P('argocdAgent'),X(710),Y(126),290,44,'ArgoCD Agent','GitOps sync target','cicd',{fs:11.5,title:'Continuously reconciles cluster state to the Git source of truth.'});
+
+    // node groups + pods
+    container(gc, X(40), Y(196), 260, 330, 'Node Group · On-Demand', 'network');
+    node(gc,P('ng-od'),X(60),Y(226),220,50,'System workloads','Ingress ctrl · CoreDNS','compute',{color:accent,fill:accentDim,text:'#fff',fs:11});
+    node(gc,P('ng-od2'),X(60),Y(288),220,50,'m6i.xlarge ×3–9','Reserved baseline','compute',{color:accent,fill:accentDim,text:'#fff',fs:11});
+    node(gc,P('fargate'),X(60),Y(350),220,50,'Fargate profile','Batch / cron jobs','compute',{color:accent,fill:accentDim,text:'#fff',fs:11});
+    node(gc,P('meshctl'),X(60),Y(412),220,50,'App Mesh / Envoy','Service mesh sidecars','compute',{color:accent,fill:accentDim,text:'#fff',fs:11});
+    node(gc,P('ingctrl'),X(60),Y(474),220,44,'AWS LB Controller','Ingress → ALB target grp','compute',{color:accent,fill:accentDim,text:'#fff',fs:10.5});
+
+    container(gc, X(330), Y(196), 380, 330, 'Microservices — EKS Pods', 'network');
+    const svcs = ['Product Catalog','Shopping Cart','Order / Checkout','Payment','Inventory','User / Auth','Search','Recommendations','Notifications'];
+    let sx=0, sy=0;
+    svcs.forEach((s,i)=>{
+      const cx = X(345 + (i%3)*122);
+      const cy = Y(228 + Math.floor(i/3)*90);
+      pod(gc, P('svc-'+i), cx, cy, 110, 74, s, accent);
+    });
+
+    container(gc, X(740), Y(196), 260, 330, 'Node Group · Spot', 'network');
+    node(gc,P('ng-spot'),X(760),Y(226),220,50,'c6i.large ×0–24','Stateless services','compute',{color:accent,fill:accentDim,text:'#fff',fs:11});
+    node(gc,P('ng-spot2'),X(760),Y(288),220,50,'Mixed instance policy','Diversified pools','compute',{color:accent,fill:accentDim,text:'#fff',fs:11});
+    node(gc,P('hpa'),X(760),Y(350),220,50,'HPA / KEDA','Pod autoscaling','compute',{color:accent,fill:accentDim,text:'#fff',fs:11});
+    node(gc,P('pdb'),X(760),Y(412),220,44,'PodDisruptionBudgets','Rolling-update safety','compute',{color:accent,fill:accentDim,text:'#fff',fs:10.5});
+
+    // Serverless row
+    node(gc,P('lam-checkout'),X(40),Y(546),230,58,'λ Checkout Validate','Sync, in request path','compute',{color:accent,fill:accentDim,text:'#fff',dashed:true,title:'Validates cart & pricing before order creation.'});
+    node(gc,P('lam-fraud'),X(290),Y(546),230,58,'λ Fraud Detection','Invoked by Payment svc','compute',{color:accent,fill:accentDim,text:'#fff',dashed:true,title:'Real-time risk scoring before payment capture.'});
+    node(gc,P('lam-image'),X(540),Y(546),230,58,'λ Image Resize','S3 event-triggered','compute',{color:accent,fill:accentDim,text:'#fff',dashed:true,title:'Generates responsive product image variants on upload.'});
+    node(gc,P('stepfn'),X(790),Y(546),210,58,'Step Functions','Order fulfillment workflow','compute',{color:accent,fill:accentDim,text:'#fff',dashed:true,title:'Orchestrates multi-step order fulfillment & saga compensation.'});
+
+    // Data row
+    sectionLabel(gd, X(40), Y(632), 'Data layer', '#FFB454');
+    node(gd,P('aurora'),X(40),Y(642),300,90,'Aurora PostgreSQL',`Global DB — ${dbRole}`,'data',{title:'Aurora Global Database: '+dbRole+'. Cross-region replication typically <1s.'});
+    node(gd,P('rdsproxy'),X(360),Y(642),150,90,'RDS Proxy','Pooling · failover','data');
+    node(gd,P('ddb'),X(530),Y(642),220,90,'DynamoDB','Global Tables — cart/session','data',{title:'Multi-active DynamoDB Global Tables for session & cart state.'});
+    node(gd,P('cache'),X(770),Y(642),230,90,'ElastiCache Redis','Global Datastore','data',{title:'Sub-ms cache for catalog & session reads; Global Datastore replicates cross-region.'});
+
+    node(gd,P('search'),X(40),Y(752),230,68,'OpenSearch Service','Product search index','data');
+    node(gd,P('s3'),X(290),Y(752),230,68,'S3','Assets · CRR enabled','data',{title:'Product images/static assets with Cross-Region Replication + versioning.'});
+    node(gd,P('backup'),X(560),Y(752),200,68,'AWS Backup','Automated vault + PITR','data');
+
+    // Messaging row
+    sectionLabel(gm, X(40), Y(842), 'Eventing & messaging', '#FF6FA5');
+    node(gm,P('eventbridge'),X(40),Y(852),220,68,'EventBridge','Order lifecycle bus','messaging',{title:'Central event bus: OrderPlaced, PaymentCaptured, InventoryReserved…'});
+    node(gm,P('sqs'),X(280),Y(852),220,68,'SQS + DLQ','Order processing queue','messaging');
+    node(gm,P('sns'),X(520),Y(852),200,68,'SNS','Fan-out notifications','messaging');
+    node(gm,P('msk'),X(740),Y(852),250,68,'Amazon MSK','Clickstream & inventory events','messaging',{title:'Managed Kafka for high-throughput clickstream + real-time inventory sync.'});
+
+    // Security strip
+    sectionLabel(gs, X(40), Y(944), 'Security & identity', '#FF5D5D');
+    node(gs,P('iam'),X(40),Y(954),165,50,'IAM / IRSA','Pod-level roles','security',{fs:10.6});
+    node(gs,P('kms'),X(215),Y(954),135,50,'KMS','Envelope encryption','security',{fs:10.6});
+    node(gs,P('secrets'),X(360),Y(954),175,50,'Secrets Manager','DB & API creds','security',{fs:10.6});
+    node(gs,P('guardduty'),X(545),Y(954),160,50,'GuardDuty','Threat detection','security',{fs:10.6});
+    node(gs,P('sechub'),X(715),Y(954),155,50,'Security Hub','Posture & findings','security',{fs:10.6});
+    node(gs,P('config'),X(880),Y(954),140,50,'AWS Config','Compliance rules','security',{fs:10.3});
+
+    // Observability strip
+    sectionLabel(go, X(40), Y(1016), 'Observability', '#4FD5E8');
+    node(go,P('cw'),X(40),Y(1026),200,50,'CloudWatch','Metrics · logs · alarms','observability',{fs:10.8});
+    node(go,P('xray'),X(250),Y(1026),150,50,'X-Ray','Distributed tracing','observability',{fs:10.8});
+    node(go,P('ci'),X(410),Y(1026),200,50,'Container Insights','EKS/pod-level metrics','observability',{fs:10.4});
+    node(go,P('datadog'),X(620),Y(1026),200,50,'Datadog APM','Dashboards & alerting','observability',{fs:10.6});
+    node(go,P('tgw'),X(830),Y(1026),190,50,'Transit Gateway','Hub for VPC/on-prem','network',{fs:10.4});
+
+    // Internal wiring
+    connect(gn, P('r53placeholder'), P('waf'), {}); // placeholder ignored (no-op safe)
+    connect(gn, P('alb'), P('waf'), {curve:'h', color:CAT.security.stroke, markerCat:'security', dash:'3 4'});
+    connect(gc, P('alb'), P('eks'), {curve:'v', color:accent, markerCat:regionKey==='pri'?'primary':'secondary', cls:'flowline', animate:true, speed:1.1, width:2, dash:'7 6'});
+    connect(gc, P('eks'), P('svc-1'), {curve:'v', color:accent, markerCat:regionKey==='pri'?'primary':'secondary', animate:true, speed:1.1, width:2, dash:'7 6'});
+    connect(gd, P('svc-1'), P('cache'), {curve:'v', color:CAT.data.stroke, markerCat:'data', animate:true, speed:1.4, dash:'5 5'});
+    connect(gd, P('cache'), P('aurora'), {curve:'h', color:CAT.data.stroke, markerCat:'data', animate:true, speed:1.6, dash:'5 5'});
+    connect(gd, P('svc-1'), P('rdsproxy'), {curve:'v', color:CAT.data.stroke, markerCat:'data', dash:'4 5'});
+    connect(gd, P('rdsproxy'), P('aurora'), {curve:'h', color:CAT.data.stroke, markerCat:'data', dash:'4 5', marker:false});
+    connect(gm, P('svc-2'), P('eventbridge'), {curve:'v', color:CAT.messaging.stroke, markerCat:'messaging', dash:'4 5'});
+    connect(gm, P('eventbridge'), P('sqs'), {curve:'h', color:CAT.messaging.stroke, markerCat:'messaging', animate:true, speed:1.5, dash:'5 5'});
+    connect(gm, P('eventbridge'), P('sns'), {curve:'h', color:CAT.messaging.stroke, markerCat:'messaging', dash:'5 5'});
+    connect(gm, P('svc-7'), P('msk'), {curve:'v', color:CAT.messaging.stroke, markerCat:'messaging', dash:'4 5'});
+    connect(gc, P('lam-image'), P('s3'), {curve:'v', color:accent, markerCat:regionKey==='pri'?'primary':'secondary', dash:'4 5'});
+    connect(gc, P('argocdAgent'), P('eks'), {curve:'v', color:CAT.cicd.stroke, markerCat:'cicd', dash:'3 4'});
+
+    // expose ALB & DB absolute centers for cross-region + global connectors
+    registry[P('albTop')] = {cx:registry[P('alb')].cx, cy:registry[P('alb')].y};
+    return {W,H,X,Y};
+  }
+
+  const region1 = buildRegion(60, 172, '#22D3AA', 'rgba(34,211,170,.10)', 'pri', 'us-east-1 · Primary', 'Writer instance');
+  const region2 = buildRegion(1380, 172, '#8B7FFF', 'rgba(139,127,255,.10)', 'sec', 'eu-west-1 · Secondary', 'Reader (promotable)');
+
+  // ================= CROSS-REGION REPLICATION (gap between panels) =================
+  const gRepl = group('layer-data');
+  const gapX1 = 1100, gapX2 = 1380;
+  [
+    ['pri-aurora','sec-aurora','Aurora Global DB replication (<1s)'],
+    ['pri-ddb','sec-ddb','DynamoDB Global Tables (multi-active)'],
+    ['pri-cache','sec-cache','ElastiCache Global Datastore'],
+    ['pri-s3','sec-s3','S3 Cross-Region Replication'],
+  ].forEach(([a,b,label],i)=>{
+    const na = registry[a], nb = registry[b];
+    const y = na.cy;
+    const path = el('path',{d:`M${na.x+na.w},${y} C${gapX1+80},${y} ${gapX2-80},${nb.y+nb.h/2} ${nb.x},${nb.y+nb.h/2}`,
+      fill:'none', stroke:'#FFB454', 'stroke-width':1.6, 'stroke-dasharray':'5 6', 'marker-end':'url(#arrow-data)'}, gRepl);
+    path.style.animation = `dashflow ${1.8+i*0.2}s linear infinite`;
+    el('text',{x:(gapX1+gapX2)/2, y:y-8, 'text-anchor':'middle', class:'nodeLabel', fill:'#FFCF8A','font-size':8.6}, gRepl).textContent = label;
+  });
+
+  // ================= ROUTE53 HEALTH CHECKS =================
+  const gHealth = group('layer-network');
+  ['pri-albTop','sec-albTop'].forEach(id=>{
+    const b = registry[id];
+    const r53 = registry['r53'];
+    const path = el('path',{d:`M${r53.cx},${r53.y+r53.h} C${r53.cx},${(r53.y+r53.h+b.cy)/2} ${b.cx},${(r53.y+r53.h+b.cy)/2} ${b.cx},${b.cy}`,
+      fill:'none', stroke:'#5C6C8A','stroke-width':1.3,'stroke-dasharray':'2 5'}, gHealth);
+    el('title',{},gHealth).textContent='Route 53 health check';
+  });
+
+  // ================= CI/CD BAND (bottom) =================
+  const gCicd = group('layer-cicd');
+  const cy0 = 1330;
+  container(gCicd, 60, cy0, 2340, 150, 'CI/CD & Infrastructure as Code (shared across regions)', 'cicd');
+  node(gCicd,'git',100,cy0+40,200,60,'GitHub','Source of truth','cicd');
+  node(gCicd,'gha',340,cy0+40,240,60,'GitHub Actions','Build · unit test · scan','cicd');
+  node(gCicd,'terraform',620,cy0+40,220,60,'Terraform Cloud','IaC plan/apply','cicd');
+  node(gCicd,'ecr',880,cy0+40,220,60,'Amazon ECR','Shared image registry','cicd');
+  node(gCicd,'argocdhub',1140,cy0+40,240,60,'ArgoCD (Hub)','GitOps CD controller','cicd');
+  node(gCicd,'cosign',1420,cy0+40,210,60,'Cosign + OPA','Image signing & policy gate','cicd');
+
+  connect(gCicd,'git','gha',{curve:'h',color:CAT.cicd.stroke,markerCat:'cicd',animate:true,speed:1.3});
+  connect(gCicd,'gha','terraform',{curve:'h',color:CAT.cicd.stroke,markerCat:'cicd',dash:'4 5'});
+  connect(gCicd,'gha','ecr',{curve:'h',color:CAT.cicd.stroke,markerCat:'cicd',animate:true,speed:1.3});
+  connect(gCicd,'ecr','cosign',{curve:'h',color:CAT.cicd.stroke,markerCat:'cicd',dash:'4 5'});
+  connect(gCicd,'cosign','argocdhub',{curve:'h',color:CAT.cicd.stroke,markerCat:'cicd',dash:'4 5',marker:false});
+  ['pri-argocdAgent','sec-argocdAgent'].forEach(id=>{
+    const hub = registry['argocdhub'], target = registry[id];
+    const path = el('path',{d:`M${hub.cx},${hub.y} C${hub.cx},${(hub.y+target.cy)/2} ${target.cx},${(hub.y+target.cy)/2} ${target.cx},${target.y+target.h}`,
+      fill:'none', stroke:CAT.cicd.stroke,'stroke-width':1.3,'stroke-dasharray':'3 5','marker-end':'url(#arrow-cicd)'}, gCicd);
+  });
+  ['pri-ecr','sec-ecr'].forEach(()=>{}); // images pulled by both clusters conceptually via ecr node already shared
+
+  // ================= GLOBAL EDGE → REGIONS (primary traffic) =================
+  const gTraffic = group('layer-network');
+  connect(gTraffic,'users','r53',{curve:'h',color:'#AEB9D4',markerCat:'edge',dash:'3 5'});
+  connect(gTraffic,'r53','cf',{curve:'h',color:'#AEB9D4',markerCat:'edge',dash:'3 5'});
+  connect(gTraffic,'cf','wafg',{curve:'h',color:'#AEB9D4',markerCat:'edge',dash:'3 5',marker:false});
+  ['pri-alb','sec-alb'].forEach(id=>{
+    const b = registry[id]; const cf = registry['cf'];
+    const accent = id.startsWith('pri') ? '#22D3AA' : '#8B7FFF';
+    const path = el('path',{d:`M${cf.cx},${cf.y+cf.h} C${cf.cx},${(cf.y+cf.h+b.cy)/2} ${b.cx},${(cf.y+cf.h+b.cy)/2} ${b.cx},${b.y}`,
+      fill:'none', stroke:accent,'stroke-width':2,'stroke-dasharray':'7 6','marker-end':`url(#arrow-${id.startsWith('pri')?'primary':'secondary'})`}, gTraffic);
+    path.style.animation = `dashflow 1s linear infinite`;
+  });
+
+  // ================= ANIMATED REQUEST PACKETS =================
+  function packetPath(regionKey, accent){
+    const P = k=>regionKey+'-'+k;
+    const pts = [
+      registry['users'], registry['r53'], registry['cf'], registry['wafg'],
+      registry[P('alb')], registry[P('eks')], registry[P('svc-1')], registry[P('cache')], registry[P('aurora')]
+    ];
+    let d = `M${pts[0].cx},${pts[0].cy+pts[0].h/2+6}`;
+    for(let i=1;i<pts.length;i++){
+      const p = pts[i];
+      const py = p.y!=null ? (p.cy) : p.cy;
+      d += ` L${p.cx},${p.cy}`;
+    }
+    const path = el('path',{d, fill:'none', stroke:accent, 'stroke-width':0, opacity:0}, group('layer-network packetpath'));
+    return path;
+  }
+  ['pri','sec'].forEach((rk,idx)=>{
+    const accent = rk==='pri' ? '#22D3AA' : '#8B7FFF';
+    const guide = packetPath(rk, accent);
+    const dAttr = guide.getAttribute('d');
+    const packet = el('circle',{r:6, fill:accent, class:'packet', filter:`url(#glow${rk==='pri'?'Primary':'Secondary'})`}, group('layer-network'));
+    packet.style.offsetPath = `path('${dAttr}')`;
+    packet.style.offsetRotate = '0deg';
+    packet.style.animation = `travel 6s ${idx*1.4}s ease-in-out infinite`;
+  });
+
+  // ---------- inline animation stylesheet (needs to be in DOM, SVG respects CSS) ----------
+  const styleTag = el('style',{},defs);
+  styleTag.textContent = `
+    @keyframes dashflow { to { stroke-dashoffset:-100; } }
+    .flowline { stroke-dashoffset:0; }
+    @keyframes travel {
+      0%   { offset-distance: 0%;   opacity:0; }
+      6%   { opacity:1; }
+      92%  { opacity:1; }
+      100% { offset-distance: 100%; opacity:0; }
+    }
+    .node rect{ transition: filter .15s; }
+    .node:hover rect{ filter:brightness(1.35); }
+    .node:hover text.nodeLabel{ fill:#ffffff; }
+    svg.paused .flowline, svg.paused path[style*="dashflow"], svg.paused .packet { animation-play-state: paused !important; }
+  `;
+  // apply dashflow animation-play-state toggling via class on svg root already set inline; ensure elements using inline style animation also respond
+  document.querySelectorAll('path').forEach(p=>{});
+
+  // ================= CONTROLS =================
+  const layerDefs = [
+    ['network','Networking','#4C7EFF'],
+    ['compute','Compute / EKS','#22D3AA'],
+    ['data','Data','#FFB454'],
+    ['messaging','Messaging','#FF6FA5'],
+    ['security','Security','#FF5D5D'],
+    ['observability','Observability','#4FD5E8'],
+    ['cicd','CI/CD','#FF9900'],
+  ];
+  const togglesEl = document.getElementById('layerToggles');
+  layerDefs.forEach(([key,label,color])=>{
+    const chip = document.createElement('div');
+    chip.className = 'chip on';
+    chip.style.color = color;
+    chip.innerHTML = `<span class="dot" style="background:${color}"></span>${label}`;
+    chip.addEventListener('click', ()=>{
+      const on = chip.classList.toggle('on');
+      chip.classList.toggle('off', !on);
+      document.querySelectorAll('.layer-'+key).forEach(node=>{
+        node.style.transition='opacity .25s';
+        node.style.opacity = on ? '1' : '0.06';
+        node.style.pointerEvents = on ? 'auto' : 'none';
+      });
+    });
+    togglesEl.appendChild(chip);
+  });
+
+  let playing = true;
+  document.getElementById('playBtn').addEventListener('click', function(){
+    playing = !playing;
+    svg.classList.toggle('paused', !playing);
+    document.getElementById('playLabel').textContent = playing ? 'Pause animation' : 'Resume animation';
+    document.querySelectorAll('.packet').forEach(p=>{ p.style.animationPlayState = playing?'running':'paused'; });
+    document.querySelectorAll('path').forEach(p=>{ if(p.style.animation){ p.style.animationPlayState = playing?'running':'paused'; } });
+  });
+  document.getElementById('resetBtn').addEventListener('click', function(){
+    document.querySelectorAll('.chip').forEach(chip=>{
+      chip.classList.add('on'); chip.classList.remove('off');
+    });
+    layerDefs.forEach(([key])=>{
+      document.querySelectorAll('.layer-'+key).forEach(node=>{ node.style.opacity='1'; node.style.pointerEvents='auto'; });
+    });
+  });
+
+})();
+</script>
+</body>
+</html>

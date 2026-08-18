@@ -56,15 +56,15 @@
 
   .controls{display:flex; flex-direction:column; gap:10px; align-items:flex-end;}
   .btnrow{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;}
-  button.ctl{
+  button.ctl, a.ctl{
     font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:.03em;
     background:var(--panel2); border:1px solid var(--grid); color:var(--text);
     padding:8px 14px; border-radius:7px; cursor:pointer; display:flex; align-items:center; gap:7px;
     transition:.15s border-color, .15s background;
   }
-  button.ctl:hover{border-color:var(--primary); background:#132038;}
+  button.ctl:hover, a.ctl:hover{border-color:var(--primary); background:#132038;}
   button.ctl.active{border-color:var(--primary); background:var(--primary-dim); color:#B7FFEA;}
-  button.ctl svg{width:12px;height:12px;}
+  button.ctl svg, a.ctl svg{width:12px;height:12px;flex:0 0 auto;}
 
   .layerToggles{display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;}
   .chip{
@@ -94,8 +94,55 @@
   footer.legend .lineSw{width:26px;height:0;border-top:2px dashed var(--muted2); display:inline-block;}
   footer.legend .lineSw.solid{border-top:2px solid var(--primary);}
 
+  a.ctl{text-decoration:none;}
+  a.ctl.homelink{
+    border-color:rgba(34,211,170,.45); color:#B7FFEA; background:var(--primary-dim);
+    position:relative; overflow:hidden;
+  }
+  a.ctl.homelink:hover{border-color:var(--primary); background:#122a3c;}
+  a.ctl.homelink::after{
+    content:''; position:absolute; inset:0; transform:translateX(-120%);
+    background:linear-gradient(100deg, transparent, rgba(183,255,234,.22), transparent);
+    animation:sheen 4.2s ease-in-out infinite; pointer-events:none;
+  }
+  @keyframes sheen{0%,68%{transform:translateX(-120%);}100%{transform:translateX(120%);}}
+
+  h1{
+    background:linear-gradient(100deg, var(--text) 0%, var(--text) 38%, var(--primary) 50%, var(--text) 62%, var(--text) 100%);
+    background-size:280% 100%;
+    -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; color:transparent;
+    animation:titleSheen 9s ease-in-out infinite;
+  }
+  @keyframes titleSheen{0%,55%{background-position:130% 0;}100%{background-position:-30% 0;}}
+
+  .eyebrow::before{animation:beacon 2.2s ease-in-out infinite;}
+  @keyframes beacon{
+    0%,100%{box-shadow:0 0 0 0 rgba(34,211,170,.55), 0 0 10px var(--primary);}
+    50%{box-shadow:0 0 0 6px rgba(34,211,170,0), 0 0 14px var(--primary);}
+  }
+
+  button.ctl, a.ctl{transition:.18s border-color,.18s background,.18s transform,.18s box-shadow;}
+  button.ctl:hover, a.ctl:hover{transform:translateY(-1px); box-shadow:0 4px 14px rgba(0,0,0,.35);}
+  button.ctl:active, a.ctl:active{transform:translateY(0);}
+  .chip:hover{transform:translateY(-1px);}
+
+  svg#diagram{animation:canvasIn .8s ease-out both;}
+  @keyframes canvasIn{from{opacity:0;} to{opacity:1;}}
+
+  footer.legend .item{transition:.18s color;}
+  footer.legend .item:hover{color:var(--text);}
+  footer.legend a.homeFoot:hover{background:var(--primary-dim);}
+
   @media (prefers-reduced-motion: reduce){
-    .packet, .flowline, .pulseDash, .blinkDot{animation:none !important;}
+    .packet, .flowline, .pulseDash, .blinkDot, .ripple, .containerEdge, .hcdot,
+    h1, svg#diagram, g.node{
+      animation:none !important;
+    }
+    a.ctl.homelink::after{animation:none !important; opacity:0;}
+    .eyebrow::before{animation:none !important;}
+    h1{-webkit-text-fill-color:var(--text); color:var(--text);}
+    g.node{opacity:1 !important;}
   }
 
   /* SVG-native animation classes are defined inline via <style> inside svg for scoping with CSS vars */
@@ -107,10 +154,14 @@
   <div class="titleblock">
     <p class="eyebrow">Live reference architecture</p>
     <h1>Global E-Commerce — Multi-Region AWS + EKS</h1>
-    <p>Active/active edge with active-primary data plane. Traffic path (bright, moving dot) and continuous cross-region replication (amber pulses) are animated. Toggle layers to isolate a concern.</p>
+    <p>Active/active edge with active-primary data plane. Live request comets trace the full path client &rarr; DNS &rarr; CDN &rarr; ALB &rarr; EKS &rarr; cache &rarr; database; amber payloads show continuous cross-region replication and grey probes show Route&nbsp;53 health checks. Toggle layers to isolate a concern, or change animation speed.</p>
   </div>
   <div class="controls">
     <div class="btnrow">
+      <a class="ctl homelink" href="index.html" title="Back to DevOps Interview Master Notes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+        Home Page
+      </a>
       <button class="ctl active" id="playBtn">
         <svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>
         <span id="playLabel">Pause animation</span>
@@ -118,6 +169,10 @@
       <button class="ctl" id="resetBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
         Reset layers
+      </button>
+      <button class="ctl" id="speedBtn" title="Cycle animation speed">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+        <span id="speedLabel">Speed 1&#215;</span>
       </button>
     </div>
     <div class="layerToggles" id="layerToggles"></div>
@@ -141,6 +196,7 @@
   <span class="item"><span class="sw" style="background:var(--cicd)"></span>CI/CD &amp; IaC</span>
   <span class="item"><span class="lineSw solid"></span>Live request path</span>
   <span class="item"><span class="lineSw"></span>Async / replication / health-check</span>
+  <a class="item homeFoot" href="index.html" style="margin-left:auto;color:var(--primary);text-decoration:none;border:1px solid rgba(34,211,170,.35);padding:7px 13px;border-radius:7px;">&#8592; Home Page</a>
 </footer>
 
 <script>
@@ -207,7 +263,7 @@
 
   function container(g, x,y,w,h,label,cat){
     const c = CAT[cat];
-    el('rect',{x,y,width:w,height:h,rx:12,fill:'rgba(255,255,255,.015)',stroke:c.stroke,'stroke-width':1,'stroke-dasharray':'2 5','opacity':.85}, g);
+    el('rect',{x,y,width:w,height:h,rx:12,fill:'rgba(255,255,255,.015)',stroke:c.stroke,'stroke-width':1,'stroke-dasharray':'2 5','opacity':.85,class:'containerEdge'}, g);
     el('text',{x:x+14,y:y+18,class:'nodeLabel',fill:c.stroke,'font-size':10.5,'letter-spacing':'.04em'}, g).textContent = label.toUpperCase();
   }
 
@@ -408,7 +464,17 @@
     const path = el('path',{d:`M${na.x+na.w},${y} C${gapX1+80},${y} ${gapX2-80},${nb.y+nb.h/2} ${nb.x},${nb.y+nb.h/2}`,
       fill:'none', stroke:'#FFB454', 'stroke-width':1.6, 'stroke-dasharray':'5 6', 'marker-end':'url(#arrow-data)'}, gRepl);
     path.style.animation = `dashflow ${1.8+i*0.2}s linear infinite`;
-    el('text',{x:(gapX1+gapX2)/2, y:y-8, 'text-anchor':'middle', class:'nodeLabel', fill:'#FFCF8A','font-size':8.6}, gRepl).textContent = label;
+    path.setAttribute('class','flowline');
+    // payload dots so replication reads as continuous movement, not just a dashed line
+    for(let k=0;k<2;k++){
+      const dot = el('circle',{r:3.6, fill:'#FFB454', class:'packet', filter:'url(#glowData)'}, gRepl);
+      dot.style.offsetPath = `path('${path.getAttribute('d')}')`;
+      dot.style.offsetRotate = '0deg';
+      dot.style.animation = `travel ${3.6+i*0.35}s ${(i*0.5 + k*(1.8+i*0.18)).toFixed(2)}s linear infinite`;
+    }
+    const t = el('text',{x:(gapX1+gapX2)/2, y:y-8, 'text-anchor':'middle', class:'nodeLabel', fill:'#FFCF8A','font-size':8.6}, gRepl);
+    t.textContent = label;
+    t.style.animation = `labelPulse ${3.2+i*0.3}s ease-in-out infinite`;
   });
 
   // ================= ROUTE53 HEALTH CHECKS =================
@@ -417,7 +483,13 @@
     const b = registry[id];
     const r53 = registry['r53'];
     const path = el('path',{d:`M${r53.cx},${r53.y+r53.h} C${r53.cx},${(r53.y+r53.h+b.cy)/2} ${b.cx},${(r53.y+r53.h+b.cy)/2} ${b.cx},${b.cy}`,
-      fill:'none', stroke:'#5C6C8A','stroke-width':1.3,'stroke-dasharray':'2 5'}, gHealth);
+      fill:'none', stroke:'#5C6C8A','stroke-width':1.3,'stroke-dasharray':'2 5', class:'flowline'}, gHealth);
+    path.style.animation = 'dashflow 3.4s linear infinite';
+    // a probe dot riding the health-check path, one region offset from the other
+    const probe = el('circle',{r:3.4, fill:'#9FB0D0', class:'hcdot'}, gHealth);
+    probe.style.offsetPath = `path('${path.getAttribute('d')}')`;
+    probe.style.offsetRotate = '0deg';
+    probe.style.animation = `travel 4.6s ${id.indexOf('pri')===0?0:2.3}s linear infinite`;
     el('title',{},gHealth).textContent='Route 53 health check';
   });
 
@@ -464,23 +536,65 @@
       registry['users'], registry['r53'], registry['cf'], registry['wafg'],
       registry[P('alb')], registry[P('eks')], registry[P('svc-1')], registry[P('cache')], registry[P('aurora')]
     ];
-    let d = `M${pts[0].cx},${pts[0].cy+pts[0].h/2+6}`;
+    // smooth cubic S-curve between consecutive hops instead of hard polyline corners
+    let d = `M${pts[0].cx},${pts[0].cy}`;
     for(let i=1;i<pts.length;i++){
-      const p = pts[i];
-      const py = p.y!=null ? (p.cy) : p.cy;
-      d += ` L${p.cx},${p.cy}`;
+      const q = pts[i-1], p = pts[i];
+      if(Math.abs(p.cx-q.cx) >= Math.abs(p.cy-q.cy)){
+        const mx = (q.cx+p.cx)/2;
+        d += ` C${mx},${q.cy} ${mx},${p.cy} ${p.cx},${p.cy}`;
+      } else {
+        const my = (q.cy+p.cy)/2;
+        d += ` C${q.cx},${my} ${p.cx},${my} ${p.cx},${p.cy}`;
+      }
     }
     const path = el('path',{d, fill:'none', stroke:accent, 'stroke-width':0, opacity:0}, group('layer-network packetpath'));
     return path;
   }
+  // a packet is drawn as a comet: a bright head plus a fading tail of smaller dots
+  function comet(layer, dAttr, accent, glowId, delay, dur){
+    const TRAIL = 6;
+    for(let i=TRAIL;i>=0;i--){
+      const wrap = el('g', {opacity:(1 - i*0.135).toFixed(3)}, layer);
+      const dot = el('circle',{r:(6.4 - i*0.78).toFixed(2), fill:accent, class:'packet'}, wrap);
+      if(i===0) dot.setAttribute('filter', `url(#${glowId})`);
+      dot.style.offsetPath = `path('${dAttr}')`;
+      dot.style.offsetRotate = '0deg';
+      dot.style.animation = `travel ${dur}s ${(delay + i*0.055).toFixed(3)}s cubic-bezier(.5,.02,.4,.98) infinite`;
+    }
+  }
+
   ['pri','sec'].forEach((rk,idx)=>{
     const accent = rk==='pri' ? '#22D3AA' : '#8B7FFF';
-    const guide = packetPath(rk, accent);
-    const dAttr = guide.getAttribute('d');
-    const packet = el('circle',{r:6, fill:accent, class:'packet', filter:`url(#glow${rk==='pri'?'Primary':'Secondary'})`}, group('layer-network'));
-    packet.style.offsetPath = `path('${dAttr}')`;
-    packet.style.offsetRotate = '0deg';
-    packet.style.animation = `travel 6s ${idx*1.4}s ease-in-out infinite`;
+    const glowId = 'glow' + (rk==='pri' ? 'Primary' : 'Secondary');
+    const dAttr = packetPath(rk, accent).getAttribute('d');
+    const layer = group('layer-network');
+    const DUR = 6.4;
+    // two in-flight requests per region, half a cycle apart
+    comet(layer, dAttr, accent, glowId, idx*1.4, DUR);
+    comet(layer, dAttr, accent, glowId, idx*1.4 + DUR/2, DUR);
+  });
+
+  // ---------- radiating rings on the entry points of the request path ----------
+  function ripple(layer, id, color, rings){
+    const n = registry[id]; if(!n) return;
+    const base = Math.max(n.w, n.h)/2;
+    for(let i=0;i<(rings||3);i++){
+      const c = el('circle',{cx:n.cx, cy:n.cy, r:base, fill:'none', stroke:color,
+                             'stroke-width':1.3, class:'ripple'}, layer);
+      c.style.animation = `ripple 3.6s ${(i*1.2).toFixed(2)}s ease-out infinite`;
+    }
+  }
+  const gRipple = group('layer-network');
+  ripple(gRipple,'users','#AEB9D4',2);
+  ripple(gRipple,'r53','#4C7EFF',3);
+  ripple(gRipple,'cf','#4C7EFF',3);
+  ripple(gRipple,'pri-eks','#22D3AA',3);
+  ripple(gRipple,'sec-eks','#8B7FFF',3);
+
+  // ---------- staggered reveal so the topology draws itself in ----------
+  Array.prototype.forEach.call(svg.querySelectorAll('g.node'), function(n, i){
+    n.style.animation = `nodeIn .45s ${Math.min(i*7, 1500)}ms ease-out both`;
   });
 
   // ---------- inline animation stylesheet (needs to be in DOM, SVG respects CSS) ----------
@@ -494,13 +608,35 @@
       92%  { opacity:1; }
       100% { offset-distance: 100%; opacity:0; }
     }
-    .node rect{ transition: filter .15s; }
-    .node:hover rect{ filter:brightness(1.35); }
+    @keyframes ripple {
+      0%   { transform: scale(1);    opacity:.45; }
+      70%  { opacity:.10; }
+      100% { transform: scale(1.45); opacity:0; }
+    }
+    .ripple { transform-box: fill-box; transform-origin: center; pointer-events:none; }
+    .packet, .hcdot { pointer-events:none; }
+    @keyframes nodeIn { from { opacity:0; } to { opacity:1; } }
+    @keyframes labelPulse { 0%,100% { opacity:.55; } 50% { opacity:1; } }
+    .containerEdge { animation: dashflow 14s linear infinite; }
+
+    g.node { transform-box: fill-box; transform-origin: center;
+             transition: transform .2s cubic-bezier(.3,1.4,.5,1); }
+    g.node:hover { transform: scale(1.045); }
+    .node rect{ transition: filter .18s, stroke-width .18s; }
+    .node:hover rect{ filter:brightness(1.4); stroke-width:2.2; }
     .node:hover text.nodeLabel{ fill:#ffffff; }
-    svg.paused .flowline, svg.paused path[style*="dashflow"], svg.paused .packet { animation-play-state: paused !important; }
+    .node:hover text.nodeSub{ fill:#C8D3E8; }
+
+    svg.paused .flowline, svg.paused .containerEdge,
+    svg.paused .packet, svg.paused .ripple, svg.paused .hcdot,
+    svg.paused path[style*="dashflow"], svg.paused text[style*="labelPulse"],
+    svg.paused g.node { animation-play-state: paused !important; }
+
+    @media (prefers-reduced-motion: reduce){
+      .packet, .ripple, .hcdot, .containerEdge, .flowline, g.node { animation:none !important; }
+      g.node { opacity:1 !important; }
+    }
   `;
-  // apply dashflow animation-play-state toggling via class on svg root already set inline; ensure elements using inline style animation also respond
-  document.querySelectorAll('path').forEach(p=>{});
 
   // ================= CONTROLS =================
   const layerDefs = [
@@ -530,13 +666,45 @@
     togglesEl.appendChild(chip);
   });
 
-  let playing = true;
+  // Web Animations gives one handle on every CSS animation, inline-styled or class-driven
+  const RATES = [1, 2, 0.5];
+  let playing = true, rate = 1, rateIdx = 0;
+
+  function applyState(){
+    svg.classList.toggle('paused', !playing);
+    if(typeof document.getAnimations === 'function'){
+      document.getAnimations().forEach(a=>{
+        a.playbackRate = rate;
+        // only toggle what actually changed, so finished one-shots (the reveal) don't replay
+        if(playing){ if(a.playState === 'paused') a.play(); }
+        else       { if(a.playState === 'running') a.pause(); }
+      });
+    }
+    // fallback for engines without getAnimations(): pause the inline-styled animations
+    const state = playing ? 'running' : 'paused';
+    document.querySelectorAll('#diagram *').forEach(p=>{
+      if(p.style && p.style.animation) p.style.animationPlayState = state;
+    });
+  }
+
   document.getElementById('playBtn').addEventListener('click', function(){
     playing = !playing;
-    svg.classList.toggle('paused', !playing);
+    this.classList.toggle('active', playing);
     document.getElementById('playLabel').textContent = playing ? 'Pause animation' : 'Resume animation';
-    document.querySelectorAll('.packet').forEach(p=>{ p.style.animationPlayState = playing?'running':'paused'; });
-    document.querySelectorAll('path').forEach(p=>{ if(p.style.animation){ p.style.animationPlayState = playing?'running':'paused'; } });
+    applyState();
+  });
+
+  document.getElementById('speedBtn').addEventListener('click', function(){
+    rateIdx = (rateIdx + 1) % RATES.length;
+    rate = RATES[rateIdx];
+    this.classList.toggle('active', rate !== 1);
+    document.getElementById('speedLabel').textContent = 'Speed ' + rate + '\u00D7';
+    if(!playing){
+      playing = true;
+      document.getElementById('playBtn').classList.add('active');
+      document.getElementById('playLabel').textContent = 'Pause animation';
+    }
+    applyState();
   });
   document.getElementById('resetBtn').addEventListener('click', function(){
     document.querySelectorAll('.chip').forEach(chip=>{
@@ -545,6 +713,12 @@
     layerDefs.forEach(([key])=>{
       document.querySelectorAll('.layer-'+key).forEach(node=>{ node.style.opacity='1'; node.style.pointerEvents='auto'; });
     });
+    rateIdx = 0; rate = 1; playing = true;
+    document.getElementById('speedLabel').textContent = 'Speed 1\u00D7';
+    document.getElementById('speedBtn').classList.remove('active');
+    document.getElementById('playBtn').classList.add('active');
+    document.getElementById('playLabel').textContent = 'Pause animation';
+    applyState();
   });
 
 })();

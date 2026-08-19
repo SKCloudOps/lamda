@@ -7,35 +7,35 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
 
+  /* AWS Architecture Icons category palette on a white enterprise canvas */
   :root{
-    --bg:#0A0F1C;
-    --panel:#0E1526;
-    --panel2:#111B30;
-    --grid:#1B2740;
-    --text:#E7ECF5;
-    --muted:#8996AC;
-    --muted2:#5C6C8A;
-    --primary:#22D3AA;
-    --primary-dim:rgba(34,211,170,.12);
-    --secondary:#8B7FFF;
-    --secondary-dim:rgba(139,127,255,.12);
-    --network:#4C7EFF;
-    --data:#FFB454;
-    --messaging:#FF6FA5;
-    --security:#FF5D5D;
-    --observ:#4FD5E8;
-    --cicd:#FF9900;
-    --edge:#AEB9D4;
+    --bg:#FFFFFF;
+    --panel:#FFFFFF;
+    --panel2:#F2F3F3;
+    --grid:#D5DBDB;
+    --grid-soft:#E9EBED;
+    --text:#16191F;
+    --squid:#232F3E;
+    --aws:#FF9900;
+    --aws-ink:#B35309;
+    --muted:#5F6B7A;
+    --muted2:#879196;
+    --primary:#ED7100;                       /* us-east-1 accent — Compute orange */
+    --primary-dim:rgba(255,153,0,.10);
+    --secondary:#00A4A6;                     /* eu-west-1 accent — AWS teal */
+    --secondary-dim:rgba(0,164,166,.10);
+    --network:#8C4FFF;                       /* Networking & Content Delivery */
+    --data:#C925D1;                          /* Database */
+    --storage:#7AA116;                       /* Storage */
+    --messaging:#E7157B;                     /* Application Integration */
+    --security:#DD344C;                      /* Security, Identity & Compliance */
+    --observ:#0972D3;                        /* Management & Governance */
+    --cicd:#01A88D;                          /* Developer Tools */
+    --edge:#232F3E;                          /* AWS Cloud / client */
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;}
-  body{
-    background:
-      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(34,211,170,.08), transparent 60%),
-      radial-gradient(ellipse 900px 500px at 85% -10%, rgba(139,127,255,.08), transparent 60%),
-      var(--bg);
-    min-height:100vh;
-  }
+  body{ background:var(--bg); min-height:100vh; }
   .mono{font-family:'JetBrains Mono',monospace;}
 
   header{
@@ -43,14 +43,15 @@
     border-bottom:1px solid var(--grid);
     display:flex; flex-wrap:wrap; gap:18px; align-items:flex-end; justify-content:space-between;
     position:sticky; top:0; z-index:50;
-    background:rgba(10,15,28,.92); backdrop-filter:blur(10px);
+    background:rgba(255,255,255,.95); backdrop-filter:blur(10px);
+    box-shadow:0 1px 0 rgba(0,7,22,.04);
   }
   header .titleblock{max-width:720px;}
   .eyebrow{
     font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.18em; text-transform:uppercase;
-    color:var(--primary); margin:0 0 8px; display:flex; align-items:center; gap:8px;
+    color:var(--aws-ink); margin:0 0 8px; display:flex; align-items:center; gap:8px;
   }
-  .eyebrow::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--primary);box-shadow:0 0 10px var(--primary);}
+  .eyebrow::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--aws);}
   h1{font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:700; margin:0 0 6px; letter-spacing:-.01em;}
   header p{margin:0; color:var(--muted); font-size:13.5px; line-height:1.5;}
 
@@ -58,27 +59,32 @@
   .btnrow{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;}
   button.ctl, a.ctl{
     font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:.03em;
-    background:var(--panel2); border:1px solid var(--grid); color:var(--text);
-    padding:8px 14px; border-radius:7px; cursor:pointer; display:flex; align-items:center; gap:7px;
+    background:#FFFFFF; border:1px solid var(--grid); color:var(--squid);
+    padding:8px 14px; border-radius:6px; cursor:pointer; display:flex; align-items:center; gap:7px;
     transition:.15s border-color, .15s background;
   }
-  button.ctl:hover, a.ctl:hover{border-color:var(--primary); background:#132038;}
-  button.ctl.active{border-color:var(--primary); background:var(--primary-dim); color:#B7FFEA;}
+  button.ctl:hover, a.ctl:hover{border-color:var(--aws); background:#FFF8EE;}
+  button.ctl.active{border-color:var(--aws); background:#FFF3E0; color:var(--aws-ink);}
   button.ctl svg, a.ctl svg{width:12px;height:12px;flex:0 0 auto;}
 
   .layerToggles{display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;}
   .chip{
     font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.02em;
     padding:6px 10px; border-radius:20px; cursor:pointer; user-select:none;
-    border:1px solid var(--grid); color:var(--muted); display:flex; align-items:center; gap:6px;
+    border:1px solid var(--grid); color:var(--muted); background:#FFFFFF;
+    display:flex; align-items:center; gap:6px; font-weight:600;
     transition:.15s all;
   }
   .chip .dot{width:8px;height:8px;border-radius:50%;}
-  .chip.on{color:var(--text); border-color:currentColor; opacity:1;}
-  .chip.off{opacity:.45;}
+  .chip.on{border-color:currentColor; opacity:1;}
+  .chip.off{opacity:.4; color:var(--muted2) !important; border-color:var(--grid);}
 
   .wrap{padding:22px 0 40px; overflow-x:auto;}
-  .canvasHolder{min-width:2480px; padding:0 24px;}
+  .canvasHolder{
+    min-width:2480px; padding:0 24px;
+    background-image:radial-gradient(circle, #EDEFF1 1px, transparent 1px);
+    background-size:30px 30px; background-position:12px 12px;
+  }
   svg#diagram{width:100%; height:auto; display:block;}
 
   .nodeLabel{font-family:'JetBrains Mono',monospace; font-weight:600;}
@@ -91,24 +97,26 @@
   }
   footer.legend .item{display:flex; align-items:center; gap:8px; font-family:'JetBrains Mono',monospace;}
   footer.legend .sw{width:12px;height:12px;border-radius:3px; display:inline-block;}
+  footer.legend{background:#FAFAFA;}
+  footer.legend .sw{border:1px solid rgba(0,7,22,.12);}
   footer.legend .lineSw{width:26px;height:0;border-top:2px dashed var(--muted2); display:inline-block;}
   footer.legend .lineSw.solid{border-top:2px solid var(--primary);}
 
   a.ctl{text-decoration:none;}
   a.ctl.homelink{
-    border-color:rgba(34,211,170,.45); color:#B7FFEA; background:var(--primary-dim);
+    border-color:rgba(255,153,0,.6); color:var(--aws-ink); background:#FFF7E9;
     position:relative; overflow:hidden;
   }
-  a.ctl.homelink:hover{border-color:var(--primary); background:#122a3c;}
+  a.ctl.homelink:hover{border-color:var(--aws); background:#FFEFD4;}
   a.ctl.homelink::after{
     content:''; position:absolute; inset:0; transform:translateX(-120%);
-    background:linear-gradient(100deg, transparent, rgba(183,255,234,.22), transparent);
+    background:linear-gradient(100deg, transparent, rgba(255,153,0,.22), transparent);
     animation:sheen 4.2s ease-in-out infinite; pointer-events:none;
   }
   @keyframes sheen{0%,68%{transform:translateX(-120%);}100%{transform:translateX(120%);}}
 
   h1{
-    background:linear-gradient(100deg, var(--text) 0%, var(--text) 38%, var(--primary) 50%, var(--text) 62%, var(--text) 100%);
+    background:linear-gradient(100deg, var(--squid) 0%, var(--squid) 38%, var(--aws) 50%, var(--squid) 62%, var(--squid) 100%);
     background-size:280% 100%;
     -webkit-background-clip:text; background-clip:text;
     -webkit-text-fill-color:transparent; color:transparent;
@@ -118,12 +126,12 @@
 
   .eyebrow::before{animation:beacon 2.2s ease-in-out infinite;}
   @keyframes beacon{
-    0%,100%{box-shadow:0 0 0 0 rgba(34,211,170,.55), 0 0 10px var(--primary);}
-    50%{box-shadow:0 0 0 6px rgba(34,211,170,0), 0 0 14px var(--primary);}
+    0%,100%{box-shadow:0 0 0 0 rgba(255,153,0,.55);}
+    50%{box-shadow:0 0 0 6px rgba(255,153,0,0);}
   }
 
   button.ctl, a.ctl{transition:.18s border-color,.18s background,.18s transform,.18s box-shadow;}
-  button.ctl:hover, a.ctl:hover{transform:translateY(-1px); box-shadow:0 4px 14px rgba(0,0,0,.35);}
+  button.ctl:hover, a.ctl:hover{transform:translateY(-1px); box-shadow:0 3px 10px rgba(0,7,22,.10);}
   button.ctl:active, a.ctl:active{transform:translateY(0);}
   .chip:hover{transform:translateY(-1px);}
 
@@ -132,7 +140,7 @@
 
   footer.legend .item{transition:.18s color;}
   footer.legend .item:hover{color:var(--text);}
-  footer.legend a.homeFoot:hover{background:var(--primary-dim);}
+  footer.legend a.homeFoot:hover{background:#FFEFD4 !important; border-color:var(--aws) !important;}
 
   @media (prefers-reduced-motion: reduce){
     .packet, .flowline, .pulseDash, .blinkDot, .ripple, .containerEdge, .hcdot,
@@ -141,7 +149,7 @@
     }
     a.ctl.homelink::after{animation:none !important; opacity:0;}
     .eyebrow::before{animation:none !important;}
-    h1{-webkit-text-fill-color:var(--text); color:var(--text);}
+    h1{-webkit-text-fill-color:var(--squid); color:var(--squid);}
     g.node{opacity:1 !important;}
   }
 
@@ -154,7 +162,7 @@
   <div class="titleblock">
     <p class="eyebrow">Live reference architecture</p>
     <h1>Global E-Commerce — Multi-Region AWS + EKS</h1>
-    <p>Active/active edge with active-primary data plane. Live request comets trace the full path client &rarr; DNS &rarr; CDN &rarr; ALB &rarr; EKS &rarr; cache &rarr; database; amber payloads show continuous cross-region replication and grey probes show Route&nbsp;53 health checks. Toggle layers to isolate a concern, or change animation speed.</p>
+    <p>Active/active edge with active-primary data plane, drawn in the AWS Architecture Icons palette. Live request comets trace the full path client &rarr; DNS &rarr; CDN &rarr; ALB &rarr; EKS &rarr; cache &rarr; database; magenta payloads show continuous cross-region replication and grey probes show Route&nbsp;53 health checks. Toggle layers to isolate a concern, or change animation speed.</p>
   </div>
   <div class="controls">
     <div class="btnrow">
@@ -186,17 +194,18 @@
 </div>
 
 <footer class="legend">
-  <span class="item"><span class="sw" style="background:var(--network)"></span>Networking / Edge</span>
-  <span class="item"><span class="sw" style="background:var(--primary)"></span>Compute — Primary region</span>
-  <span class="item"><span class="sw" style="background:var(--secondary)"></span>Compute — Secondary region</span>
-  <span class="item"><span class="sw" style="background:var(--data)"></span>Data / Storage</span>
-  <span class="item"><span class="sw" style="background:var(--messaging)"></span>Messaging / Events</span>
-  <span class="item"><span class="sw" style="background:var(--security)"></span>Security / Identity</span>
-  <span class="item"><span class="sw" style="background:var(--observ)"></span>Observability</span>
-  <span class="item"><span class="sw" style="background:var(--cicd)"></span>CI/CD &amp; IaC</span>
+  <span class="item"><span class="sw" style="background:var(--network)"></span>Networking &amp; Content Delivery</span>
+  <span class="item"><span class="sw" style="background:var(--primary)"></span>Compute — us-east-1</span>
+  <span class="item"><span class="sw" style="background:var(--secondary)"></span>Compute — eu-west-1</span>
+  <span class="item"><span class="sw" style="background:var(--data)"></span>Database</span>
+  <span class="item"><span class="sw" style="background:var(--storage)"></span>Storage</span>
+  <span class="item"><span class="sw" style="background:var(--messaging)"></span>Application Integration</span>
+  <span class="item"><span class="sw" style="background:var(--security)"></span>Security &amp; Identity</span>
+  <span class="item"><span class="sw" style="background:var(--observ)"></span>Management &amp; Governance</span>
+  <span class="item"><span class="sw" style="background:var(--cicd)"></span>Developer Tools / IaC</span>
   <span class="item"><span class="lineSw solid"></span>Live request path</span>
   <span class="item"><span class="lineSw"></span>Async / replication / health-check</span>
-  <a class="item homeFoot" href="index.html" style="margin-left:auto;color:var(--primary);text-decoration:none;border:1px solid rgba(34,211,170,.35);padding:7px 13px;border-radius:7px;">&#8592; Home Page</a>
+  <a class="item homeFoot" href="index.html" style="margin-left:auto;color:var(--aws-ink);text-decoration:none;border:1px solid rgba(255,153,0,.55);background:#FFF7E9;padding:7px 13px;border-radius:6px;">&#8592; Home Page</a>
 </footer>
 
 <script>
@@ -204,14 +213,19 @@
   const NS = "http://www.w3.org/2000/svg";
   const svg = document.getElementById('diagram');
 
+  // AWS Architecture Icons category colours. `dark` is the legible-on-white
+  // variant used for small group labels; `tint` fills the group boundaries.
+  const INK = '#16191F', SUB = '#5F6B7A', LINE = '#879196';
   const CAT = {
-    network:      {stroke:'#4C7EFF', fill:'rgba(76,122,255,.09)',  text:'#C9D6FF'},
-    data:         {stroke:'#FFB454', fill:'rgba(255,180,84,.10)',  text:'#FFE3BD'},
-    messaging:    {stroke:'#FF6FA5', fill:'rgba(255,111,165,.10)', text:'#FFD3E6'},
-    security:     {stroke:'#FF5D5D', fill:'rgba(255,93,93,.10)',   text:'#FFD3D3'},
-    observability:{stroke:'#4FD5E8', fill:'rgba(79,213,232,.10)',  text:'#CFF7FC'},
-    cicd:         {stroke:'#FF9900', fill:'rgba(255,153,0,.12)',   text:'#FFE1B0'},
-    edge:         {stroke:'#AEB9D4', fill:'rgba(174,185,212,.08)', text:'#E7ECF5'},
+    network:      {stroke:'#8C4FFF', fill:'#FFFFFF', tint:'rgba(140,79,255,.018)', text:INK, dark:'#6B21D9'},
+    compute:      {stroke:'#ED7100', fill:'#FFFFFF', tint:'rgba(237,113,0,.03)',   text:INK, dark:'#B35309'},
+    data:         {stroke:'#C925D1', fill:'#FFFFFF', tint:'rgba(201,37,209,.035)', text:INK, dark:'#9A1BA1'},
+    storage:      {stroke:'#7AA116', fill:'#FFFFFF', tint:'rgba(122,161,22,.05)',  text:INK, dark:'#5B7A0F'},
+    messaging:    {stroke:'#E7157B', fill:'#FFFFFF', tint:'rgba(231,21,123,.035)', text:INK, dark:'#B50F60'},
+    security:     {stroke:'#DD344C', fill:'#FFFFFF', tint:'rgba(221,52,76,.035)',  text:INK, dark:'#B02338'},
+    observability:{stroke:'#0972D3', fill:'#FFFFFF', tint:'rgba(9,114,211,.035)',  text:INK, dark:'#06559E'},
+    cicd:         {stroke:'#01A88D', fill:'#FFFFFF', tint:'rgba(1,168,141,.05)',   text:INK, dark:'#017A66'},
+    edge:         {stroke:'#232F3E', fill:'#FFFFFF', tint:'rgba(35,47,62,.014)',   text:INK, dark:'#232F3E'},
   };
 
   function el(tag, attrs, parent){
@@ -227,15 +241,15 @@
   const defs = el('defs', {}, svg);
   function glow(id,color){
     const f = el('filter', {id:id, x:'-80%', y:'-80%', width:'260%', height:'260%'}, defs);
-    el('feGaussianBlur', {stdDeviation:3.2, result:'b'}, f);
+    el('feGaussianBlur', {stdDeviation:2.4, result:'b'}, f);
     const m = el('feMerge', {}, f);
     el('feMergeNode', {in:'b'}, m);
     el('feMergeNode', {in:'SourceGraphic'}, m);
   }
-  glow('glowPrimary','#22D3AA'); glow('glowSecondary','#8B7FFF'); glow('glowData','#FFB454');
+  glow('glowPrimary','#ED7100'); glow('glowSecondary','#00A4A6'); glow('glowData','#C925D1');
 
-  ['network','data','messaging','security','observability','cicd','edge','primary','secondary'].forEach(k=>{
-    const c = CAT[k] ? CAT[k].stroke : (k==='primary'?'#22D3AA':'#8B7FFF');
+  ['network','compute','data','storage','messaging','security','observability','cicd','edge','primary','secondary'].forEach(k=>{
+    const c = CAT[k] ? CAT[k].stroke : (k==='primary'?'#ED7100':'#00A4A6');
     const m = el('marker',{id:'arrow-'+k, viewBox:'0 0 10 10', refX:8, refY:5, markerWidth:7, markerHeight:7, orient:'auto-start-reverse'}, defs);
     el('path',{d:'M0,0 L10,5 L0,10 z', fill:c}, m);
   });
@@ -245,15 +259,17 @@
 
   function node(g, id, x, y, w, h, label, sub, cat, opts){
     opts = opts || {};
-    const c = opts.color ? {stroke:opts.color, fill:opts.fill||'rgba(255,255,255,.06)', text:opts.text||'#fff'} : CAT[cat];
+    const c = opts.color ? {stroke:opts.color, fill:opts.fill||'#FFFFFF', text:opts.text||INK} : CAT[cat];
     const wrap = el('g', {class:'node', 'data-id':id}, g);
-    const r = el('rect', {x,y,width:w,height:h,rx:9, fill:c.fill, stroke:c.stroke, 'stroke-width':1.4}, wrap);
-    if(opts.dashed) r.setAttribute('stroke-dasharray','4 3');
+    const r = el('rect', {x,y,width:w,height:h,rx:8, fill:c.fill, stroke:c.stroke, 'stroke-width':1.25, class:'card'}, wrap);
+    if(opts.dashed) r.setAttribute('stroke-dasharray','5 3');
+    // AWS-deck convention: a category-coloured stripe down the leading edge of the card
+    el('rect', {x:x+2.5, y:y+2.5, width:3.6, height:h-5, rx:1.8, fill:c.stroke, class:'stripe'}, wrap);
     if(opts.title) el('title',{},wrap).textContent = opts.title;
-    const tx = x+w/2;
+    const tx = x+w/2+3;
     if(sub){
       el('text',{x:tx,y:y+h/2-3,'text-anchor':'middle',class:'nodeLabel',fill:c.text,'font-size':opts.fs||12.5}, wrap).textContent = label;
-      el('text',{x:tx,y:y+h/2+13,'text-anchor':'middle',class:'nodeSub',fill:'#8996AC','font-size':10.2}, wrap).textContent = sub;
+      el('text',{x:tx,y:y+h/2+13,'text-anchor':'middle',class:'nodeSub',fill:SUB,'font-size':10.2}, wrap).textContent = sub;
     } else {
       el('text',{x:tx,y:y+h/2+4,'text-anchor':'middle',class:'nodeLabel',fill:c.text,'font-size':opts.fs||12.5}, wrap).textContent = label;
     }
@@ -263,15 +279,18 @@
 
   function container(g, x,y,w,h,label,cat){
     const c = CAT[cat];
-    el('rect',{x,y,width:w,height:h,rx:12,fill:'rgba(255,255,255,.015)',stroke:c.stroke,'stroke-width':1,'stroke-dasharray':'2 5','opacity':.85,class:'containerEdge'}, g);
-    el('text',{x:x+14,y:y+18,class:'nodeLabel',fill:c.stroke,'font-size':10.5,'letter-spacing':'.04em'}, g).textContent = label.toUpperCase();
+    el('rect',{x,y,width:w,height:h,rx:10,fill:c.tint,stroke:c.stroke,'stroke-width':1.3,'stroke-dasharray':'6 4','opacity':.95,class:'containerEdge'}, g);
+    // AWS group boundaries carry a small colour chip beside the label
+    el('rect',{x:x+13,y:y+7,width:11,height:11,rx:2.5,fill:c.stroke}, g);
+    el('text',{x:x+30,y:y+17,class:'nodeLabel',fill:c.dark,'font-size':10.5,'letter-spacing':'.05em'}, g).textContent = label.toUpperCase();
   }
 
   function pod(g, id, x,y,w,h,label,accent){
     const wrap = el('g',{class:'node','data-id':id}, g);
-    el('rect',{x,y,width:w,height:h,rx:6, fill:'rgba(255,255,255,.04)', stroke:accent, 'stroke-width':1}, wrap);
-    el('circle',{cx:x+11,cy:y+h/2,r:3,fill:accent}, wrap);
-    el('text',{x:x+20,y:y+h/2+3.5,class:'nodeLabel',fill:'#DCE4F5','font-size':9.6}, wrap).textContent = label;
+    el('rect',{x,y,width:w,height:h,rx:6, fill:'#FFFFFF', stroke:accent, 'stroke-width':1.1, class:'card'}, wrap);
+    el('rect',{x:x+2,y:y+2,width:3,height:h-4,rx:1.5,fill:accent}, wrap);
+    el('circle',{cx:x+11.5,cy:y+h/2,r:2.6,fill:accent}, wrap);
+    el('text',{x:x+18,y:y+h/2+3.5,class:'nodeLabel',fill:INK,'font-size':9.4}, wrap).textContent = label;
     registry[id] = {x,y,w,h,cx:x+w/2,cy:y+h/2};
   }
 
@@ -300,7 +319,7 @@
       d = `M${sx},${sy} L${ex},${ey}`;
     }
     const cls = opts.cls || 'flowline';
-    const color = opts.color || '#4C7EFF';
+    const color = opts.color || '#8C4FFF';
     const path = el('path',{d, fill:'none', stroke:color, 'stroke-width':opts.width||1.6, class:cls}, g);
     if(opts.dashed!==false){
       path.setAttribute('stroke-dasharray', opts.dash || '6 5');
@@ -313,7 +332,7 @@
 
   // ================= GLOBAL EDGE LAYER (y 0-140) =================
   const gEdge = group('layer-network');
-  container(gEdge, 20, 6, 2440, 138, 'Global Edge & DNS', 'edge');
+  container(gEdge, 20, 6, 2440, 138, 'AWS Cloud  ·  Global Edge & DNS', 'edge');
   const edgeY = 46, edgeH = 58;
   node(gEdge,'users',60,edgeY,220,edgeH,'Client Devices','Web · iOS · Android','edge',{title:'End users worldwide, routed to nearest healthy region.'});
   node(gEdge,'r53',340,edgeY,260,edgeH,'Route 53','Latency + failover routing','network',{title:'DNS with latency-based routing and active health checks driving automatic regional failover.'});
@@ -327,17 +346,18 @@
   // ================= REGION TEMPLATE =================
   function buildRegion(originX, originY, accent, accentDim, regionKey, regionLabel, dbRole){
     const g = group('layer-network region-'+regionKey);
+    const accentInk = regionKey === 'pri' ? '#B35309' : '#00777A';
     const W = 1040, H = 1130;
     // VPC boundary
     container(g, originX, originY, W, H, `VPC · ${regionLabel}  ·  10.${regionKey==='pri'?0:1}.0.0/16`, 'network');
-    el('text',{x:originX+W-14,y:originY+18,'text-anchor':'end',class:'nodeLabel',fill:accent,'font-size':12,'letter-spacing':'.03em'},g).textContent = regionLabel.toUpperCase();
+    el('text',{x:originX+W-14,y:originY+18,'text-anchor':'end',class:'nodeLabel',fill:accentInk,'font-size':12,'letter-spacing':'.03em'},g).textContent = regionLabel.toUpperCase();
 
     // AZ dividers
     [originX+346, originX+693].forEach(dx=>{
-      el('line',{x1:dx,y1:originY+26,x2:dx,y2:originY+H-16,stroke:'#22304d','stroke-width':1,'stroke-dasharray':'2 6'},g);
+      el('line',{x1:dx,y1:originY+26,x2:dx,y2:originY+H-16,stroke:'#D5DBDB','stroke-width':1,'stroke-dasharray':'2 6'},g);
     });
     ['AZ-a','AZ-b','AZ-c'].forEach((l,i)=>{
-      el('text',{x:originX+30+i*346,y:originY+38,class:'nodeLabel',fill:'#4A5A7D','font-size':9.5,'letter-spacing':'.08em'},g).textContent=l;
+      el('text',{x:originX+30+i*346,y:originY+38,class:'nodeLabel',fill:'#879196','font-size':9.5,'letter-spacing':'.08em'},g).textContent=l;
     });
 
     const gn = group('layer-network'); g.appendChild(gn);
@@ -358,19 +378,19 @@
     node(gn,P('nat'),X(800),Y(46),200,56,'NAT Gateway','One per AZ','network',{title:'Outbound internet access for private-subnet workloads, one per AZ for resilience.'});
 
     // Control plane + autoscaling
-    node(gc,P('eks'),X(350),Y(126),340,50,'Amazon EKS Control Plane','Managed K8s 1.31 · multi-AZ','compute',{color:accent,fill:accentDim,text:'#fff',title:'AWS-managed Kubernetes API server & etcd across 3 AZs.'});
-    node(gc,P('karpenter'),X(40),Y(126),290,44,'Karpenter','Node autoscaling','compute',{color:accent,fill:accentDim,text:'#fff',fs:11.5,title:'Just-in-time node provisioning based on pending pod requirements.'});
+    node(gc,P('eks'),X(350),Y(126),340,50,'Amazon EKS Control Plane','Managed K8s 1.31 · multi-AZ','compute',{color:accent,fill:accentDim,text:INK,title:'AWS-managed Kubernetes API server & etcd across 3 AZs.'});
+    node(gc,P('karpenter'),X(40),Y(126),290,44,'Karpenter','Node autoscaling','compute',{color:accent,fill:accentDim,text:INK,fs:11.5,title:'Just-in-time node provisioning based on pending pod requirements.'});
     node(gc,P('argocdAgent'),X(710),Y(126),290,44,'ArgoCD Agent','GitOps sync target','cicd',{fs:11.5,title:'Continuously reconciles cluster state to the Git source of truth.'});
 
     // node groups + pods
-    container(gc, X(40), Y(196), 260, 330, 'Node Group · On-Demand', 'network');
-    node(gc,P('ng-od'),X(60),Y(226),220,50,'System workloads','Ingress ctrl · CoreDNS','compute',{color:accent,fill:accentDim,text:'#fff',fs:11});
-    node(gc,P('ng-od2'),X(60),Y(288),220,50,'m6i.xlarge ×3–9','Reserved baseline','compute',{color:accent,fill:accentDim,text:'#fff',fs:11});
-    node(gc,P('fargate'),X(60),Y(350),220,50,'Fargate profile','Batch / cron jobs','compute',{color:accent,fill:accentDim,text:'#fff',fs:11});
-    node(gc,P('meshctl'),X(60),Y(412),220,50,'App Mesh / Envoy','Service mesh sidecars','compute',{color:accent,fill:accentDim,text:'#fff',fs:11});
-    node(gc,P('ingctrl'),X(60),Y(474),220,44,'AWS LB Controller','Ingress → ALB target grp','compute',{color:accent,fill:accentDim,text:'#fff',fs:10.5});
+    container(gc, X(40), Y(196), 260, 330, 'Node Group · On-Demand', 'compute');
+    node(gc,P('ng-od'),X(60),Y(226),220,50,'System workloads','Ingress ctrl · CoreDNS','compute',{color:accent,fill:accentDim,text:INK,fs:11});
+    node(gc,P('ng-od2'),X(60),Y(288),220,50,'m6i.xlarge ×3–9','Reserved baseline','compute',{color:accent,fill:accentDim,text:INK,fs:11});
+    node(gc,P('fargate'),X(60),Y(350),220,50,'Fargate profile','Batch / cron jobs','compute',{color:accent,fill:accentDim,text:INK,fs:11});
+    node(gc,P('meshctl'),X(60),Y(412),220,50,'App Mesh / Envoy','Service mesh sidecars','compute',{color:accent,fill:accentDim,text:INK,fs:11});
+    node(gc,P('ingctrl'),X(60),Y(474),220,44,'AWS LB Controller','Ingress → ALB target grp','compute',{color:accent,fill:accentDim,text:INK,fs:10.5});
 
-    container(gc, X(330), Y(196), 380, 330, 'Microservices — EKS Pods', 'network');
+    container(gc, X(330), Y(196), 380, 330, 'Microservices — EKS Pods', 'compute');
     const svcs = ['Product Catalog','Shopping Cart','Order / Checkout','Payment','Inventory','User / Auth','Search','Recommendations','Notifications'];
     let sx=0, sy=0;
     svcs.forEach((s,i)=>{
@@ -379,38 +399,38 @@
       pod(gc, P('svc-'+i), cx, cy, 110, 74, s, accent);
     });
 
-    container(gc, X(740), Y(196), 260, 330, 'Node Group · Spot', 'network');
-    node(gc,P('ng-spot'),X(760),Y(226),220,50,'c6i.large ×0–24','Stateless services','compute',{color:accent,fill:accentDim,text:'#fff',fs:11});
-    node(gc,P('ng-spot2'),X(760),Y(288),220,50,'Mixed instance policy','Diversified pools','compute',{color:accent,fill:accentDim,text:'#fff',fs:11});
-    node(gc,P('hpa'),X(760),Y(350),220,50,'HPA / KEDA','Pod autoscaling','compute',{color:accent,fill:accentDim,text:'#fff',fs:11});
-    node(gc,P('pdb'),X(760),Y(412),220,44,'PodDisruptionBudgets','Rolling-update safety','compute',{color:accent,fill:accentDim,text:'#fff',fs:10.5});
+    container(gc, X(740), Y(196), 260, 330, 'Node Group · Spot', 'compute');
+    node(gc,P('ng-spot'),X(760),Y(226),220,50,'c6i.large ×0–24','Stateless services','compute',{color:accent,fill:accentDim,text:INK,fs:11});
+    node(gc,P('ng-spot2'),X(760),Y(288),220,50,'Mixed instance policy','Diversified pools','compute',{color:accent,fill:accentDim,text:INK,fs:11});
+    node(gc,P('hpa'),X(760),Y(350),220,50,'HPA / KEDA','Pod autoscaling','compute',{color:accent,fill:accentDim,text:INK,fs:11});
+    node(gc,P('pdb'),X(760),Y(412),220,44,'PodDisruptionBudgets','Rolling-update safety','compute',{color:accent,fill:accentDim,text:INK,fs:10.5});
 
     // Serverless row
-    node(gc,P('lam-checkout'),X(40),Y(546),230,58,'λ Checkout Validate','Sync, in request path','compute',{color:accent,fill:accentDim,text:'#fff',dashed:true,title:'Validates cart & pricing before order creation.'});
-    node(gc,P('lam-fraud'),X(290),Y(546),230,58,'λ Fraud Detection','Invoked by Payment svc','compute',{color:accent,fill:accentDim,text:'#fff',dashed:true,title:'Real-time risk scoring before payment capture.'});
-    node(gc,P('lam-image'),X(540),Y(546),230,58,'λ Image Resize','S3 event-triggered','compute',{color:accent,fill:accentDim,text:'#fff',dashed:true,title:'Generates responsive product image variants on upload.'});
-    node(gc,P('stepfn'),X(790),Y(546),210,58,'Step Functions','Order fulfillment workflow','compute',{color:accent,fill:accentDim,text:'#fff',dashed:true,title:'Orchestrates multi-step order fulfillment & saga compensation.'});
+    node(gc,P('lam-checkout'),X(40),Y(546),230,58,'λ Checkout Validate','Sync, in request path','compute',{color:accent,fill:accentDim,text:INK,dashed:true,title:'Validates cart & pricing before order creation.'});
+    node(gc,P('lam-fraud'),X(290),Y(546),230,58,'λ Fraud Detection','Invoked by Payment svc','compute',{color:accent,fill:accentDim,text:INK,dashed:true,title:'Real-time risk scoring before payment capture.'});
+    node(gc,P('lam-image'),X(540),Y(546),230,58,'λ Image Resize','S3 event-triggered','compute',{color:accent,fill:accentDim,text:INK,dashed:true,title:'Generates responsive product image variants on upload.'});
+    node(gc,P('stepfn'),X(790),Y(546),210,58,'Step Functions','Order fulfillment workflow','compute',{color:accent,fill:accentDim,text:INK,dashed:true,title:'Orchestrates multi-step order fulfillment & saga compensation.'});
 
     // Data row
-    sectionLabel(gd, X(40), Y(632), 'Data layer', '#FFB454');
+    sectionLabel(gd, X(40), Y(632), 'Data layer', CAT.data.dark);
     node(gd,P('aurora'),X(40),Y(642),300,90,'Aurora PostgreSQL',`Global DB — ${dbRole}`,'data',{title:'Aurora Global Database: '+dbRole+'. Cross-region replication typically <1s.'});
     node(gd,P('rdsproxy'),X(360),Y(642),150,90,'RDS Proxy','Pooling · failover','data');
     node(gd,P('ddb'),X(530),Y(642),220,90,'DynamoDB','Global Tables — cart/session','data',{title:'Multi-active DynamoDB Global Tables for session & cart state.'});
     node(gd,P('cache'),X(770),Y(642),230,90,'ElastiCache Redis','Global Datastore','data',{title:'Sub-ms cache for catalog & session reads; Global Datastore replicates cross-region.'});
 
     node(gd,P('search'),X(40),Y(752),230,68,'OpenSearch Service','Product search index','data');
-    node(gd,P('s3'),X(290),Y(752),230,68,'S3','Assets · CRR enabled','data',{title:'Product images/static assets with Cross-Region Replication + versioning.'});
-    node(gd,P('backup'),X(560),Y(752),200,68,'AWS Backup','Automated vault + PITR','data');
+    node(gd,P('s3'),X(290),Y(752),230,68,'S3','Assets · CRR enabled','storage',{title:'Product images/static assets with Cross-Region Replication + versioning.'});
+    node(gd,P('backup'),X(560),Y(752),200,68,'AWS Backup','Automated vault + PITR','storage');
 
     // Messaging row
-    sectionLabel(gm, X(40), Y(842), 'Eventing & messaging', '#FF6FA5');
+    sectionLabel(gm, X(40), Y(842), 'Eventing & messaging', CAT.messaging.dark);
     node(gm,P('eventbridge'),X(40),Y(852),220,68,'EventBridge','Order lifecycle bus','messaging',{title:'Central event bus: OrderPlaced, PaymentCaptured, InventoryReserved…'});
     node(gm,P('sqs'),X(280),Y(852),220,68,'SQS + DLQ','Order processing queue','messaging');
     node(gm,P('sns'),X(520),Y(852),200,68,'SNS','Fan-out notifications','messaging');
     node(gm,P('msk'),X(740),Y(852),250,68,'Amazon MSK','Clickstream & inventory events','messaging',{title:'Managed Kafka for high-throughput clickstream + real-time inventory sync.'});
 
     // Security strip
-    sectionLabel(gs, X(40), Y(944), 'Security & identity', '#FF5D5D');
+    sectionLabel(gs, X(40), Y(944), 'Security & identity', CAT.security.dark);
     node(gs,P('iam'),X(40),Y(954),165,50,'IAM / IRSA','Pod-level roles','security',{fs:10.6});
     node(gs,P('kms'),X(215),Y(954),135,50,'KMS','Envelope encryption','security',{fs:10.6});
     node(gs,P('secrets'),X(360),Y(954),175,50,'Secrets Manager','DB & API creds','security',{fs:10.6});
@@ -419,7 +439,7 @@
     node(gs,P('config'),X(880),Y(954),140,50,'AWS Config','Compliance rules','security',{fs:10.3});
 
     // Observability strip
-    sectionLabel(go, X(40), Y(1016), 'Observability', '#4FD5E8');
+    sectionLabel(go, X(40), Y(1016), 'Observability', CAT.observability.dark);
     node(go,P('cw'),X(40),Y(1026),200,50,'CloudWatch','Metrics · logs · alarms','observability',{fs:10.8});
     node(go,P('xray'),X(250),Y(1026),150,50,'X-Ray','Distributed tracing','observability',{fs:10.8});
     node(go,P('ci'),X(410),Y(1026),200,50,'Container Insights','EKS/pod-level metrics','observability',{fs:10.4});
@@ -439,7 +459,7 @@
     connect(gm, P('eventbridge'), P('sqs'), {curve:'h', color:CAT.messaging.stroke, markerCat:'messaging', animate:true, speed:1.5, dash:'5 5'});
     connect(gm, P('eventbridge'), P('sns'), {curve:'h', color:CAT.messaging.stroke, markerCat:'messaging', dash:'5 5'});
     connect(gm, P('svc-7'), P('msk'), {curve:'v', color:CAT.messaging.stroke, markerCat:'messaging', dash:'4 5'});
-    connect(gc, P('lam-image'), P('s3'), {curve:'v', color:accent, markerCat:regionKey==='pri'?'primary':'secondary', dash:'4 5'});
+    connect(gc, P('lam-image'), P('s3'), {curve:'v', color:CAT.storage.stroke, markerCat:'storage', dash:'4 5'});
     connect(gc, P('argocdAgent'), P('eks'), {curve:'v', color:CAT.cicd.stroke, markerCat:'cicd', dash:'3 4'});
 
     // expose ALB & DB absolute centers for cross-region + global connectors
@@ -447,32 +467,42 @@
     return {W,H,X,Y};
   }
 
-  const region1 = buildRegion(60, 172, '#22D3AA', 'rgba(34,211,170,.10)', 'pri', 'us-east-1 · Primary', 'Writer instance');
-  const region2 = buildRegion(1380, 172, '#8B7FFF', 'rgba(139,127,255,.10)', 'sec', 'eu-west-1 · Secondary', 'Reader (promotable)');
+  const region1 = buildRegion(60, 172, '#ED7100', 'rgba(237,113,0,.05)', 'pri', 'us-east-1 · Primary', 'Writer instance');
+  const region2 = buildRegion(1380, 172, '#00A4A6', 'rgba(0,164,166,.05)', 'sec', 'eu-west-1 · Secondary', 'Reader (promotable)');
 
   // ================= CROSS-REGION REPLICATION (gap between panels) =================
+  // Replication runs as labelled lanes in the corridor between the two VPCs.
+  // Anchoring to the region boundaries (not to individual cards, which sit at the
+  // far left of each region) keeps the lines from cutting across the whole diagram.
   const gRepl = group('layer-data');
-  const gapX1 = 1100, gapX2 = 1380;
+  const gapX1 = 1100, gapX2 = 1380;        // right edge of region 1, left edge of region 2
+  const laneMid = (gapX1+gapX2)/2;
+
+  el('text',{x:laneMid, y:648,'text-anchor':'middle',class:'nodeLabel',
+             fill:'#5F6B7A','font-size':9.5,'letter-spacing':'.1em'}, gRepl)
+    .textContent = 'CROSS-REGION REPLICATION';
+
   [
-    ['pri-aurora','sec-aurora','Aurora Global DB replication (<1s)'],
-    ['pri-ddb','sec-ddb','DynamoDB Global Tables (multi-active)'],
-    ['pri-cache','sec-cache','ElastiCache Global Datastore'],
-    ['pri-s3','sec-s3','S3 Cross-Region Replication'],
-  ].forEach(([a,b,label],i)=>{
-    const na = registry[a], nb = registry[b];
-    const y = na.cy;
-    const path = el('path',{d:`M${na.x+na.w},${y} C${gapX1+80},${y} ${gapX2-80},${nb.y+nb.h/2} ${nb.x},${nb.y+nb.h/2}`,
-      fill:'none', stroke:'#FFB454', 'stroke-width':1.6, 'stroke-dasharray':'5 6', 'marker-end':'url(#arrow-data)'}, gRepl);
+    ['Aurora Global DB  ·  <1s lag', '#C925D1', 'data',    false],
+    ['DynamoDB Global Tables',       '#C925D1', 'data',    true ],
+    ['ElastiCache Global Datastore', '#C925D1', 'data',    false],
+    ['S3 Cross-Region Replication',  '#7AA116', 'storage', false],
+  ].forEach(([label,color,marker,bidi],i)=>{
+    const y = 700 + i*64;
+    const d = `M${gapX1},${y} L${gapX2},${y}`;
+    const path = el('path',{d, fill:'none', stroke:color, 'stroke-width':1.7,
+      'stroke-dasharray':'5 6', 'marker-end':`url(#arrow-${marker})`, class:'flowline'}, gRepl);
+    if(bidi) path.setAttribute('marker-start', `url(#arrow-${marker})`);
     path.style.animation = `dashflow ${1.8+i*0.2}s linear infinite`;
-    path.setAttribute('class','flowline');
     // payload dots so replication reads as continuous movement, not just a dashed line
     for(let k=0;k<2;k++){
-      const dot = el('circle',{r:3.6, fill:'#FFB454', class:'packet', filter:'url(#glowData)'}, gRepl);
-      dot.style.offsetPath = `path('${path.getAttribute('d')}')`;
+      const dot = el('circle',{r:3.6, fill:color, class:'packet', filter:'url(#glowData)'}, gRepl);
+      dot.style.offsetPath = `path('${d}')`;
       dot.style.offsetRotate = '0deg';
-      dot.style.animation = `travel ${3.6+i*0.35}s ${(i*0.5 + k*(1.8+i*0.18)).toFixed(2)}s linear infinite`;
+      dot.style.animation = `travel ${3.2+i*0.3}s ${(i*0.4 + k*(1.6+i*0.15)).toFixed(2)}s linear infinite`;
     }
-    const t = el('text',{x:(gapX1+gapX2)/2, y:y-8, 'text-anchor':'middle', class:'nodeLabel', fill:'#FFCF8A','font-size':8.6}, gRepl);
+    const t = el('text',{x:laneMid, y:y-9, 'text-anchor':'middle', class:'nodeLabel',
+                         fill: color==='#7AA116' ? '#5B7A0F' : '#9A1BA1', 'font-size':8.8}, gRepl);
     t.textContent = label;
     t.style.animation = `labelPulse ${3.2+i*0.3}s ease-in-out infinite`;
   });
@@ -483,10 +513,10 @@
     const b = registry[id];
     const r53 = registry['r53'];
     const path = el('path',{d:`M${r53.cx},${r53.y+r53.h} C${r53.cx},${(r53.y+r53.h+b.cy)/2} ${b.cx},${(r53.y+r53.h+b.cy)/2} ${b.cx},${b.cy}`,
-      fill:'none', stroke:'#5C6C8A','stroke-width':1.3,'stroke-dasharray':'2 5', class:'flowline'}, gHealth);
+      fill:'none', stroke:'#B4BDC4','stroke-width':1.3,'stroke-dasharray':'2 5', class:'flowline'}, gHealth);
     path.style.animation = 'dashflow 3.4s linear infinite';
     // a probe dot riding the health-check path, one region offset from the other
-    const probe = el('circle',{r:3.4, fill:'#9FB0D0', class:'hcdot'}, gHealth);
+    const probe = el('circle',{r:3.4, fill:'#687078', class:'hcdot'}, gHealth);
     probe.style.offsetPath = `path('${path.getAttribute('d')}')`;
     probe.style.offsetRotate = '0deg';
     probe.style.animation = `travel 4.6s ${id.indexOf('pri')===0?0:2.3}s linear infinite`;
@@ -518,12 +548,12 @@
 
   // ================= GLOBAL EDGE → REGIONS (primary traffic) =================
   const gTraffic = group('layer-network');
-  connect(gTraffic,'users','r53',{curve:'h',color:'#AEB9D4',markerCat:'edge',dash:'3 5'});
-  connect(gTraffic,'r53','cf',{curve:'h',color:'#AEB9D4',markerCat:'edge',dash:'3 5'});
-  connect(gTraffic,'cf','wafg',{curve:'h',color:'#AEB9D4',markerCat:'edge',dash:'3 5',marker:false});
+  connect(gTraffic,'users','r53',{curve:'h',color:'#5F6B7A',markerCat:'edge',dash:'3 5'});
+  connect(gTraffic,'r53','cf',{curve:'h',color:'#5F6B7A',markerCat:'edge',dash:'3 5'});
+  connect(gTraffic,'cf','wafg',{curve:'h',color:'#5F6B7A',markerCat:'edge',dash:'3 5',marker:false});
   ['pri-alb','sec-alb'].forEach(id=>{
     const b = registry[id]; const cf = registry['cf'];
-    const accent = id.startsWith('pri') ? '#22D3AA' : '#8B7FFF';
+    const accent = id.startsWith('pri') ? '#ED7100' : '#00A4A6';
     const path = el('path',{d:`M${cf.cx},${cf.y+cf.h} C${cf.cx},${(cf.y+cf.h+b.cy)/2} ${b.cx},${(cf.y+cf.h+b.cy)/2} ${b.cx},${b.y}`,
       fill:'none', stroke:accent,'stroke-width':2,'stroke-dasharray':'7 6','marker-end':`url(#arrow-${id.startsWith('pri')?'primary':'secondary'})`}, gTraffic);
     path.style.animation = `dashflow 1s linear infinite`;
@@ -555,7 +585,7 @@
   function comet(layer, dAttr, accent, glowId, delay, dur){
     const TRAIL = 6;
     for(let i=TRAIL;i>=0;i--){
-      const wrap = el('g', {opacity:(1 - i*0.135).toFixed(3)}, layer);
+      const wrap = el('g', {opacity:(1 - i*0.115).toFixed(3)}, layer);
       const dot = el('circle',{r:(6.4 - i*0.78).toFixed(2), fill:accent, class:'packet'}, wrap);
       if(i===0) dot.setAttribute('filter', `url(#${glowId})`);
       dot.style.offsetPath = `path('${dAttr}')`;
@@ -565,7 +595,7 @@
   }
 
   ['pri','sec'].forEach((rk,idx)=>{
-    const accent = rk==='pri' ? '#22D3AA' : '#8B7FFF';
+    const accent = rk==='pri' ? '#ED7100' : '#00A4A6';
     const glowId = 'glow' + (rk==='pri' ? 'Primary' : 'Secondary');
     const dAttr = packetPath(rk, accent).getAttribute('d');
     const layer = group('layer-network');
@@ -578,19 +608,17 @@
   // ---------- radiating rings on the entry points of the request path ----------
   function ripple(layer, id, color, rings){
     const n = registry[id]; if(!n) return;
-    const base = Math.max(n.w, n.h)/2;
     for(let i=0;i<(rings||3);i++){
-      const c = el('circle',{cx:n.cx, cy:n.cy, r:base, fill:'none', stroke:color,
-                             'stroke-width':1.3, class:'ripple'}, layer);
-      c.style.animation = `ripple 3.6s ${(i*1.2).toFixed(2)}s ease-out infinite`;
+      const r = el('rect',{x:n.x, y:n.y, width:n.w, height:n.h, rx:8, fill:'none',
+                           stroke:color, 'stroke-width':1.5, class:'ripple'}, layer);
+      r.style.animation = `ripple 3.6s ${(i*1.4).toFixed(2)}s ease-out infinite`;
     }
   }
   const gRipple = group('layer-network');
-  ripple(gRipple,'users','#AEB9D4',2);
-  ripple(gRipple,'r53','#4C7EFF',3);
-  ripple(gRipple,'cf','#4C7EFF',3);
-  ripple(gRipple,'pri-eks','#22D3AA',3);
-  ripple(gRipple,'sec-eks','#8B7FFF',3);
+  ripple(gRipple,'r53','#8C4FFF',2);
+  ripple(gRipple,'cf','#8C4FFF',2);
+  ripple(gRipple,'pri-eks','#ED7100',2);
+  ripple(gRipple,'sec-eks','#00A4A6',2);
 
   // ---------- staggered reveal so the topology draws itself in ----------
   Array.prototype.forEach.call(svg.querySelectorAll('g.node'), function(n, i){
@@ -609,9 +637,9 @@
       100% { offset-distance: 100%; opacity:0; }
     }
     @keyframes ripple {
-      0%   { transform: scale(1);    opacity:.45; }
-      70%  { opacity:.10; }
-      100% { transform: scale(1.45); opacity:0; }
+      0%   { transform: scale(1);    opacity:.55; }
+      70%  { opacity:.12; }
+      100% { transform: scale(1.13); opacity:0; }
     }
     .ripple { transform-box: fill-box; transform-origin: center; pointer-events:none; }
     .packet, .hcdot { pointer-events:none; }
@@ -622,10 +650,12 @@
     g.node { transform-box: fill-box; transform-origin: center;
              transition: transform .2s cubic-bezier(.3,1.4,.5,1); }
     g.node:hover { transform: scale(1.045); }
-    .node rect{ transition: filter .18s, stroke-width .18s; }
-    .node:hover rect{ filter:brightness(1.4); stroke-width:2.2; }
-    .node:hover text.nodeLabel{ fill:#ffffff; }
-    .node:hover text.nodeSub{ fill:#C8D3E8; }
+    rect.card { filter: drop-shadow(0 1px 1.5px rgba(0,7,22,.10));
+                transition: fill .18s, stroke-width .18s, filter .18s; }
+    .node:hover rect.card{ fill:#F7FAFD; stroke-width:2.2;
+                           filter: drop-shadow(0 3px 8px rgba(0,7,22,.20)); }
+    .node:hover text.nodeLabel{ fill:#000716; }
+    .node:hover text.nodeSub{ fill:#414D5C; }
 
     svg.paused .flowline, svg.paused .containerEdge,
     svg.paused .packet, svg.paused .ripple, svg.paused .hcdot,
@@ -639,20 +669,21 @@
   `;
 
   // ================= CONTROLS =================
+  // [layer key, label, swatch colour, on-white text colour]
   const layerDefs = [
-    ['network','Networking','#4C7EFF'],
-    ['compute','Compute / EKS','#22D3AA'],
-    ['data','Data','#FFB454'],
-    ['messaging','Messaging','#FF6FA5'],
-    ['security','Security','#FF5D5D'],
-    ['observability','Observability','#4FD5E8'],
-    ['cicd','CI/CD','#FF9900'],
+    ['network','Networking','#8C4FFF','#6B21D9'],
+    ['compute','Compute / EKS','#ED7100','#B35309'],
+    ['data','Data','#C925D1','#9A1BA1'],
+    ['messaging','Messaging','#E7157B','#B50F60'],
+    ['security','Security','#DD344C','#B02338'],
+    ['observability','Observability','#0972D3','#06559E'],
+    ['cicd','CI/CD','#01A88D','#017A66'],
   ];
   const togglesEl = document.getElementById('layerToggles');
-  layerDefs.forEach(([key,label,color])=>{
+  layerDefs.forEach(([key,label,color,ink])=>{
     const chip = document.createElement('div');
     chip.className = 'chip on';
-    chip.style.color = color;
+    chip.style.color = ink;
     chip.innerHTML = `<span class="dot" style="background:${color}"></span>${label}`;
     chip.addEventListener('click', ()=>{
       const on = chip.classList.toggle('on');

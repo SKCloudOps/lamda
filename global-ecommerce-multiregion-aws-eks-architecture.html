@@ -153,6 +153,117 @@
     g.node{opacity:1 !important;}
   }
 
+
+  /* ---------------- architecture walkthrough ---------------- */
+  .docs{
+    border-top:1px solid var(--grid); background:#FFFFFF;
+    padding:54px 32px 90px;
+  }
+  .docsInner{max-width:1180px; margin:0 auto;}
+  .docs .kicker{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.18em;
+    text-transform:uppercase; color:var(--aws-ink); margin:0 0 10px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .docs .kicker::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--aws);}
+  .docs h2{
+    font-family:'JetBrains Mono',monospace; font-size:26px; font-weight:700;
+    color:var(--squid); margin:0 0 14px; letter-spacing:-.01em;
+  }
+  .docs .lede{font-size:15px; line-height:1.72; color:#414D5C; margin:0 0 30px; max-width:860px;}
+  .docs h3{
+    font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:700; color:var(--squid);
+    margin:52px 0 6px; padding-left:14px; border-left:4px solid var(--aws); line-height:1.35;
+    scroll-margin-top:130px;
+  }
+  .docs h3 .num{color:var(--muted2); font-weight:400; margin-right:8px;}
+  .docs h4{
+    font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:700; color:var(--squid);
+    margin:30px 0 10px; display:flex; align-items:center; gap:9px; letter-spacing:.02em;
+  }
+  .docs h4 .cdot{width:10px;height:10px;border-radius:2.5px;flex:0 0 auto;}
+  .docs p{font-size:14.2px; line-height:1.75; color:#414D5C; margin:0 0 14px; max-width:880px;}
+  .docs ul,.docs ol{font-size:14.2px; line-height:1.75; color:#414D5C; margin:0 0 16px; padding-left:22px; max-width:880px;}
+  .docs li{margin-bottom:8px;}
+  .docs strong{color:var(--squid); font-weight:600;}
+  .docs code{
+    font-family:'JetBrains Mono',monospace; font-size:12.2px; background:#F2F3F3;
+    border:1px solid var(--grid); border-radius:4px; padding:1px 5px; color:#7A3E00;
+  }
+  .docs a{color:#0972D3;}
+
+  .toc{
+    display:flex; flex-wrap:wrap; gap:8px; margin:0 0 8px; padding:0; list-style:none;
+  }
+  .toc a{
+    font-family:'JetBrains Mono',monospace; font-size:11.5px; text-decoration:none;
+    color:var(--squid); border:1px solid var(--grid); background:#FFFFFF;
+    padding:7px 13px; border-radius:6px; display:inline-block; transition:.15s all;
+  }
+  .toc a:hover{border-color:var(--aws); background:#FFF8EE; color:var(--aws-ink);}
+
+  .tableWrap{overflow-x:auto; margin:0 0 18px; border:1px solid var(--grid); border-radius:8px;}
+  .docs table{border-collapse:collapse; width:100%; min-width:720px; font-size:13.2px;}
+  .docs thead th{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+    text-align:left; color:#FFFFFF; background:var(--squid); padding:10px 14px; font-weight:600;
+    white-space:nowrap;
+  }
+  .docs tbody td{
+    padding:11px 14px; border-top:1px solid var(--grid-soft); color:#414D5C;
+    line-height:1.6; vertical-align:top;
+  }
+  .docs tbody tr:nth-child(even){background:#FAFBFC;}
+  .docs tbody tr:hover{background:#FFF8EE;}
+  .docs tbody td:first-child{
+    font-family:'JetBrains Mono',monospace; font-size:12.3px; color:var(--squid); font-weight:600;
+    white-space:nowrap;
+  }
+  .docs td.wrapcell:first-child{white-space:normal;}
+
+  .tiles{display:flex; flex-wrap:wrap; gap:12px; margin:0 0 24px;}
+  .tile{
+    flex:1 1 190px; border:1px solid var(--grid); border-radius:8px; padding:15px 17px;
+    background:#FFFFFF; border-top:3px solid var(--aws);
+  }
+  .tile .tval{font-family:'JetBrains Mono',monospace; font-size:23px; font-weight:700; color:var(--squid); line-height:1.15;}
+  .tile .tlab{font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.07em; text-transform:uppercase; color:var(--muted2); margin-top:7px;}
+  .tile .tsub{font-size:12.2px; color:#5F6B7A; margin-top:9px; line-height:1.55;}
+
+  .callout{
+    border:1px solid var(--grid); border-left:4px solid var(--observ); border-radius:7px;
+    background:#F7FAFD; padding:15px 18px; margin:0 0 20px; max-width:900px;
+  }
+  .callout.warn{border-left-color:var(--security); background:#FFF6F6;}
+  .callout.ok{border-left-color:var(--cicd); background:#F4FCFA;}
+  .callout .ctitle{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.09em; text-transform:uppercase;
+    color:var(--squid); margin:0 0 7px; font-weight:700;
+  }
+  .callout p{margin:0; font-size:13.6px; max-width:none;}
+  .callout p + p{margin-top:9px;}
+
+  .flowsteps{counter-reset:fs; list-style:none; padding:0; margin:0 0 20px; max-width:900px;}
+  .flowsteps li{
+    counter-increment:fs; position:relative; padding:0 0 15px 44px; margin:0;
+    border-left:1px dashed var(--grid);
+  }
+  .flowsteps li:last-child{border-left-color:transparent; padding-bottom:0;}
+  .flowsteps li::before{
+    content:counter(fs); position:absolute; left:-13px; top:-2px;
+    width:26px; height:26px; border-radius:50%; background:#FFFFFF;
+    border:1.5px solid var(--aws); color:var(--aws-ink);
+    font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .flowsteps li b{color:var(--squid); display:block; margin-bottom:3px; font-size:13.6px;}
+  .flowsteps li span{font-size:13.6px; line-height:1.7; color:#414D5C;}
+
+  @media (max-width:720px){
+    .docs{padding:40px 18px 70px;}
+    .docs h2{font-size:21px;}
+  }
+
   /* SVG-native animation classes are defined inline via <style> inside svg for scoping with CSS vars */
 </style>
 </head>
@@ -162,7 +273,7 @@
   <div class="titleblock">
     <p class="eyebrow">Live reference architecture</p>
     <h1>Global E-Commerce — Multi-Region AWS + EKS</h1>
-    <p>Active/active edge with active-primary data plane, drawn in the AWS Architecture Icons palette. Live request comets trace the full path client &rarr; DNS &rarr; CDN &rarr; ALB &rarr; EKS &rarr; cache &rarr; database; magenta payloads show continuous cross-region replication and grey probes show Route&nbsp;53 health checks. Toggle layers to isolate a concern, or change animation speed.</p>
+    <p>Active/active edge with active-primary data plane, drawn in the AWS Architecture Icons palette. Live request comets trace the full path client &rarr; DNS &rarr; CDN &rarr; ALB &rarr; EKS &rarr; cache &rarr; database; magenta payloads show continuous cross-region replication and grey probes show Route&nbsp;53 health checks. Toggle layers to isolate a concern, or change animation speed. <a href="#walkthrough" style="color:#0972D3;">Full component reference, replication model, guardrails and recovery runbook &darr;</a></p>
   </div>
   <div class="controls">
     <div class="btnrow">
@@ -207,6 +318,306 @@
   <span class="item"><span class="lineSw"></span>Async / replication / health-check</span>
   <a class="item homeFoot" href="index.html" style="margin-left:auto;color:var(--aws-ink);text-decoration:none;border:1px solid rgba(255,153,0,.55);background:#FFF7E9;padding:7px 13px;border-radius:6px;">&#8592; Home Page</a>
 </footer>
+
+<section class="docs" id="walkthrough">
+<div class="docsInner">
+
+  <p class="kicker">Architecture reference</p>
+  <h2>How this system is put together</h2>
+  <p class="lede">
+    The diagram above is a <strong>warm-standby, two-region deployment</strong>: the edge is active/active in both
+    regions, while the data plane has a single writer in <code>us-east-1</code> and a promotable reader in
+    <code>eu-west-1</code>. Everything below explains what each box does, how state is kept in sync between the
+    regions, which guardrails stop a bad change from reaching production, and what actually happens when something
+    fails. Figures quoted here are <strong>design targets to validate in game days</strong>, not vendor SLAs.
+  </p>
+
+  <ul class="toc">
+    <li><a href="#flow">1 · Request path</a></li>
+    <li><a href="#components">2 · Component reference</a></li>
+    <li><a href="#sync">3 · Data synchronisation</a></li>
+    <li><a href="#security">4 · Security guardrails</a></li>
+    <li><a href="#recovery">5 · Failure &amp; recovery</a></li>
+    <li><a href="#tradeoffs">6 · Trade-offs</a></li>
+  </ul>
+
+  <!-- ======================================================= 1 -->
+  <h3 id="flow"><span class="num">1</span>Request path, end to end</h3>
+  <p>
+    This is the path the animated comets trace. Static assets stop at step 3; a checkout write travels the whole way.
+  </p>
+  <ol class="flowsteps">
+    <li><b>Client resolves the hostname</b><span>Route 53 answers with latency-based routing, so a shopper in Frankfurt gets the <code>eu-west-1</code> record and a shopper in Ohio gets <code>us-east-1</code>. Health checks attached to each record remove a region that stops answering.</span></li>
+    <li><b>Anycast entry and DDoS absorption</b><span>Traffic lands on CloudFront (HTTP/S) or Global Accelerator (raw TCP/UDP for the mobile socket layer). Shield Advanced absorbs L3/L4 volumetric attacks before anything reaches an origin.</span></li>
+    <li><b>Edge cache and edge compute</b><span>CloudFront serves cached product images and catalogue responses from the nearest PoP. Global WAF rules run here — SQLi/XSS signatures, bot control, per-IP rate limits. Lambda@Edge / CloudFront Functions handle A/B bucketing, geo personalisation and header rewrites without a round trip to origin.</span></li>
+    <li><b>Regional ingress</b><span>A cache miss goes to the regional ALB, fronted by its own regional WAF web ACL. The ALB terminates TLS with an ACM certificate and routes by host/path across three AZs. Partner and mobile BFF traffic enters through API Gateway instead.</span></li>
+    <li><b>Into the cluster</b><span>The AWS Load Balancer Controller has registered pod IPs directly as ALB target group targets. The request hits an Envoy sidecar, which applies mTLS, retries, timeouts and circuit breaking before handing off to the service container.</span></li>
+    <li><b>Service-to-service work</b><span>Checkout calls Payment, which invokes the fraud-detection Lambda synchronously for a risk score. Reads hit ElastiCache first; a miss falls through to Aurora via RDS Proxy or to DynamoDB for cart and session state.</span></li>
+    <li><b>Commit and fan out</b><span>The order row is written to Aurora, then an <code>OrderPlaced</code> event goes to EventBridge. SQS buffers fulfilment work, SNS fans out customer notifications, and Step Functions drives the multi-step fulfilment saga with compensating actions if a step fails.</span></li>
+    <li><b>Asynchronously, everywhere</b><span>Clickstream and inventory deltas stream through MSK. Uploaded images trigger the resize Lambda from an S3 event. Every hop emits metrics, logs and an X-Ray trace segment.</span></li>
+  </ol>
+
+  <!-- ======================================================= 2 -->
+  <h3 id="components"><span class="num">2</span>Component reference</h3>
+  <p>Every box in the diagram, what it is responsible for, and the reason it earns its place.</p>
+
+  <h4><span class="cdot" style="background:#232F3E"></span>Global edge &amp; DNS</h4>
+  <div class="tableWrap"><table>
+    <thead><tr><th>Component</th><th>Responsibility</th><th>Why it is here</th></tr></thead>
+    <tbody>
+      <tr><td>Route 53</td><td>Authoritative DNS with latency-based routing plus health-check-driven failover.</td><td>Sends each shopper to the nearest healthy region and is the mechanism that removes a failed region from rotation.</td></tr>
+      <tr><td>Shield Advanced</td><td>Always-on L3/L4 DDoS mitigation for CloudFront and the ALBs, with DRT support and cost protection.</td><td>Retail is a seasonal extortion target; cost protection caps the scaling bill an attack would otherwise create.</td></tr>
+      <tr><td>CloudFront</td><td>Global CDN caching static assets and cacheable API responses across the PoP fleet.</td><td>Removes the majority of read traffic from origin and cuts first-byte latency for distant shoppers.</td></tr>
+      <tr><td>AWS WAF (global)</td><td>Managed and custom rule groups: injection signatures, bot control, per-IP and per-session rate limits.</td><td>Blocks scraping and credential stuffing at the edge, before origin capacity is consumed.</td></tr>
+      <tr><td>Lambda@Edge / CF Fn</td><td>Edge compute for A/B routing, geo personalisation and header manipulation.</td><td>Keeps personalisation decisions out of the origin round trip, preserving cache hit ratio.</td></tr>
+      <tr><td>ACM</td><td>Public TLS certificates for CloudFront and the regional ALBs, renewed automatically.</td><td>Removes expiry as a class of outage.</td></tr>
+      <tr><td>Global Accelerator</td><td>Static anycast IPs onto the AWS backbone for non-HTTP traffic.</td><td>Fails over in seconds at the network layer, sidestepping DNS TTL — see the recovery section.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4><span class="cdot" style="background:#8C4FFF"></span>Regional networking &amp; ingress</h4>
+  <div class="tableWrap"><table>
+    <thead><tr><th>Component</th><th>Responsibility</th><th>Why it is here</th></tr></thead>
+    <tbody>
+      <tr><td>VPC (3 AZs)</td><td><code>10.0.0.0/16</code> and <code>10.1.0.0/16</code>, non-overlapping, public and private subnet tiers per AZ.</td><td>Non-overlapping CIDRs are what make peering, Transit Gateway attachment and future region additions possible.</td></tr>
+      <tr><td>WAF (regional)</td><td>Web ACL bound directly to the ALB.</td><td>Second enforcement point for anything that bypasses CloudFront by hitting the ALB hostname directly.</td></tr>
+      <tr><td>Application LB</td><td>TLS termination, host/path routing, health checks, cross-AZ target distribution.</td><td>The AZ-resilient entry point into the cluster; deregisters unhealthy pods automatically.</td></tr>
+      <tr><td>API Gateway</td><td>REST/HTTP APIs for partner integrations and the mobile backend-for-frontend.</td><td>Gives partners throttling, usage plans, API keys and request validation the ALB cannot provide.</td></tr>
+      <tr><td>NAT Gateway</td><td>Egress for private-subnet workloads, one per AZ.</td><td>One per AZ so a single AZ failure cannot sever egress for the surviving two.</td></tr>
+      <tr><td>Transit Gateway</td><td>Hub for VPC-to-VPC and on-premises connectivity.</td><td>Central routing for the warehouse and ERP systems the fulfilment path depends on.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4><span class="cdot" style="background:#ED7100"></span>Compute — EKS and serverless</h4>
+  <div class="tableWrap"><table>
+    <thead><tr><th>Component</th><th>Responsibility</th><th>Why it is here</th></tr></thead>
+    <tbody>
+      <tr><td>EKS control plane</td><td>AWS-managed API server and etcd, replicated across three AZs.</td><td>Removes control-plane patching and quorum management from the team's scope.</td></tr>
+      <tr><td>Karpenter</td><td>Provisions right-sized nodes just in time from pending pod requirements; consolidates idle capacity.</td><td>Faster and cheaper than fixed ASG step scaling, and it handles Spot interruption notices.</td></tr>
+      <tr><td>Node group — On-Demand</td><td>Reserved <code>m6i.xlarge</code> baseline running ingress controllers, CoreDNS and other system workloads.</td><td>Anything whose eviction would be user-visible must not sit on reclaimable capacity.</td></tr>
+      <tr><td>Node group — Spot</td><td>Diversified <code>c6i.large</code> pools, 0–24 nodes, for stateless services.</td><td>Absorbs peak traffic at roughly a 70% discount; diversification limits correlated reclaim.</td></tr>
+      <tr><td>Fargate profile</td><td>Serverless pods for batch and cron jobs.</td><td>Keeps bursty batch work from distorting node autoscaling decisions.</td></tr>
+      <tr><td>App Mesh / Envoy</td><td>Sidecar mesh providing mTLS, retries, timeouts, circuit breaking and per-hop telemetry.</td><td>Moves resilience policy out of nine service codebases and into one uniform control plane.</td></tr>
+      <tr><td>AWS LB Controller</td><td>Reconciles Kubernetes Ingress objects into ALB listeners and target groups.</td><td>Registers pod IPs as targets directly, removing the extra kube-proxy hop.</td></tr>
+      <tr><td>HPA / KEDA</td><td>Pod autoscaling on CPU/memory and on external signals such as SQS queue depth.</td><td>Queue-depth scaling reacts to backlog rather than to CPU that has already saturated.</td></tr>
+      <tr><td>PodDisruptionBudgets</td><td>Caps how many replicas may be voluntarily evicted at once.</td><td>Stops a node drain or cluster upgrade from taking a service below quorum.</td></tr>
+      <tr><td>Microservices (9)</td><td>Catalog, Cart, Order/Checkout, Payment, Inventory, User/Auth, Search, Recommendations, Notifications.</td><td>Bounded contexts with independent deploy cadence and independent scaling profiles.</td></tr>
+      <tr><td>λ Checkout Validate</td><td>Synchronous cart and price validation before order creation.</td><td>Spiky, short-lived and in the request path — a good fit for per-invocation billing.</td></tr>
+      <tr><td>λ Fraud Detection</td><td>Real-time risk scoring called by the Payment service before capture.</td><td>Isolates the model runtime so it can be updated without redeploying Payment.</td></tr>
+      <tr><td>λ Image Resize</td><td>Generates responsive image variants on S3 upload events.</td><td>Event-driven and fully asynchronous; nothing waits on it.</td></tr>
+      <tr><td>Step Functions</td><td>Orchestrates the fulfilment workflow and its compensating transactions.</td><td>Makes saga state durable and inspectable instead of implicit in retry code.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4><span class="cdot" style="background:#C925D1"></span>Data and storage</h4>
+  <div class="tableWrap"><table>
+    <thead><tr><th>Component</th><th>Responsibility</th><th>Why it is here</th></tr></thead>
+    <tbody>
+      <tr><td>Aurora PostgreSQL</td><td>Global Database. Writer instance in <code>us-east-1</code>, promotable reader in <code>eu-west-1</code>. Orders, payments, inventory ledger.</td><td>Anything requiring transactional integrity and foreign keys lives here.</td></tr>
+      <tr><td>RDS Proxy</td><td>Connection pooling and transparent failover handling in front of Aurora.</td><td>Hundreds of pods opening connections would exhaust Postgres <code>max_connections</code>; the proxy also shortens failover from minutes to seconds by holding client connections open.</td></tr>
+      <tr><td>DynamoDB</td><td>Global Tables for cart and session state.</td><td>Multi-active, so a shopper's cart survives being routed to the other region mid-session.</td></tr>
+      <tr><td>ElastiCache Redis</td><td>Global Datastore. Sub-millisecond cache for catalogue reads and session lookups.</td><td>Absorbs the read volume that would otherwise force Aurora vertical scaling.</td></tr>
+      <tr><td>OpenSearch Service</td><td>Product search and faceted navigation index.</td><td>Relevance ranking and faceting are not workloads Postgres should be asked to do.</td></tr>
+      <tr><td>S3</td><td>Product images and static assets, versioned, with Cross-Region Replication enabled.</td><td>CloudFront origin and the durable store of record for media.</td></tr>
+      <tr><td>AWS Backup</td><td>Policy-driven backups with a vault, retention schedule and point-in-time recovery.</td><td>Replication copies corruption faithfully — backups are the only defence against a logical error.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4><span class="cdot" style="background:#E7157B"></span>Eventing &amp; messaging</h4>
+  <div class="tableWrap"><table>
+    <thead><tr><th>Component</th><th>Responsibility</th><th>Why it is here</th></tr></thead>
+    <tbody>
+      <tr><td>EventBridge</td><td>Order lifecycle bus — <code>OrderPlaced</code>, <code>PaymentCaptured</code>, <code>InventoryReserved</code>.</td><td>Content-based routing lets new consumers subscribe without the producer changing.</td></tr>
+      <tr><td>SQS + DLQ</td><td>Durable buffer for order processing, with a dead-letter queue for poison messages.</td><td>The shock absorber between a traffic spike and downstream capacity; also the queue depth KEDA scales on.</td></tr>
+      <tr><td>SNS</td><td>Fan-out for customer notifications across email, SMS and push.</td><td>One publish reaches every channel without the producer knowing the channel list.</td></tr>
+      <tr><td>Amazon MSK</td><td>Managed Kafka for clickstream and real-time inventory synchronisation.</td><td>Ordered, replayable, high-throughput streams — the semantics SQS deliberately does not offer.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4><span class="cdot" style="background:#0972D3"></span>Observability</h4>
+  <div class="tableWrap"><table>
+    <thead><tr><th>Component</th><th>Responsibility</th><th>Why it is here</th></tr></thead>
+    <tbody>
+      <tr><td>CloudWatch</td><td>Metrics, log aggregation, alarms and the composite alarms that drive failover decisions.</td><td>The signal Route 53 health checks and the DR runbook are wired to.</td></tr>
+      <tr><td>X-Ray</td><td>Distributed tracing across ALB, pods, Lambda and the data tier.</td><td>Turns "checkout is slow" into a named span in a named service.</td></tr>
+      <tr><td>Container Insights</td><td>Cluster, node and pod-level metrics.</td><td>Distinguishes a pod that is throttled from a node that is saturated.</td></tr>
+      <tr><td>Datadog APM</td><td>Cross-account dashboards, SLO tracking and on-call alert routing.</td><td>One pane spanning both regions plus the non-AWS estate.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4><span class="cdot" style="background:#01A88D"></span>CI/CD and infrastructure as code</h4>
+  <div class="tableWrap"><table>
+    <thead><tr><th>Component</th><th>Responsibility</th><th>Why it is here</th></tr></thead>
+    <tbody>
+      <tr><td>GitHub</td><td>Single source of truth for application code, Helm charts and Terraform.</td><td>Every production change has a reviewable commit and an author.</td></tr>
+      <tr><td>GitHub Actions</td><td>Build, unit test, SAST/dependency scan, container build.</td><td>The first gate — cheap failures happen here rather than in a cluster.</td></tr>
+      <tr><td>Terraform Cloud</td><td>Plan and apply for all infrastructure, with remote state and policy checks.</td><td>Both regions are built from the same modules, so they cannot drift apart silently.</td></tr>
+      <tr><td>Amazon ECR</td><td>Shared image registry with scan-on-push and immutable tags.</td><td>Both clusters pull the identical digest — the artifact that was tested is the artifact that runs.</td></tr>
+      <tr><td>ArgoCD (hub + agents)</td><td>Pull-based GitOps reconciliation into both clusters.</td><td>Cluster state converges to Git continuously, so drift self-heals and rollback is a revert.</td></tr>
+      <tr><td>Cosign + OPA</td><td>Image signing plus an admission policy that rejects unsigned or non-compliant workloads.</td><td>Closes the gap between "the pipeline built it" and "the cluster will run it".</td></tr>
+    </tbody>
+  </table></div>
+
+  <!-- ======================================================= 3 -->
+  <h3 id="sync"><span class="num">3</span>Data synchronisation between regions</h3>
+  <p>
+    Each store replicates differently, and the differences are what make or break a failover. The table below is the
+    single most important thing to internalise about this architecture.
+  </p>
+  <div class="tableWrap"><table>
+    <thead><tr><th>Store</th><th>Mechanism</th><th>Topology</th><th>Typical lag</th><th>Conflict handling</th><th>Behaviour on regional failover</th></tr></thead>
+    <tbody>
+      <tr><td>Aurora PostgreSQL</td><td>Global Database — replication at the storage layer, not via logical replay</td><td>Single writer, read-only secondary</td><td>Under 1 s</td><td>None possible — one writer</td><td>Secondary must be <strong>promoted</strong>. Writes are rejected until promotion completes.</td></tr>
+      <tr><td>DynamoDB</td><td>Global Tables</td><td>Multi-active — both regions writable</td><td>Sub-second</td><td>Last writer wins, per item</td><td>No action needed. Carts and sessions keep working through the event.</td></tr>
+      <tr><td>ElastiCache Redis</td><td>Global Datastore</td><td>Primary writes, secondary read-only</td><td>About 1 s</td><td>None — one primary</td><td>Promote the secondary, or accept a cold cache and the Aurora read amplification that follows.</td></tr>
+      <tr><td>Amazon S3</td><td>Cross-Region Replication (asynchronous)</td><td>Bidirectional, versioning required</td><td>Minutes; 15 min with Replication Time Control</td><td>Version IDs preserved; newest wins per object</td><td>Recently uploaded media may be briefly missing in the surviving region.</td></tr>
+      <tr><td>OpenSearch</td><td>Cross-cluster replication, or rebuild from the catalogue</td><td>Leader / follower indices</td><td>Seconds</td><td>Not applicable — derived data</td><td>Rebuildable from Aurora, so it is never the constraint.</td></tr>
+      <tr><td>Amazon MSK</td><td>MSK Replicator or MirrorMaker 2</td><td>Active / passive topics</td><td>Seconds</td><td>Consumer offsets translated, not identical</td><td>Consumers restart from the translated offset; expect some duplicate delivery.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout warn">
+    <p class="ctitle">The effective RPO is set by the slowest store in the path</p>
+    <p>
+      An order is not one write. It is an Aurora row, a DynamoDB cart update, an S3 receipt and an EventBridge event.
+      Quoting "RPO ≈ 1 second" because that is Aurora's number is wrong: if the receipt PDF lands in S3 and the region
+      fails 30 seconds later, that object may not have replicated. <strong>Per business transaction, the RPO is the
+      worst case across every store it touched.</strong>
+    </p>
+    <p>
+      This is why the design leans on the SQS and EventBridge buffer. Work that has been accepted but not yet
+      completed survives in a queue rather than in the memory of a pod that no longer exists.
+    </p>
+  </div>
+
+  <h4><span class="cdot" style="background:#C925D1"></span>Rules the application has to honour</h4>
+  <ul>
+    <li><strong>Writes are pinned to the writer region.</strong> The secondary is a reader. Either route write paths back to <code>us-east-1</code>, or enable Aurora write forwarding and accept the added cross-Atlantic latency on every write.</li>
+    <li><strong>No read-your-writes across regions.</strong> A write committed in <code>us-east-1</code> and read from the <code>eu-west-1</code> reader a few hundred milliseconds later may not be there. Read back from the writer within a session, or from DynamoDB, which is multi-active.</li>
+    <li><strong>Every mutating endpoint takes an idempotency key.</strong> A retry after a failover must not create a second order or capture a second payment. This is the single most common source of data damage during DR.</li>
+    <li><strong>Cache invalidation crosses regions.</strong> ElastiCache Global Datastore replicates the primary's writes, but an invalidation issued against the wrong endpoint silently does nothing.</li>
+    <li><strong>KMS keys must exist in both regions.</strong> S3 CRR of SSE-KMS objects fails unless the destination has a usable key — use multi-Region keys or an explicit destination key in the replication rule.</li>
+  </ul>
+
+  <!-- ======================================================= 4 -->
+  <h3 id="security"><span class="num">4</span>Security guardrails</h3>
+  <p>
+    Guardrails are graded by what happens when someone tries to cross them. A <strong>preventative</strong> guardrail
+    makes the action fail. A <strong>detective</strong> control tells you it happened. The goal is that the expensive
+    mistakes are all in the first category.
+  </p>
+
+  <h4><span class="cdot" style="background:#DD344C"></span>Preventative — the change simply does not go through</h4>
+  <div class="tableWrap"><table>
+    <thead><tr><th>Guardrail</th><th>Enforced by</th><th>What it stops</th></tr></thead>
+    <tbody>
+      <tr><td>Pod-level IAM</td><td>IRSA / EKS Pod Identity</td><td>Node-wide credentials. Each pod assumes only its own scoped role; there are no long-lived access keys in a container.</td></tr>
+      <tr><td>Unsigned images</td><td>Cosign + OPA/Kyverno admission</td><td>Admission rejects any image without a valid signature, so a registry compromise does not become a running workload.</td></tr>
+      <tr><td>Policy violations at plan time</td><td>Terraform Cloud policy checks</td><td>A public S3 bucket, an open security group or an unencrypted volume fails the plan and never reaches an apply.</td></tr>
+      <tr><td>Encryption everywhere</td><td>KMS envelope encryption</td><td>Unencrypted data at rest across Aurora, DynamoDB, S3, EBS and MSK, with key policies separating who may use a key from who may manage it.</td></tr>
+      <tr><td>Credential sprawl</td><td>Secrets Manager</td><td>Database and API credentials in manifests or environment files. Secrets are fetched at runtime and rotated on a schedule.</td></tr>
+      <tr><td>Network exposure</td><td>Private subnets, security groups, VPC endpoints</td><td>Data stores have no public route. Service-to-service traffic is mTLS via the Envoy mesh; AWS API calls stay on VPC endpoints rather than traversing NAT.</td></tr>
+      <tr><td>Edge abuse</td><td>WAF + Shield Advanced</td><td>Injection payloads, credential stuffing, scrapers and volumetric floods, dropped before origin capacity is spent.</td></tr>
+      <tr><td>Self-inflicted outages</td><td>PodDisruptionBudgets</td><td>A drain or upgrade taking a service below quorum. Note this covers <em>voluntary</em> disruption only — it does not protect against node failure.</td></tr>
+      <tr><td>Region and service sprawl</td><td>Service control policies (organisation level)</td><td>Workloads created outside approved regions, or the root user acting in a member account. Assumed present at the org level rather than drawn in this diagram.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4><span class="cdot" style="background:#DD344C"></span>Detective — you find out, and you find out quickly</h4>
+  <div class="tableWrap"><table>
+    <thead><tr><th>Control</th><th>Watches for</th><th>Wired to</th></tr></thead>
+    <tbody>
+      <tr><td>GuardDuty</td><td>Crypto-mining behaviour, anomalous API calls, credential exfiltration, malicious IP contact, EKS audit-log findings.</td><td>Security Hub, then to on-call for high-severity findings.</td></tr>
+      <tr><td>Security Hub</td><td>Aggregated posture and findings against CIS and AWS Foundational Security Best Practices.</td><td>The single queue the security team works from.</td></tr>
+      <tr><td>AWS Config</td><td>Resource configuration drift against conformance packs, with recorded history.</td><td>Auto-remediation for a defined subset; ticket for the rest.</td></tr>
+      <tr><td>CloudTrail</td><td>Every API call, in an immutable organisation trail.</td><td>The forensic record. Assumed org-level, not drawn above.</td></tr>
+      <tr><td>ECR scan-on-push</td><td>Known CVEs in image layers.</td><td>Blocks promotion of a critical-severity image to the production channel.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout">
+    <p class="ctitle">Why GitOps is itself a security control</p>
+    <p>
+      Because ArgoCD reconciles continuously, an operator who edits the cluster by hand is reverted within minutes.
+      That removes standing human write access to production as a requirement: the pipeline identity is the only
+      thing that needs it, and every change carries a commit, a reviewer and a diff.
+    </p>
+  </div>
+
+  <!-- ======================================================= 5 -->
+  <h3 id="recovery"><span class="num">5</span>Failure domains and recovery</h3>
+
+  <div class="tiles">
+    <div class="tile">
+      <div class="tval">&lt; 2 min</div>
+      <div class="tlab">AZ loss — RTO</div>
+      <div class="tsub">Absorbed automatically. No human involved and no data loss.</div>
+    </div>
+    <div class="tile">
+      <div class="tval">5–15 min</div>
+      <div class="tlab">Region loss — RTO</div>
+      <div class="tsub">DNS TTL, plus Aurora promotion, plus validation before traffic is trusted.</div>
+    </div>
+    <div class="tile">
+      <div class="tval">~1 s</div>
+      <div class="tlab">Region loss — RPO</div>
+      <div class="tsub">Aurora's figure. The real per-transaction number is the worst store it touched.</div>
+    </div>
+    <div class="tile">
+      <div class="tval">Seconds</div>
+      <div class="tlab">Rollback — RTO</div>
+      <div class="tsub">A bad deploy is a Git revert; ArgoCD reconciles the previous digest.</div>
+    </div>
+  </div>
+
+  <div class="tableWrap"><table>
+    <thead><tr><th>Failure</th><th>Blast radius</th><th>Detected by</th><th>Recovery mechanism</th><th>RTO</th><th>RPO</th></tr></thead>
+    <tbody>
+      <tr><td>Pod crash</td><td>One replica</td><td>Liveness probe, ~10 s</td><td>ReplicaSet reschedules; the ALB had already deregistered the target.</td><td>Seconds</td><td>Zero</td></tr>
+      <tr><td>Node loss / Spot reclaim</td><td>Pods on one node</td><td>Node NotReady; 2-minute Spot interruption notice</td><td>Karpenter provisions replacement capacity; PDBs pace the drain.</td><td>1–3 min</td><td>Zero</td></tr>
+      <tr><td>AZ impairment</td><td>One third of capacity</td><td>ALB health checks, CloudWatch alarms</td><td>Multi-AZ ALB, node groups and NAT; Aurora and ElastiCache fail over within the region.</td><td>Under 2 min</td><td>Zero</td></tr>
+      <tr><td>Regional impairment</td><td>Entire region</td><td>Route 53 health checks plus composite CloudWatch alarms</td><td>DNS shifts to <code>eu-west-1</code>; Aurora secondary promoted; ElastiCache promoted.</td><td>5–15 min</td><td>~1 s for Aurora; up to 15 min for S3</td></tr>
+      <tr><td>Bad deploy</td><td>One service, both regions</td><td>Canary metrics, SLO error-budget burn rate</td><td>Revert the commit; ArgoCD reconciles to the previous image digest.</td><td>Seconds to minutes</td><td>Zero</td></tr>
+      <tr><td>Logical data corruption</td><td>One table or dataset</td><td>Integrity checks, customer reports, anomaly alarms</td><td>Aurora or DynamoDB point-in-time recovery to just before the bad write. <strong>Replication will not save you — it copied the corruption.</strong></td><td>30–90 min</td><td>To the second, via PITR</td></tr>
+      <tr><td>Accidental deletion</td><td>Objects or a table</td><td>Config, GuardDuty, CloudTrail alarms</td><td>S3 versioning and MFA delete; restore from the Backup vault.</td><td>Hours</td><td>Last version or backup</td></tr>
+      <tr><td>Credential compromise / ransomware</td><td>Potentially account-wide</td><td>GuardDuty findings, anomalous CloudTrail activity</td><td>Isolate, rotate through Secrets Manager, restore from a Vault Lock copy held in a separate account.</td><td>Hours</td><td>Last immutable copy</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4><span class="cdot" style="background:#ED7100"></span>Regional failover runbook</h4>
+  <ol class="flowsteps">
+    <li><b>Confirm, do not react</b><span>A composite alarm across several independent signals must fire — a single failing health check is not a region outage. Failing over on a false positive costs an Aurora promotion and a cold cache for nothing.</span></li>
+    <li><b>Stop the bleeding at DNS</b><span>Route 53 health checks pull the failed region automatically. Client-observed recovery is bounded by record TTL, which is why TTL is kept at 60 seconds. Global Accelerator traffic moves in seconds because anycast does not wait for DNS.</span></li>
+    <li><b>Promote the data tier</b><span>Promote the Aurora global secondary — typically under a minute — then ElastiCache. Until Aurora promotion completes the surviving region serves reads but rejects writes, so this step is the critical path.</span></li>
+    <li><b>Scale into the load</b><span><code>eu-west-1</code> was carrying its own share, not all of it. Karpenter and HPA scale out, but a cold ElastiCache means Aurora briefly absorbs the full read volume — pre-warm the cache or plan for the spike.</span></li>
+    <li><b>Drain the buffers</b><span>Work accepted before the failure sits in SQS and MSK. Consumers restart from translated offsets, so duplicate delivery is expected — this is what the idempotency keys are for.</span></li>
+    <li><b>Validate before declaring recovery</b><span>Run synthetic checkouts end to end. Traffic arriving is not the same as orders completing.</span></li>
+    <li><b>Fail back deliberately</b><span>Failback is a planned change, not an emergency. Rebuild <code>us-east-1</code> as the new secondary, let replication catch up fully, then reverse roles during a low-traffic window.</span></li>
+  </ol>
+
+  <div class="callout ok">
+    <p class="ctitle">A recovery plan that has not been rehearsed is a hypothesis</p>
+    <p>
+      Regional failover should be exercised on a schedule, not discovered during an incident. The drills worth running:
+      a real Aurora global failover in a pre-production copy; restoring a backup and verifying the restored data rather
+      than just the job status; killing an AZ's worth of nodes to confirm PDBs and Karpenter behave; and forcing Spot
+      reclamation under load. Each one turns an assumption in this document into a measurement.
+    </p>
+  </div>
+
+  <!-- ======================================================= 6 -->
+  <h3 id="tradeoffs"><span class="num">6</span>Trade-offs this design accepts</h3>
+  <ul>
+    <li><strong>Warm standby, not active/active for writes.</strong> A single Aurora writer keeps the data model simple and removes conflict resolution entirely, at the cost of a promotion step in the failover path. True active/active writes would mean either sharding by geography or accepting conflict resolution across the whole order model.</li>
+    <li><strong>The secondary region is largely idle capacity.</strong> It serves its own read traffic but is provisioned to absorb both regions. That is the premium being paid for a single-digit-minute RTO.</li>
+    <li><strong>Mixed consistency models.</strong> Aurora is strongly consistent, DynamoDB is multi-active with last-writer-wins, and S3 is eventually consistent across regions. Developers have to know which store they are touching — this is a real, permanent cognitive cost.</li>
+    <li><strong>Spot capacity trades cost for churn.</strong> Roughly a 70% saving on stateless tiers, paid for with interruption handling, diversified pools and graceful shutdown that has to actually work.</li>
+    <li><strong>The mesh adds a hop.</strong> Envoy sidecars bring uniform mTLS, retries and telemetry, and they add latency and per-pod memory. Worth it at nine services; questionable at three.</li>
+    <li><strong>DNS TTL is a floor on failover.</strong> Nothing in the HTTP path recovers faster than the TTL clients have cached, which is exactly why Global Accelerator carries the traffic that cannot tolerate it.</li>
+  </ul>
+
+</div>
+</section>
 
 <script>
 (function(){
